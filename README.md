@@ -46,4 +46,9 @@ The yosys was setup.
 The gtkwave was setup.
    <img width="764" alt="gtkwave" src="https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b53bb7d7-d3fe-4259-918e-6d348abef910">
 </details>
- 
+  <details open>
+<summary>iverilog</summary>
+<br>
+The iverilog was setup.
+<img width="666" alt="iverilog" src="https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e649c3c3-d141-48f9-83ee-03a9ad5a669d">
+</details>

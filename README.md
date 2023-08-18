@@ -19,10 +19,25 @@ A brief description of what this training summarizes :
  
 ![icc2_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0a733004-dca6-412f-a94c-bc8608ecb36b)
 </details>
+<details open>
+<summary>pt_shell</summary>
+<br>
+  The pt_shell was setup.
+ 
+ ![pt_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2e3efe8a-6aa3-4402-b3e4-542a4ac6b876)
+</details>
+<details open>
+<summary>lc_shell</summary>
+<br>
+  The lc_shell was setup.
+ 
+![lc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/80feb4c1-1705-4ebb-8b10-a1593710dbc1)
+</details>
  <details open>
 <summary>Yosys</summary>
 <br>
 The yosys was setup.
+  
 <img width="568" alt="yosys" src="https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/52c877f5-dda8-4fad-84ad-8697c30ddb68">
 </details>
  <details open>

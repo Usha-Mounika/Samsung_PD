@@ -70,10 +70,10 @@ The iverilog was setup.
   
  - **RTL Design** : The RTL Design stands for **Register Transfer Language.**  It sits between the high-level system specification and the lower-level gate-level implementation. This is a design abstraction which models the flow of digital signals between hardware registers, and the logical operations performed on those signals.
   RTL is preferred because it is easy to understand and implement compared to structural and behavioral models
-  -  **HDL** : A hardware description language (HDL) enables a precise, formal description of an electronic circuit that allows for the automated analysis and simulation of an electronic circuit.
-  - **Simulator** : Simulator is the tool used for checking adherence to the specification by simulating the design. iverilog is the tool used for RTL simulation. A simulator looks for change in the input signals and when no change in input, the output also doesn't change.
-  - **Design** : Design is the actual verilog code or set of Verilog codeswhich has the intended functionality to meet the required specifications. Design may have one or more primary inputs or primary outputs.
-  - **TestBench** : TestBench is the setup to apply stimulus to the design to check its functionality. TestBench doesn't have a primary input or primary output.
+ -  **HDL** : A hardware description language (HDL) enables a precise, formal description of an electronic circuit that allows for the automated analysis and simulation of an electronic circuit.
+ - **Simulator** : Simulator is the tool used for checking adherence to the specification by simulating the design. iverilog is the tool used for RTL simulation. A simulator looks for change in the input signals and when no change in input, the output also doesn't change.
+ - **Design** : Design is the actual verilog code or set of Verilog codeswhich has the intended functionality to meet the required specifications. Design may have one or more primary inputs or primary outputs.
+ - **TestBench** : TestBench is the setup to apply stimulus to the design to check its functionality. TestBench doesn't have a primary input or primary output.
 
  ![testbench](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a057bfc6-029d-4cde-8549-3c33cb0a6001)
 
@@ -83,11 +83,24 @@ The iverilog was setup.
 <br>
   
 - **iverilog** : iverilog is a compiler that translates Verilog source code into executable programs for simulation, or other netlist formats for further processing.
-  - **gtkwave** : GTKWave is an analysis tool used to perform debugging on Verilog or VHDL simulation models. It relies on a post-mortem approach through the use of
+- **gtkwave** : GTKWave is an analysis tool used to perform debugging on Verilog or VHDL simulation models. It relies on a post-mortem approach through the use of
 dumpfiles.
 
 ![iverilog simulation](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5ffc0f70-7a1a-494e-a025-81231cd1bc2f)
 
 **Lab examples using iverilog and gtkwave**
+
+![Lab1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d815c579-2efe-4303-9739-c9351e9663fb)
+
+![Blank 2 Grids Collage (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/22fc7b31-23c7-4fe3-9352-51c6c2bfb5cc)
+
+</details>
+ <details open>
+<summary> Introduction to Yosys and Logic Synthesis </summary>
+<br>
+  
+- **Logic Synthesis** : 
+- **Yosys** : Yosys is a framework for Verilog RTL synthesis. It currently hasextensive Verilog-2005 support and provides a basic set of synthesis
+algorithms for various application domains.
 
 </details>

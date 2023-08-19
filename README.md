@@ -3,6 +3,7 @@
 A brief description of what this training summarizes : 
 
 - [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
+- [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
  <details open>
@@ -51,4 +52,10 @@ The gtkwave was setup.
 <br>
 The iverilog was setup.
 <img width="666" alt="iverilog" src="https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e649c3c3-d141-48f9-83ee-03a9ad5a669d">
+</details>
+##[Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
+ <details open>
+<summary>Introduction to RTL Design and Synthesis</summary>
+<br>
+  RTL Design: 
 </details>

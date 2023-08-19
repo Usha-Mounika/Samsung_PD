@@ -12,6 +12,11 @@ A brief description of what this training summarizes :
   The dc_shell was setup.
   
 ![dc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/693aa266-5775-42d6-adce-885437e43565)
+
+- The Design compiler is an EDA tool in the field of Digital IC design. 
+- It plays a crucial role in translating high-level hardware descriptive languages into optimized gate-level representation.
+- Design Compiler employs sophisticated algorithms to reduce power consumption, enhance circuit speed, and minimize chip area utilization.
+- This tool is essential for optimizing the design's power, performance, and area (PPA) metrics. 
 </details>
 <details open>
 <summary>icc2_shell</summary>
@@ -19,6 +24,10 @@ A brief description of what this training summarizes :
   The icc2_shell was setup.
  
 ![icc2_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0a733004-dca6-412f-a94c-bc8608ecb36b)
+
+- ICC2 (Integrated Circuit Compiler 2) Shell is a command-line interface that provides a powerful environment for managing various stages of the chip design process.
+-  This command-line interface enables automation of complex design flows, making it easier to handle intricate VLSI projects.
+-  Its features encompass logic synthesis, placement, routing, and clock tree synthesis, all orchestrated for optimal power, performance, and area (PPA) trade-offs. 
 </details>
 <details open>
 <summary>pt_shell</summary>

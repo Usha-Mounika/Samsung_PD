@@ -11,7 +11,7 @@ A brief description of what this training summarizes :
 <br>
   The dc_shell was setup.
   
-![dc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/693aa266-5775-42d6-adce-885437e43565)
+ ![dc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/693aa266-5775-42d6-adce-885437e43565)
 
 - The Design compiler is an EDA tool in the field of Digital IC design. 
 - It plays a crucial role in translating high-level hardware descriptive languages into optimized gate-level representation.
@@ -23,7 +23,7 @@ A brief description of what this training summarizes :
 <br>
   The icc2_shell was setup.
  
-![icc2_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0a733004-dca6-412f-a94c-bc8608ecb36b)
+ ![icc2_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0a733004-dca6-412f-a94c-bc8608ecb36b)
 
 - ICC2 (Integrated Circuit Compiler 2) Shell is a command-line interface that provides a powerful environment for managing various stages of the chip design process.
 -  This command-line interface enables automation of complex design flows, making it easier to handle intricate VLSI projects.
@@ -34,14 +34,14 @@ A brief description of what this training summarizes :
 <br>
   The pt_shell was setup.
  
- ![pt_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2e3efe8a-6aa3-4402-b3e4-542a4ac6b876)
+  ![pt_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2e3efe8a-6aa3-4402-b3e4-542a4ac6b876)
 </details>
 <details open>
 <summary>lc_shell</summary>
 <br>
   The lc_shell was setup.
  
-![lc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/80feb4c1-1705-4ebb-8b10-a1593710dbc1)
+ ![lc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/80feb4c1-1705-4ebb-8b10-a1593710dbc1)
 </details>
  <details open>
 <summary>Yosys</summary>
@@ -64,6 +64,7 @@ The iverilog was setup.
 </details>
 
  ## [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
+ 
  <details open>
 <summary>Introduction to RTL Design and Synthesis</summary>
 <br>
@@ -91,7 +92,7 @@ always @ (posedge clk ,posedgr rst)
 ```
  - **TestBench** : TestBench is the setup to apply stimulus to the design to check its functionality. TestBench doesn't have a primary input or primary output.
 
- ![testbench](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a057bfc6-029d-4cde-8549-3c33cb0a6001)
+![testbench](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7748b0a1-356e-4c61-9a20-6ecc8fc37989)
 
 - **Logic Synthesis** : The Logic Synthesis involves following steps
   - Syntax Analysis: Takes input of HDL files and checks for syntax errors.The syntax analyzer breaks the code into tokens, then builds a parse tree, which is a graphical representation of the syntactic structure of the HDL file.
@@ -105,7 +106,8 @@ always @ (posedge clk ,posedgr rst)
    
 - **Synthesizer** : Synthesizer is the tool used for converting RTL to Netlist. Yosys is the tool used for synthesis and iverilog is the tool used to verify the synthesis. The RTL design is converted into gates and the connections are made between gates and netlist is given as an output file.
 
-     ![Screenshot 2023-08-20 092650](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a775200f-0528-4b51-860f-73fadf6f2123)
+
+![Screenshot 2023-08-20 092650](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/99486688-b0bd-4313-9489-b6a2df52844e)
 
 
 - Netlist :  It is the representation of design in the form of Standard libs in the .lib. The set of inputs or outputs remain same between RTL design and Synthesized Netlist.
@@ -119,13 +121,57 @@ always @ (posedge clk ,posedgr rst)
 - **gtkwave** : GTKWave is an analysis tool used to perform debugging on Verilog or VHDL simulation models. It relies on a post-mortem approach through the use of
 dumpfiles.
 
-![iverilog simulation](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5ffc0f70-7a1a-494e-a025-81231cd1bc2f)
+![iverilog simulation](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e1cff27a-9006-4f26-ab04-9729c58bfcad)
+
 
 **Lab examples using iverilog and gtkwave**
 
-![Lab1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d815c579-2efe-4303-9739-c9351e9663fb)
+![Lab1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2b68d5f3-44c4-4fe3-8e9b-eb5e8b83bc24)
 
-![Blank 2 Grids Collage (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/22fc7b31-23c7-4fe3-9352-51c6c2bfb5cc)
+The following image shows the a good D-latch operation with gtkwave
+![Blank 2 Grids Collage (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d2827e98-29c8-4a06-b291-47b8615cb700)
+The following is the verilog code for good latch:
+```verilog
+module good_latch (input clk , input reset , input d , output reg q);
+always @ (clk,reset,d)
+begin
+	if(reset)
+		q <= 1'b0;
+	else if(clk)
+		q <= d;
+end
+```
+The following is the test bench code for good latch:
+```verilog
+`timescale 1ns / 1ps
+module tb_good_latch;
+	// Inputs
+	reg clk, reset, d;
+	// Outputs
+	wire q;
+
+        // Instantiate the Unit Under Test (UUT)
+	good_latch uut (
+		.clk(clk),
+		.reset(reset),
+		.d(d),
+		.q(q)
+	);
+
+	initial begin
+	$dumpfile("tb_good_latch.vcd");
+	$dumpvars(0,tb_good_latch);
+	// Initialize Inputs
+	clk = 0;
+	reset = 1;
+	d = 0;
+	#300 $finish;
+	end
+
+always #20 clk = ~clk;
+always #23 d = ~d;
+always	#15 reset=0;
+```
 
 </details>
  <details open>
@@ -135,16 +181,16 @@ dumpfiles.
  - **Yosys** : Yosys is a framework for Verilog RTL synthesis. It currently hasextensive Verilog-2005 support and provides a basic set of synthesis
 algorithms for various application domains.
  - **Sky130PDK** : The SKY130 is a mature 180nm-130nm hybrid technology originally developed internally by Cypress Semiconductor before being spun out into SkyWater Technology and made accessible to general industry.
-
-![yosys](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8879ae3b-8906-4c39-a5dd-bc9d869185f4)
+![yosys](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c82f157a-23b7-46f8-896d-9738096d55c7)
 
   - .**lib** is the collection of logic modules that includes basic gates such as AND, OR etc.. and different flavors of same gate such as slow, medium, fast.
  ### Need for different flavors in design:
  The logic path consists of 3 stages: the launch flip-flop, the combinational delay, capture flip-flop.The combinational delay in a logic path decides the maximum speed of operation in a logic circuit. The **CLKtoQ period of  FFA**, **combinational delay** **setup time of FFB** are the factors to be considered for faster operation of a logic design. So the minimum clock period should be greater than this sum to ensure glitch free operation of design. This minimum period contributs to the higher speed and thus resulting in higher performance of the design.
- ![ffpath](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/22e9a0b2-6b04-44e5-972e-4bb9d25b0ec1)
+
  - **Setup time** determines the minimum amount of time the data input to a flip-flop must be stable before the clock edge arrives. 
  - **Hold time** refers to the minimum amount of time the data input to a flip-flop must be stable after the clock edge arrives.
- - ![hold eq](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f173f14a-bbc0-456d-8bbb-7e19eb6ac56a)
+ - ![hold eq](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c1daa786-52eb-4180-8403-0314b3a713ca)
+![ffpath](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c01d6e7d-6a41-463b-8dc6-165cc2051dc4)
 
  - We need faster cells to meet setup requirement and slower cells to meet hold requirement.
  - The load in a digital design is **Capacitance**.  The cell delay is less when the capacitor charges or discharges faster. So it needs wider transistors that are capable of sourcing more current.
@@ -155,8 +201,34 @@ Narrower Transistors => More delay => Less are and Power
   - The tradeoff of speed comes with area and power.
 - **Selection of cells**: The use of faster cells consumes more area and power and causes hold violations. The use of slower cells makes the circuit sluggish and may not meet the performance. So, The synthesizer needs to be guided to select the flavor using **constraints**.
 - This is a snippet example of how synthesis is being done from Behavioral code to gate level design.
+![synthesis](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/23da17a0-4bc5-474b-a1a2-ed3ca0cd5091)
 
 
- ![synthesis](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8b600c8f-e62a-4f45-84b0-02bb246a8b2d) 
+ 
  ### Lab using Yosys
+ The following images show the synthesis of a 2x1 multiplexer from verilog code to its gate level netlist. 
+ ![first](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/17e30794-3b9c-4471-bc8c-aa2abaf70309)
+![n-1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1863611f-76e7-45e8-aac5-b8a1d22fe965)
+![last](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/faa7c01b-34ee-4b64-9c5b-80d6c5534a81)
+This following snippet shows the steps to generate RTL to netlist using Yosys tool.
+```yosys
+$ yosys
+yosys> read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+yosys> read_verilog good_mux.v 
+yosys> synth -top good_mux 
+yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+yosys> show
+
+yosys> write_verilog good_mux_netlist.v 
+yosys> !gvim good_mux_netlist.v 
+
+yosys> write_verilog -noattr good_mux_netlist.v
+yosys> !gvim good_mux_netlist.v 
+
+```
+The following snap is the behavioral design in the code
+![good_mux logic](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9aa1e911-7623-4b2b-9dc5-47d00f85de78)
+The following code snippet is the generated netlist without switch (on left) and with switch (right image).
+![Blank 2 Grids Collage (2)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9ed09f75-fd13-4bbe-998e-b50b5feede37)
+
 </details>

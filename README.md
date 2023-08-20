@@ -6,24 +6,27 @@ A brief description of what this training summarizes :
 - [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
+
  <details open>
 <summary>dc_shell</summary>
-<br>
+<br>	 
   The dc_shell was setup.
-  
- ![dc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/693aa266-5775-42d6-adce-885437e43565)
+
+![dc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5846b160-d888-454e-a1b0-d492b2137f36)
 
 - The Design compiler is an EDA tool in the field of Digital IC design. 
 - It plays a crucial role in translating high-level hardware descriptive languages into optimized gate-level representation.
 - Design Compiler employs sophisticated algorithms to reduce power consumption, enhance circuit speed, and minimize chip area utilization.
-- This tool is essential for optimizing the design's power, performance, and area (PPA) metrics. 
+- This tool is essential for optimizing the design's power, performance, and area (PPA) metrics.
 </details>
+
 <details open>
 <summary>icc2_shell</summary>
 <br>
   The icc2_shell was setup.
  
- ![icc2_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0a733004-dca6-412f-a94c-bc8608ecb36b)
+ ![icc2_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/83cf9480-5e09-4635-80eb-ec4656bbc3f9)
+
 
 - ICC2 (Integrated Circuit Compiler 2) Shell is a command-line interface that provides a powerful environment for managing various stages of the chip design process.
 -  This command-line interface enables automation of complex design flows, making it easier to handle intricate VLSI projects.
@@ -33,15 +36,23 @@ A brief description of what this training summarizes :
 <summary>pt_shell</summary>
 <br>
   The pt_shell was setup.
- 
-  ![pt_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2e3efe8a-6aa3-4402-b3e4-542a4ac6b876)
+
+ ![pt_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c3d81adc-1013-4c30-9ac6-e6acf001c965)
+
+- **PrimeTime** analyzes the timing behavior of a digital circuit by considering signal propagation delays, clock cycles, and other factors. It helps identify critical paths and timing violations.
+-  It can estimate power consumption based on the circuit's activity and help designers optimize power usage.
+-  It also provides signal integrity analysis, variability analysis, clock tree synthesis and design optimization.
 </details>
 <details open>
 <summary>lc_shell</summary>
 <br>
   The lc_shell was setup.
  
- ![lc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/80feb4c1-1705-4ebb-8b10-a1593710dbc1)
+![lc_shell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4b61b75b-95a2-4f85-b1ff-4d8593bdc86d)
+
+- **Library Compiler** refers to a tool that generates optimized cell libraries for use in digital integrated circuit designs.
+-  These libraries contain pre-characterized cells (logic gates, flip-flops, etc.) that have been characterized for various operating conditions, such as process corners and temperature ranges.
+-  It is used for ndm generation from cell libraries and technology files.
 </details>
  <details open>
 <summary>Yosys</summary>
@@ -72,11 +83,11 @@ The iverilog was setup.
  - **RTL Design** : The RTL Design stands for **Register Transfer Language.**  It sits between the high-level system specification and the lower-level gate-level implementation. This is a design abstraction which models the flow of digital signals between hardware registers, and the logical operations performed on those signals.
   RTL is preferred because it is easy to understand and implement compared to structural and behavioral models.
  -  **HDL** : A hardware description language (HDL) enables a precise, formal description of an electronic circuit that allows for the automated analysis and simulation of an electronic circuit.
- - **Simulator** : Simulator is the tool used for checking adherence to the specification by simulating the design. iverilog is the tool used for RTL simulation. A simulator looks for change in the input signals and when no change in input, the output also doesn't change.
- - **Design** : Design is the actual verilog code or set of Verilog codeswhich has the intended functionality to meet the required specifications. Design may have one or more primary inputs or primary outputs.
-    -RTL design is the behavioral representation of the required specification. The following code snippet is an example of Verilog HDL(RTL) code:
+ - **Simulator** : Simulator is the tool used for checking adherence to the specification by simulating the design. **iverilog** is the tool used for RTL simulation. A simulator looks for change in the input signals and when no change in input, the output also doesn't change.
+ - **Design** : Design is the actual verilog code or set of verilog codes which has the intended functionality to meet the required specifications. Design may have one or more primary inputs or primary outputs.
+    - RTL design is the behavioral representation of the required specification. The following code snippet is an example of Verilog HDL(RTL) code:
 
-```vhdl
+```verilog
   module sample_code (
    input clk,rst,
    output result,done);

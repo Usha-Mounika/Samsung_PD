@@ -4,10 +4,11 @@ A brief description of what this training summarizes :
 
 - [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 - [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
+- [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/Samsung_PD#Day2)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
- <details>
+<details>
 <summary>dc_shell</summary>
 <br>	 
   The dc_shell was setup.
@@ -241,5 +242,29 @@ The following snap is the behavioral design in the code
 ![good_mux logic](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9aa1e911-7623-4b2b-9dc5-47d00f85de78)
 The following code snippet is the generated netlist without switch (on left) and with switch (right image).
 ![Blank 2 Grids Collage (2)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9ed09f75-fd13-4bbe-998e-b50b5feede37)
+
+</details>
+
+## [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/Samsung_PD#Day2)
+ <details>
+<summary>Introduction to timing .libs</summary>
+<br>
+	 
+The Library includes the various parameters to be defined for a design such as units of voltage, resistance, capacitance and type of technology used, delay model used, input transition etc... 
+![pvt ss](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c2a92802-ed80-4573-a126-ded39bf7bee1)
+
+The library name (as follows) explains about **PVT conditions** of a .lib file.The following library is a 130 nm technology with tt (process), 1.8V (voltage), 25c (temperature).
+- The **process variation** defines the change in parameters due to fabrication. In other words, two wafers made at same instant with same material may have different specifications. The process can be **slow(ss), typical(tt), fast(ff)**.
+	 
+- The **voltage variation** and **temperature variation** effect the operation of circuit in the design.
+ ![PVT cond](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/59db1741-96aa-462a-9242-6bce26dd2202)
+
+The cell information in a library gives about the leakage power for different combinations (for example, for 2 input gate the power information of all 4 combinations are given) of inputs, area, power port information and various information associated with each pin.
+-The following comparison shows that the same **AND gate** has three diferent flavors.
+  - The wider transistor (and2_4) has less delay and consumes more area and power.
+  - The moderate wide transistor (and2_2) has moderate delay and consumes moderate power and moderate area.
+  - The narrower transistor (and2_0) has more delay and consumes less area and power.
+In the following 2-input AND gate, you can also see the 4. combinations of inputs as in the truth table and the power associated with those inputs.
+![comparison](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/90583d7a-8474-43bf-90c1-ae69a4d250c5)
 
 </details>

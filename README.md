@@ -32,7 +32,7 @@ A brief description of what this training summarizes :
 -  This command-line interface enables automation of complex design flows, making it easier to handle intricate VLSI projects.
 -  Its features encompass logic synthesis, placement, routing, and clock tree synthesis, all orchestrated for optimal power, performance, and area (PPA) trade-offs. 
 </details>
-<details open>
+<details >
 <summary>pt_shell</summary>
 <br>
   The pt_shell was setup.

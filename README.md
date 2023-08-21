@@ -257,7 +257,7 @@ The library name (as follows) explains about **PVT conditions** of a .lib file.T
 - The **process variation** defines the change in parameters due to fabrication. In other words, two wafers made at same instant with same material may have different specifications. The process can be **slow(ss), typical(tt), fast(ff)**.
 	 
 - The **voltage variation** and **temperature variation** effect the operation of circuit in the design.
- ![PVT cond](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/59db1741-96aa-462a-9242-6bce26dd2202)
+ss
 
 The cell information in a library gives about the leakage power for different combinations (for example, for 2 input gate the power information of all 4 combinations are given) of inputs, area, power port information and various information associated with each pin.
 -The following comparison shows that the same **AND gate** has three diferent flavors.
@@ -266,5 +266,10 @@ The cell information in a library gives about the leakage power for different co
   - The narrower transistor (and2_0) has more delay and consumes less area and power.
 In the following 2-input AND gate, you can also see the 4. combinations of inputs as in the truth table and the power associated with those inputs.
 ![comparison](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/90583d7a-8474-43bf-90c1-ae69a4d250c5)
+
+</details>
+ <details>
+<summary>Hierarchical Synthesis and Flat Synthesis</summary>
+<br>
 
 </details>

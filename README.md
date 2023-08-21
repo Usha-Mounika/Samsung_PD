@@ -7,7 +7,7 @@ A brief description of what this training summarizes :
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
- <details open>
+ <details>
 <summary>dc_shell</summary>
 <br>	 
   The dc_shell was setup.
@@ -20,7 +20,7 @@ A brief description of what this training summarizes :
 - This tool is essential for optimizing the design's power, performance, and area (PPA) metrics.
 </details>
 
-<details open>
+<details>
 <summary>icc2_shell</summary>
 <br>
   The icc2_shell was setup.
@@ -43,7 +43,7 @@ A brief description of what this training summarizes :
 -  It can estimate power consumption based on the circuit's activity and help designers optimize power usage.
 -  It also provides signal integrity analysis, variability analysis, clock tree synthesis and design optimization.
 </details>
-<details open>
+<details>
 <summary>lc_shell</summary>
 <br>
   The lc_shell was setup.
@@ -54,20 +54,20 @@ A brief description of what this training summarizes :
 -  These libraries contain pre-characterized cells (logic gates, flip-flops, etc.) that have been characterized for various operating conditions, such as process corners and temperature ranges.
 -  It is used for ndm generation from cell libraries and technology files.
 </details>
- <details open>
+ <details>
 <summary>Yosys</summary>
 <br>
 The yosys was setup.
   
 <img width="568" alt="yosys" src="https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/52c877f5-dda8-4fad-84ad-8697c30ddb68">
 </details>
- <details open>
+ <details>
 <summary>gtkwave</summary>
 <br>
 The gtkwave was setup.
    <img width="764" alt="gtkwave" src="https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b53bb7d7-d3fe-4259-918e-6d348abef910">
 </details>
-  <details open>
+  <details>
 <summary>iverilog</summary>
 <br>
 The iverilog was setup.
@@ -76,7 +76,7 @@ The iverilog was setup.
 
  ## [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
  
- <details open>
+ <details>
 <summary>Introduction to RTL Design and Synthesis</summary>
 <br>
   
@@ -124,7 +124,7 @@ always @ (posedge clk ,posedgr rst)
 - Netlist :  It is the representation of design in the form of Standard libs in the .lib. The set of inputs or outputs remain same between RTL design and Synthesized Netlist.
 
 </details>
- <details open>
+ <details>
 <summary>Introduction to Opensource simulator : iverilog gtkwave </summary>
 <br>
   
@@ -185,7 +185,7 @@ always	#15 reset=0;
 ```
 
 </details>
- <details open>
+ <details>
 <summary> Introduction to Yosys and Logic Synthesis </summary>
 <br>
   
@@ -196,7 +196,7 @@ algorithms for various application domains.
 
   - .**lib** is the collection of logic modules that includes basic gates such as AND, OR etc.. and different flavors of same gate such as slow, medium, fast.
  ### Need for different flavors in design:
- The logic path consists of 3 stages: the launch flip-flop, the combinational delay, capture flip-flop.The combinational delay in a logic path decides the maximum speed of operation in a logic circuit. The **CLKtoQ period of  FFA**, **combinational delay** **setup time of FFB** are the factors to be considered for faster operation of a logic design. So the minimum clock period should be greater than this sum to ensure glitch free operation of design. This minimum period contributs to the higher speed and thus resulting in higher performance of the design.
+ The logic path consists of 3 stages: the launch flip-flop, the combinational delay, capture flip-flop.The combinational delay in a logic path decides the maximum speed of operation in a logic circuit. The **CLKtoQ period of  FFA**, **combinational delay** **setup time of FFB** are the factors to be considered for faster operation of a logic design. So the minimum clock period should be greater than this sum to ensure glitch free operation of design. This minimum period contributes to the higher speed and thus resulting in higher performance of the design.
 
  - **Setup time** determines the minimum amount of time the data input to a flip-flop must be stable before the clock edge arrives. 
  - **Hold time** refers to the minimum amount of time the data input to a flip-flop must be stable after the clock edge arrives.

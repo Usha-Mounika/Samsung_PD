@@ -251,13 +251,14 @@ The following code snippet is the generated netlist without switch (on left) and
 <br>
 	 
 The Library includes the various parameters to be defined for a design such as units of voltage, resistance, capacitance and type of technology used, delay model used, input transition etc... 
+
 ![pvt ss](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c2a92802-ed80-4573-a126-ded39bf7bee1)
 
 The library name (as follows) explains about **PVT conditions** of a .lib file.The following library is a 130 nm technology with tt (process), 1.8V (voltage), 25c (temperature).
 - The **process variation** defines the change in parameters due to fabrication. In other words, two wafers made at same instant with same material may have different specifications. The process can be **slow(ss), typical(tt), fast(ff)**.
 	 
 - The **voltage variation** and **temperature variation** effect the operation of circuit in the design.
-ss
+![PVT cond](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b5055b4f-dc7e-4482-840d-199287b2a70e)
 
 The cell information in a library gives about the leakage power for different combinations (for example, for 2 input gate the power information of all 4 combinations are given) of inputs, area, power port information and various information associated with each pin.
 -The following comparison shows that the same **AND gate** has three diferent flavors.
@@ -271,5 +272,171 @@ In the following 2-input AND gate, you can also see the 4. combinations of input
  <details>
 <summary>Hierarchical Synthesis and Flat Synthesis</summary>
 <br>
+
+Let us consider a module having two submodules as following code and schematic for understanding hierarchical synthesis and flat synthesis.
+```verilog
+module sub_module2 (input a, input b, output y);
+	assign y = a | b;
+endmodule
+
+module sub_module1 (input a, input b, output y);
+	assign y = a&b;
+endmodule
+
+
+module multiple_modules (input a, input b, input c , output y);
+	wire net1;
+	sub_module1 u1(.a(a),.b(b),.y(net1));  //net1 = a&b
+	sub_module2 u2(.a(net1),.b(c),.y(y));  //y = net1|c ,ie y = a&b + c;
+endmodule
+```
+
+![Schematic](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a08c9ee6-8c23-435b-896d-092bc9b3f25f)
+
+Now inorder to synthesize a netlist from RTL code, we follow these steps using yosys:
+Step-1: Load the yosys tool by giving yosys command
+```bash
+$yosys
+```
+Step-2: Inorder to run yosys, we need two inputs verilog file and .lib file. So, These inputs were given using read_verilog and read_liberty thus successfully finishing frontend
+```bash
+yosys> read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+yosys> read_verilog multiple_modules.v
+```
+Step-3: Inorder to synthesize the netlist, we use **synth -top** command to synthesize the toplevel module. This gives the count of no. of bits, wires, inputs,cells etc...
+```bash
+yosys> synth -top multiple_modules
+yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+```
+![cell design](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6cd3bd1b-b089-4205-b776-2decaf2ee594)
+
+Here, the **show** command must specify the name, as there are multiple modules. The **multiple_modules** here specify the top_level.
+In this output, there are two sub_modules specified as blackbox without any idea of the logic in it. The circuit gives information only about inputs and outputs.
+The final schematic of the multiple_module is as:
+![out1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1d01c03e-354b-405e-9992-710195736d34)
+
+Step-4:Finally, by using the write_verilog command it converts the behavioral code into the gate-level netlist as following:
+```bash
+yosys> write_verilog -noattr multiple_modules_hier.v
+yosys> !gvim multiple_modules_hier.v
+```
+So, The hierarchical Synthesized netlist is as follows:
+```verilog
+module multiple_modules(a, b, c, y);
+  input a;
+  input b;
+  input c;
+  wire net1;
+  output y;
+  sub_module1 u1 (
+    .a(a),
+    .b(b),
+    .y(net1)
+  );
+  sub_module2 u2 (
+    .a(net1),
+    .b(c),
+    .y(y)
+  );
+endmodule
+
+module sub_module1(a, b, y);
+  wire _0_;
+  wire _1_;
+  wire _2_;
+  input a;
+  input b;
+  output y;
+  sky130_fd_sc_hd__and2_0 _3_ (
+    .A(_1_),
+    .B(_0_),
+    .X(_2_)
+  );
+  assign _1_ = b;
+  assign _0_ = a;
+  assign y = _2_;
+endmodule
+
+module sub_module2(a, b, y);
+  wire _0_;
+  wire _1_;
+  wire _2_;
+  input a;
+  input b;
+  output y;
+  sky130_fd_sc_hd__or2_0 _3_ (
+    .A(_1_),
+    .B(_0_),
+    .X(_2_)
+  );
+  assign _1_ = b;
+  assign _0_ = a;
+  assign y = _2_;
+endmodule
+```
+The flattened nelist is the netlist where the hierarchies (or submodules) are are replaced by the actual gates logic present in those sub modules. Inorder to generate the flattened netlist the first 3 steps were same. In the step-4,
+```bash
+yosys> flatten
+yosys> write_verilog -noattr multiple_modules_flat.v
+```
+The output of the flattened synthesis is:
+```verilog
+module multiple_modules(a, b, c, y);
+  wire _0_;
+  wire _1_;
+  wire _2_;
+  wire _3_;
+  wire _4_;
+  wire _5_;
+  input a;
+  input b;
+  input c;
+  wire net1;
+  wire \u1.a ;
+  wire \u1.b ;
+  wire \u1.y ;
+  wire \u2.a ;
+  wire \u2.b ;
+  wire \u2.y ;
+  output y;
+  sky130_fd_sc_hd__and2_0 _6_ (
+    .A(_1_),
+    .B(_0_),
+    .X(_2_)
+  );
+  sky130_fd_sc_hd__or2_0 _7_ (
+    .A(_4_),
+    .B(_3_),
+    .X(_5_)
+  );
+  assign _4_ = \u2.b ;
+  assign _3_ = \u2.a ;
+  assign \u2.y  = _5_;
+  assign \u2.a  = net1;
+  assign \u2.b  = c;
+  assign y = \u2.y ;
+  assign _1_ = \u1.b ;
+  assign _0_ = \u1.a ;
+  assign \u1.y  = _2_;
+  assign \u1.a  = a;
+  assign \u1.b  = b;
+  assign net1 = \u1.y ;
+endmodule
+```
+In this figure, there are no hierarchies such as u1, u2 and we have the gate logic present in it such as AND, OR.
+![flatshow](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fa852f0d-91f5-4991-bcfc-a81fe5fbd647)
+
+
+Inorder to generate a submodule only, we give the sub-module name(sub_module1) with **synth -top** command
+The following image shows the synthesized circuit of **sub_module1**. The submodules can be generated 
+- whenever there are multiple instances of same module in the design
+- To stitch various modules when there are massive designs 
+![mod](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/540f7b2f-7ce0-4a0a-a195-3464987eecf9)
+
+</details>
+<details>
+<summary>Flop coding Styles</summary>
+<br>
+
 
 </details>

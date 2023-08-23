@@ -436,7 +436,7 @@ The following image shows the synthesized circuit of **sub_module1**. The submod
 </details>
 <details>
 <summary>Flop coding Styles</summary>
-<br>
+<br>	
 	
 #### Why flops?
 In a combinational logic design, the change in input is seen at the output after the propagation delay. During the propagation of data, if there are more cells of different delays, this might cause a glitch in the output. If this combinational logic has more cells, this would cause an unstable output.Inorder to avoid these glitches, the flops are used between the cmobinational design.

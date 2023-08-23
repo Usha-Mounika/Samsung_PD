@@ -437,6 +437,68 @@ The following image shows the synthesized circuit of **sub_module1**. The submod
 <details>
 <summary>Flop coding Styles</summary>
 <br>
+	
+#### Why flops?
+In a combinational logic design, the change in input is seen at the output after the propagation delay. During the propagation of data, if there are more cells of different delays, this might cause a glitch in the output. If this combinational logic has more cells, this would cause an unstable output.Inorder to avoid these glitches, the flops are used between the cmobinational design.
+The flip-flop is a single bit storage device used between the combinational circuit to avoid glitches in the output.When a flop is used, the output of the previous stage is stored until there is a posedge or negedge triggered at the clock so the combinational circuit avoids glitches at the output as each stage is sort of shielded from input to output by the clock.
+The signals such as set or reset are used to initialise the flops otherwise any (previous value) garbage value could be propagated to next stage. These signals can be asynchronous or synchronous.
+### Lab on flop synthesis:
+Inorder to generate the gtkwave using iverilog, the following sequence of steps are followed:
+```bash
+$iverilog dff_asyncres.v tb_asyncres.v
+$./a.out
+$gtkwave tb_dff_asyncres.vcd
+```
+The **./a/out** generates a vcd output file that can be viewed with gtkwave
+Inorder to generate the synthesized circuit, the following sequence of steps are followed:
+```bash
+$yosys
+yosys> read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+yosys> read_verilog dff_asyncres.v
+yosys> synth -top dff_asyncres
+yosys> dff_libmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+yosys> show
+```
+**Asynchronous reset**: The asynchronous reset is the input of the flop, which shifts the output to 0 irrespective of the clock or the input signal D on the flop. 
+The Behavioral code of asynchronous reset is as follows:
+```verilog
+module dff_asyncres ( input clk ,  input async_reset , input d , output reg q );
+always @ (posedge clk , posedge async_reset)
+begin
+	if(async_reset)
+		q <= 1'b0;
+	else	
+		q <= d;
+end
+endmodule
+```
+This can be visualised as on gtkwave as follows:
+![dff_asyncres gtk](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cabb77e7-d1b5-4bb0-bf5e-799489f1063d)
 
+The synthesized circuit for asynchronous reset is:
+![dff_asyncres show](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d5a6ee70-2b29-4fe3-8a46-5b31c39fa8b5)
+***Asynchronous set**: The output of the flop changes to 1 irrespective of the clock edge or the input signal of D on the flop. 
+The Behavioral code of asynchronous set is:
+```verilog
+module dff_async_set ( input clk ,  input async_set , input d , output reg q );
+always @ (posedge clk , posedge async_set)
+begin
+	if(async_set)
+		q <= 1'b1;
+	else	
+		q <= d;
+end
+endmodule
+```
+The gtkwave output is as follows:
+![dff_asyncset gtk](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/edac6109-0013-415c-afab-13aac0f146fd)
+
+The synthesized circuit is as follows:
+![dff_ayncset show](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f3ef913e-eac7-4bb5-87f6-9f7fee21eeb3)
+
+**Synchronous reset**:
+The synthesized circuit is as follows:
+![dff_syncres show](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f475f1b5-2d30-4f13-98b3-b1a1c662d7c8)
 
 </details>

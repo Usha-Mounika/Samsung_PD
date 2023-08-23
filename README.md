@@ -449,7 +449,7 @@ $iverilog dff_asyncres.v tb_asyncres.v
 $./a.out
 $gtkwave tb_dff_asyncres.vcd
 ```
-The **./a/out** generates a vcd output file that can be viewed with gtkwave
+The **./a.out** generates a vcd output file that can be viewed with gtkwave
 Inorder to generate the synthesized circuit, the following sequence of steps are followed:
 ```bash
 $yosys
@@ -497,8 +497,47 @@ The gtkwave output is as follows:
 The synthesized circuit is as follows:
 ![dff_ayncset show](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f3ef913e-eac7-4bb5-87f6-9f7fee21eeb3)
 
-**Synchronous reset**:
+**Synchronous reset**: The Behavioral code of synchronous reset is as follows:
+```verilog
+module dff_syncres ( input clk , input async_reset , input sync_reset , input d , output reg q );
+always @ (posedge clk )
+begin
+	if (sync_reset)
+		q <= 1'b0;
+	else	
+		q <= d;
+end
+endmodule
+```
 The synthesized circuit is as follows:
 ![dff_syncres show](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f475f1b5-2d30-4f13-98b3-b1a1c662d7c8)
+
+The simulated wave is as follows:
+![dff_syncres gtkwave](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/36a5b560-4d83-4c30-a400-b4121ef23aef)
+</details>
+<details>
+<summary>Coding optimizations</summary>
+<br>	
+	
+Some circuits may not need any standard cells like multiplication by 2. These circuits doesn't need **'abc -liberty'** command. Let us consider multiplication by 2 and multiplication by 9. In binary number system, when a number is multiplied by 2, the number can be appended by 0 at the end. In other words, When a number multiplied by 2^n, the number shifts n digits to left. For example, Let us consider the truth table of 2:
+![image](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4ea02717-2d8c-44e1-b4fa-6cf853599671)
+The behavioral code is as follows:
+```verilog
+module mul2 (input [2:0] a, output [3:0] y);
+	assign y = a * 2;
+endmodule
+```
+The simulated circuit and the synthesized netlist are as follows:
+![mul2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0d59f15c-afbd-49b5-a18a-0d20a8bf1ac5)
+**Multiplication by 9**: When a number is multiplied by 9, the number gets repeated itself. This can be as illustrated:
+![mul9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c895c83a-e8f3-4037-b4f6-a26f78244692)
+The behavioral code is
+```verilog
+module mult8 (input [2:0] a , output [5:0] y);
+	assign y = a * 9;
+endmodule
+```
+The synthesized circuit and netlist are:
+![mult8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7d5c17b6-ade6-45c6-a4ce-69276fa44568)
 
 </details>

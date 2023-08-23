@@ -261,7 +261,7 @@ The library name (as follows) explains about **PVT conditions** of a .lib file.T
 ![PVT cond](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b5055b4f-dc7e-4482-840d-199287b2a70e)
 
 The cell information in a library gives about the leakage power for different combinations (for example, for 2 input gate the power information of all 4 combinations are given) of inputs, area, power port information and various information associated with each pin.
--The following comparison shows that the same **AND gate** has three diferent flavors.
+ - The following comparison shows that the same **AND gate** has three diferent flavors.
   - The wider transistor (and2_4) has less delay and consumes more area and power.
   - The moderate wide transistor (and2_2) has moderate delay and consumes moderate power and moderate area.
   - The narrower transistor (and2_0) has more delay and consumes less area and power.
@@ -294,16 +294,17 @@ endmodule
 ![Schematic](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a08c9ee6-8c23-435b-896d-092bc9b3f25f)
 
 Now inorder to synthesize a netlist from RTL code, we follow these steps using yosys:
-Step-1: Load the yosys tool by giving yosys command
+
+ **Step-1**: Load the yosys tool by giving yosys command
 ```bash
 $yosys
 ```
-Step-2: Inorder to run yosys, we need two inputs verilog file and .lib file. So, These inputs were given using read_verilog and read_liberty thus successfully finishing frontend
+**Step-2**: Inorder to run yosys, we need two inputs verilog file and .lib file. So, These inputs were given using read_verilog and read_liberty thus successfully finishing frontend
 ```bash
 yosys> read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 yosys> read_verilog multiple_modules.v
 ```
-Step-3: Inorder to synthesize the netlist, we use **synth -top** command to synthesize the toplevel module. This gives the count of no. of bits, wires, inputs,cells etc...
+**Step-3**: Inorder to synthesize the netlist, we use **synth -top** command to synthesize the toplevel module. This gives the count of no. of bits, wires, inputs,cells etc...
 ```bash
 yosys> synth -top multiple_modules
 yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
@@ -374,7 +375,7 @@ module sub_module2(a, b, y);
   assign y = _2_;
 endmodule
 ```
-The flattened nelist is the netlist where the hierarchies (or submodules) are are replaced by the actual gates logic present in those sub modules. Inorder to generate the flattened netlist the first 3 steps were same. In the step-4,
+The flattened nelist is the netlist where the hierarchies (or submodules) are replaced by the actual gates logic present in those sub modules. Inorder to generate the flattened netlist the first 3 steps were same. In the step-4,
 ```bash
 yosys> flatten
 yosys> write_verilog -noattr multiple_modules_flat.v
@@ -439,9 +440,12 @@ The following image shows the synthesized circuit of **sub_module1**. The submod
 <br>	
 	
 #### Why flops?
-In a combinational logic design, the change in input is seen at the output after the propagation delay. During the propagation of data, if there are more cells of different delays, this might cause a glitch in the output. If this combinational logic has more cells, this would cause an unstable output.Inorder to avoid these glitches, the flops are used between the cmobinational design.
+In a combinational logic design, the change in input is seen at the output after the propagation delay. During the propagation of data, if there are more cells of different delays, this might cause a glitch in the output. If this combinational logic has more cells, this would cause an unstable output.In order to avoid these glitches, the flops are used between the combinational design.
+
 The flip-flop is a single bit storage device used between the combinational circuit to avoid glitches in the output.When a flop is used, the output of the previous stage is stored until there is a posedge or negedge triggered at the clock so the combinational circuit avoids glitches at the output as each stage is sort of shielded from input to output by the clock.
+
 The signals such as set or reset are used to initialise the flops otherwise any (previous value) garbage value could be propagated to next stage. These signals can be asynchronous or synchronous.
+
 ### Lab on flop synthesis:
 Inorder to generate the gtkwave using iverilog, the following sequence of steps are followed:
 ```bash
@@ -456,7 +460,7 @@ $yosys
 yosys> read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 yosys> read_verilog dff_asyncres.v
 yosys> synth -top dff_asyncres
-yosys> dff_libmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+yosys> dfflibmap -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib
 yosys> show
 ```
@@ -519,9 +523,14 @@ The simulated wave is as follows:
 <summary>Coding optimizations</summary>
 <br>	
 	
-Some circuits may not need any standard cells like multiplication by 2. These circuits doesn't need **'abc -liberty'** command. Let us consider multiplication by 2 and multiplication by 9. In binary number system, when a number is multiplied by 2, the number can be appended by 0 at the end. In other words, When a number multiplied by 2^n, the number shifts n digits to left. For example, Let us consider the truth table of 2:
-![image](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4ea02717-2d8c-44e1-b4fa-6cf853599671)
+Some circuits may not need any standard cells like multiplication by 2. These circuits doesn't need **'abc -liberty'** command. 
+Let us consider multiplication by 2 and multiplication by 9. In binary number system, when a number is multiplied by 2, the number can be appended by 0 at the end. In other words, When a number multiplied by 2^n, the number shifts n digits to left. 
+For example, Let us consider the truth table of 2:
+
+![image](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/dbb265c6-cce2-4f80-9cbf-1db1bc1491da)
+
 The behavioral code is as follows:
+
 ```verilog
 module mul2 (input [2:0] a, output [3:0] y);
 	assign y = a * 2;
@@ -531,12 +540,14 @@ The simulated circuit and the synthesized netlist are as follows:
 ![mul2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0d59f15c-afbd-49b5-a18a-0d20a8bf1ac5)
 **Multiplication by 9**: When a number is multiplied by 9, the number gets repeated itself. This can be as illustrated:
 ![mul9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c895c83a-e8f3-4037-b4f6-a26f78244692)
+
 The behavioral code is
 ```verilog
 module mult8 (input [2:0] a , output [5:0] y);
 	assign y = a * 9;
 endmodule
 ```
+
 The synthesized circuit and netlist are:
 ![mult8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7d5c17b6-ade6-45c6-a4ce-69276fa44568)
 

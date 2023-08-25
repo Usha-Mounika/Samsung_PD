@@ -5,6 +5,7 @@ A brief description of what this training summarizes :
 - [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 - [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
 - [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/Samsung_PD#Day2)
+-  [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/Samsung_PD#Day3)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -544,7 +545,7 @@ The simulated circuit and the synthesized netlist are as follows:
 The behavioral code is
 ```verilog
 module mult8 (input [2:0] a , output [5:0] y);
-	assign y = a * 9;
+	assign y = a * 9;logic to m
 endmodule
 ```
 
@@ -552,3 +553,74 @@ The synthesized circuit and netlist are:
 ![mult8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7d5c17b6-ade6-45c6-a4ce-69276fa44568)
 
 </details>
+
+## [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/Samsung_PD#Day3)
+
+<details>
+<summary>Combinational Optimization</summary>
+<br>
+The Combinational Logic Optimization is nothing but squeezing the logic to get the most optimized design thus reducing area and power. The techniques used for Combinational Optimization are:
+	
+  ### Constant propagation, which is a direct optimization technique 
+  The following image is an example of constant propagation. When A is tied down to ground (logic 0), the output will be the inversion of C input. In the MOS Transistor implementation, the combinational logic would occupy 2 gates with 3 inputs. As the input A is constant, it can be reduced to 2 transistor logic (inverter) with single input, which occupies less space and reduces power consumption.
+  ![comb opt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2db5e402-17b0-4e0f-b678-98dbba29d69d)
+ ### Boolean Logic Optimization, can be done by using K-Map or Quine McKluskey Method
+ Let us consider an example statement **assign y=a?(b?c:(c?a:0)):(!c)**. The following expression is using ternary operation, that can be realised by using multiplexers as shown. The logic can be reduced as following by ysubg laws of boolean algebra such that a series of multiplexers got reduced an xnor gate.
+ ![bool opt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5a31fb1e-e10b-4b94-bee1-8ab0ea16ce80)
+
+ ### Lab examples on combinational Optimization
+ The command to do optimizations is **opt_clean -purge**,  which is executed after *synth -top* command.
+ #### Example-1:
+ The behavioral code is:
+ ```verilog
+module opt_check (input a , input b , output y);
+	assign y = a?b:0;
+endmodule
+```
+![opt1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8a0a38b1-3edc-497c-9091-2cdbf15bc05f)
+
+The synthesized circuit is:
+![optcheck](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bcafa937-84d2-4444-95be-bcad2b0989a3)
+ #### Example-2:
+  The behavioral code is:
+ ```verilog
+module opt_check2 (input a , input b , output y);
+	assign y = a?1:b;
+endmodule
+```
+![opt2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fd0d7987-44df-4b30-86f4-e224b10e5ee8)
+
+The synthesized circuit is:
+![optcheck2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fab49fd2-c826-43fa-807f-f33984095616)
+
+#### Example-3:
+  The behavioral code is:
+```verilog
+module opt_check3 (input a , input b, input c , output y);
+	assign y = a?(c?b:0):0;
+endmodule
+```
+![optcheck3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/efae5e77-ba90-44e3-aef1-d7a298710589)
+
+The synthesized circuit is:
+![opt3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a1f65ca2-e5ab-41c4-b72c-e2fd884e3f3d)
+
+#### Example-4:
+  The behavioral code is:
+```verilog
+module opt_check4 (input a , input b , input c , output y);
+ assign y = a?(b?(a & c ):c):(!c);
+ endmodule
+```
+The synthesized circuit is:
+![optcheck4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/eaf3960a-2a41-43a0-9104-114186a0379b)
+
+
+
+
+
+
+
+
+
+</details>	

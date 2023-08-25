@@ -616,11 +616,248 @@ The synthesized circuit is:
 ![optcheck4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/eaf3960a-2a41-43a0-9104-114186a0379b)
 
 
+#### Example-5:
+The multiple modules are being synthesized from RTL code to netlist. So, The following sequence of steps are followed:
+```bash
+yosys> read_liberty -lib ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+yosys> read_verilog multiple_module_opt.v
+yosys> synth -top multiple_module_opt2
+yosys> opt_clean -purge
+yosys> abc -liberty ../lib/sky130_fd_sc_hd__tt_025C_1v80.lib 
+yosys> flatten
+yosys> show
+yosys> write_verilog -noattr multiple_module_opt_net.v
+```
+ The behavioral code is:
+```verilog
+module sub_module1(input a , input b , output y);
+ assign y = a & b;
+endmodule
+
+
+module sub_module2(input a , input b , output y);
+ assign y = a^b;
+endmodule
+
+module multiple_module_opt(input a , input b , input c , input d , output y);
+wire n1,n2,n3;
+
+sub_module1 U1 (.a(a) , .b(1'b1) , .y(n1));
+sub_module2 U2 (.a(n1), .b(1'b0) , .y(n2));
+sub_module2 U3 (.a(b), .b(d) , .y(n3));
+
+assign y = c | (b & n1); 
+
+
+endmodule
+```
+The synthesized circuit is:
+
+**Before flatten**:
+![multimod1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b38aadf5-d636-401b-a9e4-e486fa8a271b)
+**After flatten**:
+![multimod1after](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/36200cdd-09b4-4c27-87f0-8da253653e0b)
+#### Example-6: 
+The behavioral code is:
+```verilog
+module sub_module(input a , input b , output y);
+ assign y = a & b;
+endmodule
 
 
 
+module multiple_module_opt2(input a , input b , input c , input d , output y);
+wire n1,n2,n3;
+
+sub_module U1 (.a(a) , .b(1'b0) , .y(n1));
+sub_module U2 (.a(b), .b(c) , .y(n2));
+sub_module U3 (.a(n2), .b(d) , .y(n3));
+sub_module U4 (.a(n3), .b(n1) , .y(y));
 
 
+endmodule
+```
+The synthesized circuit is :
+
+**Before flatten**:
+
+![opt2before](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/03222a2d-1bb6-4a6f-b6a5-63520af9a964)
+
+**After flatten**:
+![mod2after](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/145d3633-a910-4e3e-b5da-3d9919566a89)
+</details>	
+<details>
+<summary>Sequential Optimization</summary>
+<br>
+The various Sequential Optimisation techniques are:
+	
+- Sequential Constant Propagation
+- State Optimization
+- Retiming
+- Sequential Logic Cloning
+  ### Sequential Constant Propagation
+  The sequential propagation occurs when there is no change in output irrespective of the inputs or clock being applied. For example, In the following circuit, the D is tied down to ground, the output is always 0 whatever may be the reset condition. But This will not continue to next sequential stages. The output of next sequential stage may or may not vary. The output of this NAND gate will be 1 as Q is always 0.
+  
+![seqconstpropaga](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ef9c7d52-fede-4ac8-b52d-721d8a88b7a0)
+
+Let us consider the set with D flip-flop. In the following example, the output is high when set is applied and low when no set condition. But it cannot be interpreted as set inverted condition. Considering the set to be asynchronous (change in state before clock edge), but the output still doesnot change until the clock edge. So, This typew of circuits cannot be optimized and they are retained in the design.
+
+![set seq](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3b68c3c6-edcb-44d3-9805-ca320bc1abda)
+
+**State Optimization**
+
+The state optimization is the optimization of unused states. Depending upon states, we can get the most optimized finite machine.
+
+**Cloning**
+
+  Cloning is done with *Physical aware synthesis*. This can be explained through an example. Let us consider 3 flipflops A,B,C, which are far from each other with more routing length. Let A be the launching flop of both B and C capture flops. Assuming that the positive slack is high, The A flop is cloned to two different points on the net length such that the distance between launch and capture is reduced, thus reducing the delay of the circuit. The cloning implies that the flop is copied to two distinct points where it is not present. This is an advanced optimization technique.
+  
+  **Retiming**
+  
+  Retiming is done to improve the performance of a circuit. When two consecutive combinational stages operate at different frequencies(that is have different combinational delay), some of the logic is moved to the next flop, thus reducing the delay at eaxh stage and improving the frequency of operation without any change in the logic of the design.  This involves scrutinizing the existing schedule, pinpointing bottlenecks, reordering for better efficiency, integrating alterations, and validating the resultant performance enhancements.
+ ### Lab examples on Sequential Optimization
+ #### Example-1
+ 
+ The behavioral code is:
+ ```verilog
+module dff_const1(input clk, input reset, output reg q);
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+		q <= 1'b0;
+	else
+		q <= 1'b1;
+end
+
+endmodule
+```
+
+The Synthesized circuit is:
+![dfffcionst1ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9d03e2b2-4a00-4d18-8615-38c344a26922)
+
+The simulated output is:
+![dffconst1gtkwave](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/145f35d2-2b2f-4259-91f9-da202042deaa)
+
+#### Example-2
+ The behavioral code is:
+ ```verilog
+module dff_const2(input clk, input reset, output reg q);
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+		q <= 1'b1;
+	else
+		q <= 1'b1;
+end
+
+endmodule
+```
+
+The Synthesized circuit is:
+
+![dffconst2ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/66ef2acd-de11-4ed5-b63c-883a1401265a)
+
+The simulated output is:
+
+![dffconst2gtk](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bdb3ef18-e296-4dc8-8b9e-de3bb8eeccda)
+
+#### Example-3
+ The behavioral code is:
+ ```verilog
+module dff_const3(input clk, input reset, output reg q);
+reg q1;
+
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+	begin
+		q <= 1'b1;
+		q1 <= 1'b0;
+	end
+	else
+	begin
+		q1 <= 1'b1;
+		q <= q1;
+	end
+end
+
+endmodule
+```
+
+The Synthesized circuit is:
+
+![dffconst3ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4b85033a-7982-49bc-9318-f209481c42e1)
+
+The simulated output is:
+
+![dffconst3gtk](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2fc92814-54ba-4742-ae52-53e60c5eedff)
+
+#### Example-4
+ The behavioral code is:
+ ```verilog
+module dff_const4(input clk, input reset, output reg q);
+reg q1;
+
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+	begin
+		q <= 1'b1;
+		q1 <= 1'b1;
+	end
+	else
+	begin
+		q1 <= 1'b1;
+		q <= q1;
+	end
+end
+
+endmodule
+```
+
+The Synthesized circuit is:
+
+![dffconst4ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d9b32810-11a2-4f59-bf5a-a327f4f76731)
+
+The simulated output is:
+
+![dffconst4gtk](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a0d5c25f-61d2-4765-a562-165850ecac7b)
+
+#### Example-5
+ The behavioral code is:
+ ```verilog
+module dff_const5(input clk, input reset, output reg q);
+reg q1;
+
+always @(posedge clk, posedge reset)
+begin
+	if(reset)
+	begin
+		q <= 1'b0;
+		q1 <= 1'b0;
+	end
+	else
+	begin
+		q1 <= 1'b1;
+		q <= q1;
+	end
+end
+
+endmodule
+```
+
+The Synthesized circuit is:
+
+![dffconst5ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/94277438-1d08-4f43-a0f9-ecb8c061025b)
+
+The simulated output is:
+
+![dffconst5gtk](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/48730d06-a8a9-4f5d-a3f4-eb8e6baf4483)
+
+</details>	
+<details>
+<summary>Sequential Optimization of unused outputs</summary>
+<br>
 
 
 </details>	

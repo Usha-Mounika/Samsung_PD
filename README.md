@@ -557,15 +557,15 @@ The synthesized circuit and netlist are:
 ## [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/Samsung_PD#Day3)
 
 <details>
-<summary>Combinational Optimization</summary>
+<summary> Combinational Optimization with examples </summary>
 <br>
-The Combinational Logic Optimization is nothing but squeezing the logic to get the most optimized design thus reducing area and power. The techniques used for Combinational Optimization are:
+The Combinational Logic Optimization is nothing but squeezing the logic to get the most optimized design thus reducing area and power.  The techniques used for Combinational Optimization are:
 	
   ### Constant propagation, which is a direct optimization technique 
   The following image is an example of constant propagation. When A is tied down to ground (logic 0), the output will be the inversion of C input. In the MOS Transistor implementation, the combinational logic would occupy 2 gates with 3 inputs. As the input A is constant, it can be reduced to 2 transistor logic (inverter) with single input, which occupies less space and reduces power consumption.
   ![comb opt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2db5e402-17b0-4e0f-b678-98dbba29d69d)
  ### Boolean Logic Optimization, can be done by using K-Map or Quine McKluskey Method
- Let us consider an example statement **assign y=a?(b?c:(c?a:0)):(!c)**. The following expression is using ternary operation, that can be realised by using multiplexers as shown. The logic can be reduced as following by ysubg laws of boolean algebra such that a series of multiplexers got reduced an xnor gate.
+ Let us consider an example statement **assign y=a?(b?c:(c?a:0)):(!c)**. The following expression is using ternary operation, that can be realised by using multiplexers as shown. The logic can be reduced as following by using laws of boolean algebra such that a series of multiplexers got reduced to an xnor gate.
  ![bool opt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5a31fb1e-e10b-4b94-bee1-8ab0ea16ce80)
 
  ### Lab examples on combinational Optimization
@@ -687,7 +687,7 @@ The synthesized circuit is :
 ![mod2after](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/145d3633-a910-4e3e-b5da-3d9919566a89)
 </details>	
 <details>
-<summary>Sequential Optimization</summary>
+<summary>Sequential Optimization with examples</summary>
 <br>
 The various Sequential Optimisation techniques are:
 	
@@ -700,7 +700,7 @@ The various Sequential Optimisation techniques are:
   
 ![seqconstpropaga](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ef9c7d52-fede-4ac8-b52d-721d8a88b7a0)
 
-Let us consider the set with D flip-flop. In the following example, the output is high when set is applied and low when no set condition. But it cannot be interpreted as set inverted condition. Considering the set to be asynchronous (change in state before clock edge), but the output still doesnot change until the clock edge. So, This typew of circuits cannot be optimized and they are retained in the design.
+Let us consider the set with D flip-flop. In the following example, the output is high when set is applied and low when no set condition. But it cannot be interpreted as set inverted condition. Considering the set to be asynchronous (change in state before clock edge), but the output still does not change until the clock edge. So, This type of circuits cannot be optimized and they are retained in the design.
 
 ![set seq](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3b68c3c6-edcb-44d3-9805-ca320bc1abda)
 
@@ -714,7 +714,7 @@ The state optimization is the optimization of unused states. Depending upon stat
   
   **Retiming**
   
-  Retiming is done to improve the performance of a circuit. When two consecutive combinational stages operate at different frequencies(that is have different combinational delay), some of the logic is moved to the next flop, thus reducing the delay at eaxh stage and improving the frequency of operation without any change in the logic of the design.  This involves scrutinizing the existing schedule, pinpointing bottlenecks, reordering for better efficiency, integrating alterations, and validating the resultant performance enhancements.
+  Retiming is done to improve the performance of a circuit. When two consecutive combinational stages operate at different frequencies(that is have different combinational delay), some of the logic is moved to the next flop, thus reducing the delay at each stage and improving the frequency of operation without any change in the logic of the design.  This involves scrutinizing the existing schedule, pinpointing bottlenecks, reordering for better efficiency, integrating alterations, and validating the resultant performance enhancements.
  ### Lab examples on Sequential Optimization
  #### Example-1
  
@@ -731,6 +731,7 @@ end
 
 endmodule
 ```
+The following code shows the synchronous reset condition. The D input is always connected to 1. So, when reset is high, output is 0. when reset is low, output is high after the arrival of next clock edge.
 
 The Synthesized circuit is:
 ![dfffcionst1ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9d03e2b2-4a00-4d18-8615-38c344a26922)
@@ -752,6 +753,7 @@ end
 
 endmodule
 ```
+The following code shows constant propagation of logic 1. Here, the reset input is considered to be set condition. WHen reset is high, output is high. When reset is low, output is high till next clock edge. After next clock edge, the output is high as D input is connected to logic 1. So, no flipflop is required after optimization.
 
 The Synthesized circuit is:
 
@@ -783,7 +785,7 @@ end
 
 endmodule
 ```
-
+This is a 2 flipflop reset-set circuit. Here, The output of q1 is low when reset is high. The output of q1 is high after next clock edge when reset is low. The output of q is only low at the instant of change in reset condition, else it is always high. This happens due to the *clk-q delay* present in the q1 flipflop output. SO, the state goes low for this cycle, and retains to 1 from next clock edge.
 The Synthesized circuit is:
 
 ![dffconst3ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4b85033a-7982-49bc-9318-f209481c42e1)
@@ -814,6 +816,7 @@ end
 
 endmodule
 ```
+In this circuit, there is no need of flipflops as the outputs q1 and q are high irrespective of clock edge or reset condition.
 
 The Synthesized circuit is:
 
@@ -845,6 +848,7 @@ end
 
 endmodule
 ```
+Here, q is the primary output and q1 is the intermediate output. This is similar to synchronous reset condition. But the output changes after one more clock cycle as there are two flipflops.
 
 The Synthesized circuit is:
 
@@ -858,6 +862,62 @@ The simulated output is:
 <details>
 <summary>Sequential Optimization of unused outputs</summary>
 <br>
+The Sequential circuit having unused outputs( that is the outputs are not required) can be optimised.	
 
+#### Example-1:	
+Let us see an example of 3-bit counter. The Behavioral code is:
+```verilog
+module counter_opt (input clk , input reset , output q);
+reg [2:0] count;
+assign q = count[0];
+
+always @(posedge clk ,posedge reset)
+begin
+	if(reset)
+		count <= 3'b000;
+	else
+		count <= count + 1;
+end
+
+endmodule
+```
+In the following ocde, the q takes count[0] and count[1] and count[2] are unused. The counter resets to 0 if reset is high else it increments the value of counter. We know, the incrementing of counter of LSB  toggles output for each clock cycl, which is independent on other output states. So, this can be optimized by using a single toggle flipflop instead of 3 flipflops, that changes output for every clock cycle.
+
+![tff](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6484b782-9163-46bc-a3d5-b17d72b6fb45)
+
+This can be viewd by synthesis. The reset is active low so an inverterr is connected as we defined reset active high. The ouput of flipflop is given to an inverter and back to D flipflop which gives the toggle flipflop output.
+
+The synthesized circuit is:
+
+![countckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cb2998da-0aaf-4124-81a5-3452acdc0232)
+
+#### Example-2: 
+Now Let us see an example that uses the 3 flipflops. The Behavioral code is:
+
+```verilog
+module counter_opt (input clk , input reset , output q);
+reg [2:0] count;
+assign q = count[2:0] == 3'b100;
+
+always @(posedge clk ,posedge reset)
+begin
+	if(reset)
+		count <= 3'b000;
+	else
+		count <= count + 1;
+end
+
+endmodule
+```
+
+In this example, the q is assigned the 3 bit value 100, so this can be obtained using NOR gate as follows:
+
+![count2 logic](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1ce167d2-da5b-44cf-b470-ffed1c36f997)
+
+Here, the 3 flipflops are required as output is a 3 bit data so all the flipflops are retained and the combinational logic specifies the adder logic, incrementing the counter upon each clock cycle. 
+
+The synthesized circuit is:
+
+![countopt2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/dc92ffa7-18b5-46f2-8349-1511c70718d7)
 
 </details>	

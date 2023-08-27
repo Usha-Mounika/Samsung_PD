@@ -6,6 +6,7 @@ A brief description of what this training summarizes :
 - [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
 - [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/Samsung_PD#Day2)
 -  [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/Samsung_PD#Day3)
+-   [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/Samsung_PD#Day4)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -612,9 +613,11 @@ module opt_check4 (input a , input b , input c , output y);
  assign y = a?(b?(a & c ):c):(!c);
  endmodule
 ```
+
+![exp4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ab808849-18d1-4f7c-978d-51e2140794e6)
+
 The synthesized circuit is:
 ![optcheck4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/eaf3960a-2a41-43a0-9104-114186a0379b)
-
 
 #### Example-5:
 The multiple modules are being synthesized from RTL code to netlist. So, The following sequence of steps are followed:
@@ -677,6 +680,9 @@ sub_module U4 (.a(n3), .b(n1) , .y(y));
 
 endmodule
 ```
+
+![exp6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/23b3e55f-9bc5-456d-9625-6e0716b75282)
+
 The synthesized circuit is :
 
 **Before flatten**:
@@ -921,3 +927,68 @@ The synthesized circuit is:
 ![countopt2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/dc92ffa7-18b5-46f2-8349-1511c70718d7)
 
 </details>	
+
+## [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/Samsung_PD#Day4)
+<details>
+<summary> GLS and Synthesis-simulation mismatch </summary>
+<br>
+	
+#### What is GLS?
+GLS stands for Gate Level Simulation. GLS is obtaining the simulated output by running testbench with netlist as design under test (DUT). Before, the simulation is done with RTL code as DUT, and the testbench providing stimulus to code as per the specifications.
+
+The Netlist is logically same as the RTL code. So, same testbench goes with the netlist as specifications are same.The netlist is plugged in place of RTL file and simulation is run by invoking simulator with testbench.
+
+#### Why GLS?
+The GLS is done to verify the logical correctness of the design. When simulation is done in RTL, there is no notion of timing. To ensure timig is met, GLS needs to be run with delay annotation.
+
+The following image shows the iverilog flow of the process. The iverilog takes an extra input, that is gate level verilog models to generate GLS simulated output. If these gate level models are delay annotated, then this GLS can be used for timing validation.
+
+![gls iverilog flow](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7290001b-5c45-4390-8093-9d39346542bb)
+
+In this design, let us assume the following state is defined, the subsequent netlist is obtained as shown. The files that define the behaviour of **and** and **or** in the netlist are the gate level verilog models. The gate level verilog models can be timing aware (both timing and logic is ckecked) or functional (only logic benaviour is checked).
+![ex](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/337ba22f-7372-4647-ae10-218fbeffdbe3)
+
+#### Synthesis Simulation Mismatch:
+The reasons for synthis simulation mismatches can be:
+- Missing Sensitivity List
+- Blocking vs Non-Blocking Assignments
+- Non Standard Verilog Coding
+
+**Missing Sensitivty List:**
+
+ A Simulator works based on the activity. When there is a change in input, then only output changes. Let us consider an example of 2x1 multiplexer. The bahavioral code on left only considers sel as input. So when sel changes, the output is evaluated at that instant and corresponding io or i1 is captured at that instant and  it continues at output until there is next change in sel irrespective of changes in io or i1.
+ In constrant to this, the behavioral code on right, evaluates the change in every signal( which can be sel or i0 or i1).
+
+![sensit exp](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/553f59ed-8e78-4e67-8083-eeba7440ef95)
+
+**Blocking and Non-Blocking Statements in Verilog:**
+
+A Blocking Statement evaluates statements in the order they are written inside the always block. The Blocking Statements use **=** for assigning values.
+A Non-BLocking Statement evaluates all the assigning variables at once on the RHS and assign to those on LHS when it enters always block. The Non-Blocking Statements use **<=** for assigning values.
+This improper assignment sometimes cause mismatches due to improper use of blocking Statements.
+**Caveats with Blocking Statements**:
+In this example, the flip flop assignment varies the number of flipflops dimulated in the circuit. These caveats can be avoided by using Non-Blocking Statements.
+
+![caveat1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ba593e92-d9bc-4229-af7d-322b1ac3e9fc)
+
+In this example, the synthesis yields the same circuit as shown, but the simulation gives different behaviour. This causes Synthesis-Simulation mismatch.
+
+![caveat2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/93704ba6-37e2-4635-9255-455587abd8cf)
+
+ Due to such issues, it becomes paramount importance to run GLS on netlist and match the behaviour of output simulated and expected. So, This is why we run GLS.
+ </details>
+
+<details>
+<summary> Labs on GLS and Synthesis-simulation mismatch </summary>
+<br>
+
+
+
+
+
+
+
+
+
+ 
+</details>

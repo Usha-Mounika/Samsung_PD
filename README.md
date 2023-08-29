@@ -965,7 +965,16 @@ The reasons for synthis simulation mismatches can be:
 
 A Blocking Statement evaluates statements in the order they are written inside the always block. The Blocking Statements use **=** for assigning values.
 A Non-BLocking Statement evaluates all the assigning variables at once on the RHS and assign to those on LHS when it enters always block. The Non-Blocking Statements use **<=** for assigning values.
+
+Nonblocking assignments are only made to register data types and are therefore only permitted inside of procedural blocks, such as initial blocks and always blocks. Nonblocking assignments are not permitted in
+continuous assignments.
+
 This improper assignment sometimes cause mismatches due to improper use of blocking Statements.
+
+- Combinational (always@*) →blocking (=) assignment.
+- Sequential (always@posedge) → non-blocking (<=) assignment
+- Always separate sequential and combinational logic
+
 **Caveats with Blocking Statements**:
 In this example, the flip flop assignment varies the number of flipflops dimulated in the circuit. These caveats can be avoided by using Non-Blocking Statements.
 
@@ -982,9 +991,70 @@ In this example, the synthesis yields the same circuit as shown, but the simulat
 <summary> Labs on GLS and Synthesis-simulation mismatch </summary>
 <br>
 
+#### Example-1
+A Ternary operator takes 3 operands. It is in the form of **<condition>?<True>:<False>**. When the condition is true, the first part is executed and if the condition is false, the second part is executed.
+The behavioral code is :
+```verilog
+module ternary_operator_mux (input i0 , input i1 , input sel , output y);
+	assign y = sel?i1:i0;
+	endmodule
+```
 
+The RTL simulated output is:
+![rtlexxp1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/68b78ddd-d67f-4458-88a9-c0ddec5baf4c)
 
+The RTL synthesized circuit is:
+![exp1ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c4720c7b-4cf6-4da1-bb0f-de5f1254d1ca)
 
+The GLS simulated output is:
+This is simulated using the RTL netlist, testbench, and the verilog models by giving to iverilog. Then the vcd file is dumped and viewed using gtkwave.
+![glsexp1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/864d3fa6-5db6-46bd-8ebe-0213200141e5)
+
+#### Example-2
+Now let us look at the example of a bad_mux. 
+The Behavioral code is:
+```verilog
+module bad_mux (input i0 , input i1 , input sel , output reg y);
+always @ (sel)
+begin
+	if(sel)
+		y <= i1;
+	else 
+		y <= i0;
+end
+endmodule
+```
+The synthesized circuit is:
+
+The circuit is a 2x1 multiplexer, although the behaviour mimics a dual-edge triggered flipflop.
+![showex2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/392c28b9-173c-43fc-a00f-5b16bdfc47cf)
+
+The simulated output is:
+
+Here, the top image shows RTL simulation and bottom image shows GLS simulation. The above image didn't reflect the changes in input at the output after the select line edge, but below image reflected the corresponding changes in input at the output through select line. The GLS can be inferred as there are extra inputs as _1_,_2_,_3_..., which are absent in RTL simulated output. So, This is a *synthesis-simulation mismatch* as the generated output differs between RTL and GLS.
+![outex2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/08607860-45eb-42cd-a005-4763261e9837)
+
+#### Example-3
+Now let us look at another caveat explained.
+The behavioral code is:
+```verilog
+module blocking_caveat (input a , input b , input  c, output reg d); 
+reg x;
+always @ (*)
+begin
+	d = x & c;
+	x = a | b;
+end
+endmodule
+```
+
+The synthesized circuit is:
+This circuit mimics a flop, but there is no flop in the synthesized circuit.
+![lastexp](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/11735cfc-2338-4ce7-bd36-b9b35154686f)
+The simulated output is:
+![rtl3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0b5d7cd2-1818-4bed-8057-3380837b2f20)
+
+In the RTL simulated output, though a or b is low, the output is high when c is high. This occurs due to the usage of blocking statements. The previous value of a|b  is used to and with c. So, the x mimics a flipflop. In the GLS si,ulated output, the output is clearly dependent only on the present inputs.
 
 
 

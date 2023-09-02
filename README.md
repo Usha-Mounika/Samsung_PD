@@ -1056,8 +1056,8 @@ This circuit mimics a flop, but there is no flop in the synthesized circuit.
 The simulated output is:
 ![rtl3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0b5d7cd2-1818-4bed-8057-3380837b2f20)
 
-</details>
 In the RTL simulated output, though a or b is low, the output is high when c is high. This occurs due to the usage of blocking statements. The previous value of a|b  is used to and with c. So, the x mimics a flipflop. In the GLS si,ulated output, the output is clearly dependent only on the present inputs.
+</details>
 
 ## [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
 <details>

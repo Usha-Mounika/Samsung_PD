@@ -6,7 +6,9 @@ A brief description of what this training summarizes :
 - [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
 - [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/Samsung_PD#Day2)
 -  [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/Samsung_PD#Day3)
--   [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/Samsung_PD#Day4)
+-  [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/Samsung_PD#Day4)
+-  [Day5 : DFT](https://www.github.com/Usha-Mounika/Samsung_PD#Day5)
+-  [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -1054,11 +1056,228 @@ This circuit mimics a flop, but there is no flop in the synthesized circuit.
 The simulated output is:
 ![rtl3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0b5d7cd2-1818-4bed-8057-3380837b2f20)
 
+</details>
 In the RTL simulated output, though a or b is low, the output is high when c is high. This occurs due to the usage of blocking statements. The previous value of a|b  is used to and with c. So, the x mimics a flipflop. In the GLS si,ulated output, the output is clearly dependent only on the present inputs.
 
+## [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
+<details>
+<summary>Basiscs of Digital Logic design and RTL Synthesis</summary>
+<br>	 
+	
+### Basics of Digital Design
+Digital Logic is a switching function which is powerful in automation and decision making. Most of the automation involves decision making circuits. These specifications are mentioned as the behavioral design, written in HDLs. The famous HDL are VHDL, Verilog.
+	
+-  Every design starts with a target specification. This decides the architecture of the chip. This representation is done in a programming language (RTL).
+-  The RTL is the behavioral code. We require the actual gates i.e., gates, flops etc..
+![Screenshot 2023-09-02 150858](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/064d5a33-aec1-4792-a3d7-5c5efaa5438d)
+
+-  The RTL code is translated into gate level netlist by Synthesis. The synthesis tool takes .lib and verilog file as input and gives netlist as output.
+- .lib is a collection of different logical modules(AND, OR, NOT, NAND...) with different flavors(Fast, typical, slow). We need faster cells to meet setup (also for higher performance) and slower cells to meet hold requirements.
+- The hold time implies that the data to capture flop shouldn't be changed during this window. The data should arrive only after the hold window and before the setup window. The intermediate period is the combinational period which determines the speed of circuit.
+![launch capture](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/31c1abe5-32bd-40ba-a4ae-ddb21000cdaa)
+
+- From the MOSFET drain current equation, we know, drain current is proportional to the width to length ratio. As width of transistor increases, the current capacity increases, thus faster charge/discharge and vice-versa.
+- The Synthesizer is guided to select the flavor of cells that are optimum for implementation of logic circuit. This guidance is referred as constraints.
+
+### Logic Synthesis
+ - Logic Synthesis tries to achieve a working digital circuit which is logically and electrically correct by meeting the timing specifications. Let us consider an example to understand.
+![exlogic synth](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f979159f-71af-4e41-9e3d-cb9f14d799bf)
+In this example, let us assume the behavioural code of 3-bit carry adder logic (i.e., ab+bc+ca). So, this logic can be implemented in many ways using the basic logic gates. Consider the following values of delay and area for the standard cells (logic gates) used in the implementation. When the delay of each implementation is considered as the following table, the third implementation gives the least delay and consumes less area. But, if the path where logic is present is a hold-sensitive path, we need to use either second or first implementation depending on the requirement to meet the violation it might cause.
+
+- *The constraints are the guide to synthesizer to pick the correct library cells which are appropriate for optimum design*.
+</details>
+
+<details>
+<summary>Introduction to DC Shell</summary>
+<br>	
+
+The Design Compiler is a synthesis tool targeted for ASIC flow from Synopsys.
+
+#### Features:
+
+- Established as a premium synthesis tool across semiconductor industry
+- Interoperabilty with various backend tools from Synopsys
+- Has the ability to perform DFT Scan stitch
+- Can handle huge designs with extreme complexity and provide very good QoR
+  
+### Common Terminology associated with DC:
+
+- *Synopsys Design Constraints*(SDC) : These are the design constraints which are supplied to DC to enable appropriate optimization suitable for achieving the best implementation.
+- *.lib* : Design Library which contains the Standard cells.
+- *.db* : Same as .lib but in a different format. DC understands libraries in .db format
+- *.ddc* : Synopsys propreitary format for storing the design information. DC can write out and read in DDC.
+- *Design* : RTL files which has the behavioral model of the design. 
+
+#### SDC : Synopsys Design Constraints
+
+- The SDC format specifies the design intent in terms of **timing, power and area** constraints. Power is specified interms of UPF. UPF can be read through SDC commands.
+- Supported by different EDA tools across semiconductor Industry.
+- SDC is based on Tool Command Language (Tcl).
+
+#### DC Setup:
+
+The dc setup takes the RTL files and .lib files (as in yosys) and also SDC to generate the gate-level netlist, ddc format file and synthesis reports as outputs.
+
+![dcsetup](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c124c265-17b5-46d8-95a5-b256299f303c)
+
+The ASIC flow is the steps involved in converting RTL to the physical database(GDS). The Application Specific IC flow is as follows:
+
+The RTL is the behavioral code of design. It is synthesized into logical netlist (consists of gates). After DFT, it is placed after proper floor plan  and synthesis of clock tree.Then final database i.e., physical netlist is obtained.
+
+![asic flow](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ecc17f1e-49b8-4b65-a90b-28eb5add0113)
+
+The DC Synthesis flow can be illustated as follows:
+Here, the *Design.lib* is a design library, not the standard .lib or technology library, which can be a third-party IP that can be a readymade design available. The DC ensures that the outputs and inputs of this module are properly connected to design and appropriately optimizing the logic.
+
+The Design Compiler reads the verilog files of design and standard library files and constraints and generates reports after linking and synthesizing the design. It finally writes out a netlist as output.
+
+![dcsynth flow](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cbb90ec5-53bc-4d7e-8379-c889c566de76)
+</details>
+
+<details>
+<summary>TCL Scripting</summary>
+<br>	
+Tool Command Language is used for writing SDCs.
+	
+### Basic commands in TCL
+
+The tcl is typed language i.e., all gaps and paranthesis should be properly followed.
+
+<details>
+  <summary>set</summary>
+  <br> 
+	
+```tcl
+  set
+  ```
+   - It is used for creating and assigning any variable.
+   - For example, **set a 5** --> a=5
+   -    set a \[expr $a+$b\] --> a=a+b
+   - The square brackets are used for nesting the commands in TCL.
+     
+     </details>
+     <details>
+  <summary>if--else</summary>
+  <br>
+  
+  ```tcl
+  if {condition} {
+  statements if true
+  } else {
+  statements if false
+  }
+   ```
+
+The condition must always be specified in curly braces only. The $ sign is used when the value of variable is being used, not when it is being assigned(with set).
+
+For example,
+
+```tcl
+if {$a < 10} {
+echo "$a is less than 10"
+}else {
+echo "$a is greater than 10"
+}
+```
+</details>
+     <details>
+  <summary>echo</summary>
+  <br>
+-echo is the command used in tcl for displaying (same as linux).
+	     
+  ```tcl
+  echo
+  ```
+   </details>
+   <details>
+  <summary>while</summary>
+  <br>	
+	   
+ ```tcl
+  while {condition} {
+  statements
+  }
+ ```
+For example,
+
+```tcl
+set i 0
+while {$i < 10} {
+  echo $i;
+ incr i;
+}
+```
+   - The **incr** is same as **set i \[expr $i+1\]** or **i=i+1**.
+   - Wrong manipulation of variables could lead to infinite loops.
+  </details>
+  <details>
+  <summary>for</summary>
+  <br>
+	  
+  ```tcl
+  for {looping var} {condition} {looping var modification} {
+  statements
+  }
+```
+
+For example,
+	  
+```tcl
+  for {set i 0} {$i < 10} {incr i} {
+  echo $i;
+  }
+```
+
+  </details>
+  <details>
+  <summary>foreach</summary>
+  <br>
+	  foreach is a general tcl statement.
+```tcl
+  foreach var list {
+  statements
+  }
+```
+	  
+For example,
+
+```tcl
+set my_design_list [list u_top/u_mod1 \
+			 u_top/u_mod3 ]
+foreach my_module $my_design_list {
+set_size_only $my_module;
+  }
+```
+
+ - Here, **my_design_list** is the name of the list. List is similar to arrays in C.
+ - \ is used as line breaker i.e., next line is continuation of the present command. 
+ - The loop iterates for every element of the list. 
+ - **set_size_only** is a DC specific command.
+   
+   </details>
+   <details>
+  <summary>foreach_in_collection</summary>
+  <br>
+  
+- foreach_in_collection is a DC specific command
+  
+```tcl
+foreach_in_collection var collection {
+   statements
+ }
+```
+
+![foreach ex](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8095eadc-d52b-42ca-bd4a-f341afb2e06e)
+
+In the above example, the nesting of commands can be seen. The output of one variable is used to obtain another variable output.
 
 
 
 
- 
+
+
+
+
+
+
 </details>

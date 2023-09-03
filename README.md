@@ -1061,7 +1061,7 @@ In the RTL simulated output, though a or b is low, the output is high when c is 
 
 ## [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
 <details>
-<summary>Basiscs of Digital Logic design and RTL Synthesis</summary>
+<summary>Basics of Digital Logic design and RTL Synthesis</summary>
 <br>	 
 	
 ### Basics of Digital Design
@@ -1132,6 +1132,66 @@ Here, the *Design.lib* is a design library, not the standard .lib or technology 
 The Design Compiler reads the verilog files of design and standard library files and constraints and generates reports after linking and synthesizing the design. It finally writes out a netlist as output.
 
 ![dcsynth flow](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cbb90ec5-53bc-4d7e-8379-c889c566de76)
+
+#### Invoking dc basic setup
+The .lib file is for user reference and .db file is for DC reference. The DC understands .db format, not .lib format. The contents of .lib file are as follows:
+
+We know that the library name consists of the information such as PVT (Process, Voltage, temperature) conditions of design. Every electronic circuit operation is a function of voltage, temperature and process.
+The .lib is specified for each PVT corner.This PVT corner is a typical, 25c temperature and 1.8V. This .lib file gives information such as units of R,L,C, time & type of technology used and the various flavors of each cell etc... 
+The dc shell is invoked using following commands:
+```bash
+$ csh
+$ dc_shell
+dc_shell> 
+```
+We need to enable cshell and then invoke DC shell. The DC shell checks the license of various compilers like VHDL compiler,HDL compiler(to understand the verilog or any other HDLs), DFT compiler(as DC enables scan stitich), Design vision(graphical version of DC), Power Compiler(as it is power aware synthesis) etc...
+```bash
+dc_shell> echo $target_library
+ your_library.db
+dc_shell> echo $link_library
+ * your_library.db
+```
+In DC, the technology file is in the form of target library or link library. These both libraries are used by DC shell to pick standard cells. 
+**your_library.db** is an imaginary non-existent library, just pointed for dummy purpose.
+```bash
+dc_shell> read_verilog DC_WORKSHOP/verilog_files/lab1_flop_with_en.v
+dc_shell> write -f verilog -out lab1_net.v
+dc_shell> sh gvim lab1_net.v &
+```
+We give the input verilog file (RTL code) to read and write the verilog file as read by the design. The file editor can't be opened with gvim in shell. We need to use the ablove sh gvim inorder to open a file editor with shell.
+The Behavioral code of the design being read is :
+```verilog
+module lab1_flop_with_en
+endmodule
+```
+The expected behavior is:
+![behave](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b82f913b-ea18-4616-bda3-99dd4ad90dcb)
+
+But the out netlist file doesn't have any libs read. So, the dc shell reads lib files in .db format. 
+```bash
+dc_shell> read_db ~/DC_WORKSHOP/lib/sky130_fd_sc_hd_tt_025c_1v80.db
+dc_shell> sh gvim lab1_net.v &
+```
+Now the out netlist is as follows: 
+The cells are in SEQGEN but not as sky130 cells format. This happens because target & link library not assigned any file.
+**gtech** is the virtual library in DC's memory to understand the design.
+```
+dc_shell> set target_library /home/usha.m/DC_WORKSHOP/lib/sky130_fd_sc_hd_tt_025c_1v80.db
+dc_shell> set link_library {* <path to standardcell library> }
+dc_shell> link
+dc_shell> compile
+dc_shell> write -f verilog -out lab1_net_with_sky130.v
+```
+Now by assigning the files to the libraries, the design is linked and compiled as follows. Here, the link_library is assigned such inorder to append to the pre-existing list data without overwriting it.
+Now the outnetlist obtained is as follows.
+
+### Lab on ddc gui with design_vision
+
+
+
+
+
+
 </details>
 
 <details>
@@ -1270,8 +1330,6 @@ foreach_in_collection var collection {
 ![foreach ex](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8095eadc-d52b-42ca-bd4a-f341afb2e06e)
 
 In the above example, the nesting of commands can be seen. The output of one variable is used to obtain another variable output.
-
-
 
 
 

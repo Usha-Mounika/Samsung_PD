@@ -1144,7 +1144,8 @@ $ csh
 $ dc_shell
 dc_shell> 
 ```
-We need to enable cshell and then invoke DC shell. The DC shell checks the license of various compilers like VHDL compiler,HDL compiler(to understand the verilog or any other HDLs), DFT compiler(as DC enables scan stitich), Design vision(graphical version of DC), Power Compiler(as it is power aware synthesis) etc...
+We need to enable cshell and then invoke DC shell. The DC shell checks the license of various compilers like VHDL compiler,HDL compiler(to understand the verilog or any other HDLs), DFT compiler(as DC enables scan stitich), Design vision(graphical version of DC), Power Compiler(as it is power aware synthesis) etc... This can be illustrated as follows:
+
 ```bash
 dc_shell> echo $target_library
  your_library.db
@@ -1158,10 +1159,17 @@ dc_shell> read_verilog DC_WORKSHOP/verilog_files/lab1_flop_with_en.v
 dc_shell> write -f verilog -out lab1_net.v
 dc_shell> sh gvim lab1_net.v &
 ```
-We give the input verilog file (RTL code) to read and write the verilog file as read by the design. The file editor can't be opened with gvim in shell. We need to use the ablove sh gvim inorder to open a file editor with shell.
+We give the input verilog file (RTL code) to read and write the verilog file as read by the design. The file editor can't be opened with gvim in shell. We need to use the above **sh gvim <file_name> &** inorder to open a file editor with shell.
 The Behavioral code of the design being read is :
 ```verilog
-module lab1_flop_with_en
+module lab1_flop_with_en ( input res , input clk , input d , input en , output reg q);
+always @ (posedge clk , posedge res)
+begin
+	if(res)
+		q <= 1'b0;
+	else if(en)
+		q <= d;	
+end
 endmodule
 ```
 The expected behavior is:
@@ -1175,7 +1183,7 @@ dc_shell> sh gvim lab1_net.v &
 Now the out netlist is as follows: 
 The cells are in SEQGEN but not as sky130 cells format. This happens because target & link library not assigned any file.
 **gtech** is the virtual library in DC's memory to understand the design.
-```
+```bash
 dc_shell> set target_library /home/usha.m/DC_WORKSHOP/lib/sky130_fd_sc_hd_tt_025c_1v80.db
 dc_shell> set link_library {* <path to standardcell library> }
 dc_shell> link
@@ -1185,11 +1193,34 @@ dc_shell> write -f verilog -out lab1_net_with_sky130.v
 Now by assigning the files to the libraries, the design is linked and compiled as follows. Here, the link_library is assigned such inorder to append to the pre-existing list data without overwriting it.
 Now the outnetlist obtained is as follows.
 
-### Lab on ddc gui with design_vision
+#### Lab on ddc gui with design_vision
+Inorder to launch the design vision, we again load cshell and **design_vision** command. This will launch the gui format of DC shell called design_vision.
+The command to write out a ddc file as output of dc_shell after writing out netlist is:
+```bash
+dc_shell> write -f ddc -out lab1_flop.ddc
+```
+The following image shows the design_vision loaded with gui. If the gui is not opened, you can use *start_gui* command.
 
+The ddc automatically loads the technology file and current design without specifying. ddc stores all the information in the tool memory in that particular session. But, ddc is a synopsys proprietary format, i.e., it can only be understood by Synopsys tools. The main advantage of ddc is all the information loaded in one tool can be saved and used in another tool with one command *read_ddc*.*read_verilog* reads only the verilog file. 
+The following image shows the loaded read_ddc and read_verilog command. In the *read_ddc*, you can find the .db file loaded without specifying whereas, *read_verilog* command loads only the design data.
+The final behavior of the circuit is as follows (displayed with ddc gui) is:
+ 
+#### Lab on .synopsys dc setup
+Invoking the dc shell using csh, dc_shell commands. When a session is loaded, the target_library and link_library variables must be set everytime. In the real-time scenario, we will have multiple .db files for a design and we cannot miss them.
+So, Setting these both variables everytime would be cumbersome and error-prone. This can be overcome by **.synopsys_dc.setup**.
+There are two versions of .synopsys_dc.setup in dc_shell. 
 
-
-
+ -  When dc_shell is installed, there will be .synopsys_dc.setup in the folder
+ -  When dc_shell is invoked,  the shell looks for it in user_home_directory
+The order of priority is, if file exists in user_home_directory, will be picked and the installed (default) is ignored. If not found, then installed one is picked.
+All repetitive tasks which are needed for tool setup can be pointed in this file (mainly target_library, link_library).When the tasks are defined in this file, the tool automatically picks these values and load it in tool memory.
+So, This can be done by creating a file with this name and loading the shell as follows:
+```bash
+$ gvim .synopsys_dc.setup
+$dc_shell
+dc_shell> echo $target_library
+```
+The same can be illustrated as follows:
 
 
 </details>
@@ -1203,10 +1234,6 @@ Tool Command Language is used for writing SDCs.
 
 The tcl is typed language i.e., all gaps and paranthesis should be properly followed.
 
-<details>
-  <summary>set</summary>
-  <br> 
-	
 ```tcl
   set
   ```
@@ -1215,11 +1242,6 @@ The tcl is typed language i.e., all gaps and paranthesis should be properly foll
    -    set a \[expr $a+$b\] --> a=a+b
    - The square brackets are used for nesting the commands in TCL.
      
-     </details>
-     <details>
-  <summary>if--else</summary>
-  <br>
-  
   ```tcl
   if {condition} {
   statements if true
@@ -1239,20 +1261,13 @@ echo "$a is less than 10"
 echo "$a is greater than 10"
 }
 ```
-</details>
-     <details>
-  <summary>echo</summary>
-  <br>
--echo is the command used in tcl for displaying (same as linux).
+
+- echo is the command used in tcl for displaying (same as linux).
 	     
   ```tcl
   echo
   ```
-   </details>
-   <details>
-  <summary>while</summary>
-  <br>	
-	   
+     
  ```tcl
   while {condition} {
   statements
@@ -1269,11 +1284,8 @@ while {$i < 10} {
 ```
    - The **incr** is same as **set i \[expr $i+1\]** or **i=i+1**.
    - Wrong manipulation of variables could lead to infinite loops.
-  </details>
-  <details>
-  <summary>for</summary>
-  <br>
-	  
+   - The incr is given with variable directly, not value of variable($i).
+ 
   ```tcl
   for {looping var} {condition} {looping var modification} {
   statements
@@ -1288,11 +1300,8 @@ For example,
   }
 ```
 
-  </details>
-  <details>
-  <summary>foreach</summary>
-  <br>
-	  foreach is a general tcl statement.
+
+-  foreach is a general tcl statement.
 ```tcl
   foreach var list {
   statements
@@ -1312,13 +1321,7 @@ set_size_only $my_module;
  - Here, **my_design_list** is the name of the list. List is similar to arrays in C.
  - \ is used as line breaker i.e., next line is continuation of the present command. 
  - The loop iterates for every element of the list. 
- - **set_size_only** is a DC specific command.
-   
-   </details>
-   <details>
-  <summary>foreach_in_collection</summary>
-  <br>
-  
+ - **set_size_only** is a DC specific command. 
 - foreach_in_collection is a DC specific command
   
 ```tcl
@@ -1330,7 +1333,7 @@ foreach_in_collection var collection {
 ![foreach ex](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8095eadc-d52b-42ca-bd4a-f341afb2e06e)
 
 In the above example, the nesting of commands can be seen. The output of one variable is used to obtain another variable output.
-
+#### Lab on TCL scripting
 
 
 

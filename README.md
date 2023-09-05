@@ -1059,6 +1059,62 @@ The simulated output is:
 In the RTL simulated output, though a or b is low, the output is high when c is high. This occurs due to the usage of blocking statements. The previous value of a|b  is used to and with c. So, the x mimics a flipflop. In the GLS si,ulated output, the output is clearly dependent only on the present inputs.
 </details>
 
+## [Day5 : DFT](https://www.github.com/Usha-Mounika/Samsung_PD#Day5)
+<details>
+<summary>DFT</summary>
+<br>	
+	
+### Design for Testability
+
+DFT is a technique which facilitates a design to become testable after production or adding an extra design for an existing design to make sure it can be tested after being fabricated. DFT makes testing easy for post-production process. There are 3 main levels of testing chips after being fabricated i.e., chip-level(die-level), board level, system-level. DFT is also done due to market and economical needs.
+**Testability**: If a design is well-controllable and well-observable, it is said to be testable. There are different DFT techniques such as MBist Logic (Memory Built-in Self test), scan chains (for flops), test patterns (combinational circuits). DFT insertion is done during synthesis. 
+The DFT reduces tester complexity, tester time and reduces faulty devices, although it adds complications to design flow. The scan chain insertion may cause more setup and hold violations increasing design time and power,area.
+#### Basic Terminology:
+- Controllability : A point is said to be controllable if both ‘0’ and ‘1’ can be propagated through scan patterns. The controllability can be achieved by using mux or any other selector switch. This may icrease area, power in design
+- Observability : The ability to measure the state of a logic signal. When we say that a node is observable, we mean that the value at the node can be shifted out through scan patterns and can be observed through scan out ports.
+- Stuck at-fault: It is a physical damage/defect compared to the good system, which may or may not cause system failure.
+- Error: An error is caused by a fault because of which system went to erroneous state.
+- Failure: failure is when the system is not providing the expected service. A fault causes an error which leads to the system failure.
+- Fault Coverage: Percentage of the total number of logical faults that can be tested using a given test set.
+- Defect Level: Refers to the fraction of shipped parts that are defective. In the other words, the proportion of the faulty chip in which fault isn’t detected and has been classified as good.
+
+There are two main techniques of DFT.
+-**Adhoc Technique**:
+Rules:
+○ Avoid combinational feedback
+○ All flip flops must be initializable
+○ Partition a large circuit into small blocks.
+○ Provide test control for the signals which are not controllable
+○ While designing test logic we have to consider the ATE requirements
+-**Structured Technique**:
+ - In this, we use a new kind of flipflop called scan flipflop. An extra combinational design added to flipflop.
+ - Boundary scan is the scan done by limiting number of devices to be scanned.Bist can be LBist or MBist.
+![scanflop](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1fd9c312-c10c-494b-b6a7-c4d80cf9cfe0)
+
+**Scan Chain Technique**:
+Scan chains are the elements in scan-based designs that are used to shift-in and shift-out test data.
+- Scan chain technique can be explained as:
+   - Specifying the scan constraint
+   - Specifying Scan ports and scan enbles
+   - compiling dft
+   - identify number of scan chains
+- A scan chain is formed by a number of flops connected back to back in a chain with the output of one flop connected to another flop.
+- The input of first flop is connected to the input pin of the chip (called scan-in) from where scan data is fed. The output of the last flop is connected to the output pin of the chip (called scan-out) which is used to take the shifted data out.
+- Scan flops are used to test stuck-at faults and test path delays in thew design.
+- Number of cycles required to run a pattern = Length of largest scan chain in design.
+- Smaller chain length means more number of input/output ports is needed as scan_inand scan_out ports.
+              -  Number of ports required = 2 X Number of scan chain
+  There are 3 types of scan flip-flops configurations namely multiplexed, clocked, lssd (latch sensitive scan design).
+  The overview of DFT compiler is as follows:
+  ![dft compiler](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bcf89ce1-e198-425c-8d73-bfd7621c2531)
+  
+  Steps followed to draw scan chain:
+1. Assert scan_enable (make it high) so as to enable (SI -> Q) path for each flop
+2. Keep shifting in the scan data until the intended values at intended nodes are reached
+3. De-assert scan_enable (for one pulse of clock in case of stuck-at testing and two or more cycles in case of transition testing) to enable D->Q path so that the combinational cloud output can be captured at the next clock edge.
+4. Again assert scan_enable and shift out the data through scan_out
+</details>
+
 ## [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
 <details>
 <summary>Basics of Digital Logic design and RTL Synthesis</summary>

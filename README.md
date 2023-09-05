@@ -9,6 +9,7 @@ A brief description of what this training summarizes :
 -  [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/Samsung_PD#Day4)
 -  [Day5 : DFT](https://www.github.com/Usha-Mounika/Samsung_PD#Day5)
 -  [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
+-  [Day7 : Basic SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day7)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -1136,7 +1137,10 @@ Digital Logic is a switching function which is powerful in automation and decisi
 - The Synthesizer is guided to select the flavor of cells that are optimum for implementation of logic circuit. This guidance is referred as constraints.
 
 ### Logic Synthesis
- - Logic Synthesis tries to achieve a working digital circuit which is logically and electrically correct by meeting the timing specifications. Let us consider an example to understand.
+ - Logic Synthesis tries to achieve a working digital circuit which is logically and electrically correct by meeting the timing specifications.
+ ![lc](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/356b01c0-1aa4-44fa-a784-b38a80b285fc)
+
+  Let us consider an example to understand.
 ![exlogic synth](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f979159f-71af-4e41-9e3d-cb9f14d799bf)
 In this example, let us assume the behavioural code of 3-bit carry adder logic (i.e., ab+bc+ca). So, this logic can be implemented in many ways using the basic logic gates. Consider the following values of delay and area for the standard cells (logic gates) used in the implementation. When the delay of each implementation is considered as the following table, the third implementation gives the least delay and consumes less area. But, if the path where logic is present is a hold-sensitive path, we need to use either second or first implementation depending on the requirement to meet the violation it might cause.
 
@@ -1191,6 +1195,7 @@ The Design Compiler reads the verilog files of design and standard library files
 
 #### Invoking dc basic setup
 The .lib file is for user reference and .db file is for DC reference. The DC understands .db format, not .lib format. The contents of .lib file are as follows:
+![lib](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5e1d27ef-53bc-47eb-8619-c6ce86b5abbe)
 
 We know that the library name consists of the information such as PVT (Process, Voltage, temperature) conditions of design. Every electronic circuit operation is a function of voltage, temperature and process.
 The .lib is specified for each PVT corner.This PVT corner is a typical, 25c temperature and 1.8V. This .lib file gives information such as units of R,L,C, time & type of technology used and the various flavors of each cell etc... 
@@ -1202,6 +1207,8 @@ dc_shell>
 ```
 We need to enable cshell and then invoke DC shell. The DC shell checks the license of various compilers like VHDL compiler,HDL compiler(to understand the verilog or any other HDLs), DFT compiler(as DC enables scan stitich), Design vision(graphical version of DC), Power Compiler(as it is power aware synthesis) etc... This can be illustrated as follows:
 
+![dc_shell (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/45410227-54db-4905-b9ef-3d8e37c12a80)
+
 ```bash
 dc_shell> echo $target_library
  your_library.db
@@ -1212,7 +1219,7 @@ In DC, the technology file is in the form of target library or link library. The
 **your_library.db** is an imaginary non-existent library, just pointed for dummy purpose.
 ```bash
 dc_shell> read_verilog DC_WORKSHOP/verilog_files/lab1_flop_with_en.v
-dc_shell> write -f verilog -out lab1_net.v
+dc_shell> write -f verilog -out lab1_flop_net.v
 dc_shell> sh gvim lab1_net.v &
 ```
 We give the input verilog file (RTL code) to read and write the verilog file as read by the design. The file editor can't be opened with gvim in shell. We need to use the above **sh gvim <file_name> &** inorder to open a file editor with shell.
@@ -1234,40 +1241,62 @@ The expected behavior is:
 But the out netlist file doesn't have any libs read. So, the dc shell reads lib files in .db format. 
 ```bash
 dc_shell> read_db ~/DC_WORKSHOP/lib/sky130_fd_sc_hd_tt_025c_1v80.db
-dc_shell> sh gvim lab1_net.v &
+dc_shell> write -f verilog -out lab1_db_net.v
+dc_shell> sh gvim lab1_db_net.v &
 ```
-Now the out netlist is as follows: 
+
 The cells are in SEQGEN but not as sky130 cells format. This happens because target & link library not assigned any file.
 **gtech** is the virtual library in DC's memory to understand the design.
+The following steps are proper sequence to write gate level netlist from the behavioral code:
 ```bash
 dc_shell> set target_library /home/usha.m/DC_WORKSHOP/lib/sky130_fd_sc_hd_tt_025c_1v80.db
 dc_shell> set link_library {* <path to standardcell library> }
+dc_shell> read_verilog DC_WORKSHOP/verilog_files/lab1_flop_with_en.v
+dc_shell> read_db ~/DC_WORKSHOP/lib/sky130_fd_sc_hd_tt_025c_1v80.db
 dc_shell> link
 dc_shell> compile
-dc_shell> write -f verilog -out lab1_net_with_sky130.v
+dc_shell> write -f verilog -out lab1_flop_net.v
 ```
+
+In the following image, you can clearly observe the SEQGEN cells changed to sky130 cells after proper linking & compiling.Now the outnetlist obtained is as follows:
+![netlist out](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7bfa7e9f-bd79-4e1b-ada2-e5e24f53d454)
+
 Now by assigning the files to the libraries, the design is linked and compiled as follows. Here, the link_library is assigned such inorder to append to the pre-existing list data without overwriting it.
-Now the outnetlist obtained is as follows.
+The highlighted area are the commands used as above. 
+![steps1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ffa4d3a4-98b2-4e37-87ab-f050a40d19a6)
+After linking, it is showing the db linked ad the cell count and other design information after compiling.
+![steps2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/12092d52-11f0-4741-892c-ccc4a7596bcb)
+After succesful compilation, the output netlist is as shown above, the netlist now consists of sky130 cells.
+![steps3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cf9203d5-e9ba-47f9-89be-37bb2bdd75a1)
 
 #### Lab on ddc gui with design_vision
-Inorder to launch the design vision, we again load cshell and **design_vision** command. This will launch the gui format of DC shell called design_vision.
+Inorder to launch the design vision, we again load cshell and **design_vision** command. This will launch the gui format of DC shell called design_vision. 
 The command to write out a ddc file as output of dc_shell after writing out netlist is:
 ```bash
 dc_shell> write -f ddc -out lab1_flop.ddc
 ```
-The following image shows the design_vision loaded with gui. If the gui is not opened, you can use *start_gui* command.
+The following image shows the design_vision loaded with gui. If the gui is not opened, you can use *start_gui* command. Design vision is internally compiled with dc shell.
+![ddc](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f6a828c7-9f86-4afe-b4fe-2bb82d2fe4d6)
 
 The ddc automatically loads the technology file and current design without specifying. ddc stores all the information in the tool memory in that particular session. But, ddc is a synopsys proprietary format, i.e., it can only be understood by Synopsys tools. The main advantage of ddc is all the information loaded in one tool can be saved and used in another tool with one command *read_ddc*.*read_verilog* reads only the verilog file. 
 The following image shows the loaded read_ddc and read_verilog command. In the *read_ddc*, you can find the .db file loaded without specifying whereas, *read_verilog* command loads only the design data.
+![ddccomp](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fef0344c-fa45-4f14-b4cc-719f42f7d615)
+
+The schematic view of the scan flipflop is :
+![ddcschem](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/489c2c53-fbe9-4cf0-9bcb-cba430bead36)
+
+By clicking on this flop, the detailed behavior can be viewed.
 The final behavior of the circuit is as follows (displayed with ddc gui) is:
+![schem](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2cf101cd-c9db-42a3-a19f-82e43dbe0986)
+
  
 #### Lab on .synopsys dc setup
 Invoking the dc shell using csh, dc_shell commands. When a session is loaded, the target_library and link_library variables must be set everytime. In the real-time scenario, we will have multiple .db files for a design and we cannot miss them.
 So, Setting these both variables everytime would be cumbersome and error-prone. This can be overcome by **.synopsys_dc.setup**.
-There are two versions of .synopsys_dc.setup in dc_shell. 
-
- -  When dc_shell is installed, there will be .synopsys_dc.setup in the folder
- -  When dc_shell is invoked,  the shell looks for it in user_home_directory
+DC reads .synopsys_dc.setup files in order:
+- Synopsys installation directory (all user projects)
+- User home directory (all projects for this user)
+- Current project directory 
 The order of priority is, if file exists in user_home_directory, will be picked and the installed (default) is ignored. If not found, then installed one is picked.
 All repetitive tasks which are needed for tool setup can be pointed in this file (mainly target_library, link_library).When the tasks are defined in this file, the tool automatically picks these values and load it in tool memory.
 So, This can be done by creating a file with this name and loading the shell as follows:
@@ -1277,7 +1306,7 @@ $dc_shell
 dc_shell> echo $target_library
 ```
 The same can be illustrated as follows:
-
+![syndcset](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/27803167-efb6-43af-b93e-6eb384f8c147)
 
 </details>
 
@@ -1288,7 +1317,9 @@ Tool Command Language is used for writing SDCs.
 	
 ### Basic commands in TCL
 
-The tcl is typed language i.e., all gaps and paranthesis should be properly followed.
+- The tcl is typed language i.e., all gaps and paranthesis should be properly followed.
+- The wildcard (*) is used for bigger data-sets.
+- $ symbol is used for referring a variable, not for assigning.
 
 ```tcl
   set
@@ -1341,6 +1372,10 @@ while {$i < 10} {
    - The **incr** is same as **set i \[expr $i+1\]** or **i=i+1**.
    - Wrong manipulation of variables could lead to infinite loops.
    - The incr is given with variable directly, not value of variable($i).
+
+The following image shows the output and syntax of while loop. Though incr replaced with $i+1, the output didn't change.
+![tcl2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/284a26a4-a2f4-4548-bcc2-de7a15820d75)
+
  
   ```tcl
   for {looping var} {condition} {looping var modification} {
@@ -1355,6 +1390,8 @@ For example,
   echo $i;
   }
 ```
+The following image shows the usage of for command and its syntax and using basic commands set (for assignment), incr (incrementing).
+![tcl1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/adb24bb5-8057-4c07-bb82-c75341b74f09)
 
 
 -  foreach is a general tcl statement.
@@ -1379,22 +1416,83 @@ set_size_only $my_module;
  - The loop iterates for every element of the list. 
  - **set_size_only** is a DC specific command. 
 - foreach_in_collection is a DC specific command
-  
+
+ The following image shows the usage of dc_specific command "get_lib_cells". In this image, the cellnames is a collection as it is closed with curly braces. 
+ A list is generally closed with square braces.
+ ![tcl3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/64e6b2d2-004b-47b3-83a9-246e1316da64)
+
 ```tcl
 foreach_in_collection var collection {
    statements
  }
 ```
-
+- The foreach command is used for lists and foreach_in_collection is a dc specific command used for collections.
 ![foreach ex](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8095eadc-d52b-42ca-bd4a-f341afb2e06e)
 
 In the above example, the nesting of commands can be seen. The output of one variable is used to obtain another variable output.
-#### Lab on TCL scripting
 
+The following image shows the usage of dc specific command "get_object_name". If get_object_name is not used, the shells gives a pointer as output such as "_sel3". So, now all the names of lib cells are printed as follows:
+![tcl4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/749a1381-9ce5-4b38-886e-782dbb6f11e7)
+The following code can also be written in a file editor and it can be executed using source command i.e.,
+```bash
+dc_shell> source abc.tcl
+```
+The tcl script in the gvim file is:
+```tcl
+foreach_in_collection my_var [get_lib_cells */*and*]  {
+set my_var_name [get_object_name $my_var];
+echo $my_var_name;
+}
 
+echo "Printing Multiplication table"
+set i 5;
+set j 1;
+while {$j < 21} {
+echo "$i x $j = [expr $i*$j]";
+incr j;
+}
 
+set mylist [list a b c d e f g];
+foreach myvar $mylist {
+echo $myvar;
+}
+echo $mylist;
+```
 
-
-
+Now the output of the code is as follows:
+![tcl5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1a03ec29-8276-4d2a-a97d-236e7748d527)
 
 </details>
+
+## [Day7 : Basic SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day7)
+<details>
+<summary>Introduction to STA </summary>
+<br>	
+
+</details>
+<details>
+<summary> Constraints </summary>
+<br>
+
+</details>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

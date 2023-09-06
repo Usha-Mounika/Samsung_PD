@@ -1561,19 +1561,97 @@ As capacitance is high, the charging time is slow, so more input transition whic
 When the output capacitance is higher than constrained, the tool breaks the net and buffers the net so that the fanout gets divided among buffers, not the cell and the cell drives the buffers.
 #### Lookup Table
 The lookup table is a table that contains cell delay values as a function of input transition and output capacitance. the input transition values are take as row and load capacitance values are taken as columns. 
+![lib5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b69c46a4-c82b-486f-ab3c-cef2bb6efa08)
+
 The cell having a certain input transition time and output capacitance are mapped to a delay value.
 If these transition and capacitance values are not present in the table, the range/interval (between which two values the cap and tran exist) of values are considered and interpolated to obtain a new delay value corresponding to that input transition and output capacitance.   
 The power consumed by the cell is also specified interms of lookup table (LUT).
 #### Different flavors of cells
 The cells are available in different flavors. For example, an AND gate is available with different area(wider and narrower transistors).
+![lib2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9bf19f17-f912-4bc8-9cb1-2aa1ed19b3bc)
+
 The .lib also gives information regarding the power pins such as n-well connection, p-well connection etc.. 
 The .lib also gives the input pin capacitance and the max transition allowed for each pin, whether pin is clocked or not and for output pin, it specifies the direction, logic function etc..
+![lib3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7a08a8f5-b02b-4b4c-9e15-1e49c84229e8)
+
+The following image shows whether a specified pin is clock pin or not. The right side image is the clock pin of flop and left side shows signal pin of combinational gate.
+![lib4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/67b3ecc3-1fa3-4149-a63c-b8828169bc1e)
+
 All of these are known as attributes which can be obtained in the dc_shell by using commands with attributes.
 #### Timing Unateness
 Unateness helps the tool in understanding how to propagate the transition.
 Positive unateness: For a rise in input, the output may rise or no change but it never falls. AND gate, OR gate follows positive unateness.
+![lib6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6f8ca62e-ea7a-4e58-84ce-adb483d7b347)
+
 Negative unateness: For a rise in input, the output may fall or no change but it never rises. NOT gate, NAND gate, NOR gate follows negative unateness.
-Non-Unateness: For a rise in input, the output may rise or fall. It depends on other input. EX-OR gate, EX-NOR gate follows Non-Unateness.
+![lib7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/78b60bff-f928-4eb2-b52f-1ae0e8bad927)
+
+Non-Unateness: For a rise in input, the output may rise or fall. It depends on other input. EX-OR gate, EX-NOR gate follows Non-Unateness.In combinational design, the unateness is defined as both positive and negative as shown below:
+![lib8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0414e39c-60ed-44fa-b879-81ea0898ff2d)
+
+Let us consider the unateness of a sequential design.The sequential design clearly defines unateness and non-unateness. The CLK_N represents active low pin of clock.
+The following image shows the clock attribute of clock pin is true and signal pin(D) is false for a D flip-flop.
+![lib1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/631a3876-1afd-43c0-adcd-1e0e5aeead60)
+
+The following image shows the direction of Q pin and the type of flop. So, it is a negative triggered flop.
+![lib1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8e449d9d-056d-4325-9d40-d23f129d5d72)
+
+This can clearly demonstrated in the below picture showing falling edge triggered and follows non-unateness.
+![lib1_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ef69c986-4f4e-4d94-8214-ee0c94b2e508)
+
+The below image shows the comparison of combinational gate and sequential flop defining unateness.
+![lib1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e0695a4f-a6de-4212-8470-8ce896486233)
+
+The following image shows the rising and falling edge triggered flop look up tables (timing information of rise and fall delays) as follows:
+![lib1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9b4a4169-f139-4ffd-8bb4-23dc35392655)
+
+The following image shows the setup and hold considerations with respect to edge as follows:
+![lib1_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/08352038-2e74-49f4-b94f-b028f5407104)
+
+Now the attributes of these cells can be called using dc_shell. The following image shows the list of libraries linked to design (using **list_lib** command) and the various flavor of and cells present in design( using foreach loop).
+![lib2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/af3440fc-765b-46e2-bec3-dd73c4181cce)
+
+The following image shows the attributes such as function (that gives the function of design),  pin direction and usage of dc specific commands such as get_lib_attribute, get_lib_pins.
+![lib2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4772425e-b773-4c8f-957f-9e8899bdb079)
+
+The below image shows usage of attributes such as clock, area, capacitance.
+![lib2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4dce63b3-1420-47b9-9e16-f7812517a233)
+
+There are various attributes og library cells. These attributes can be viewed using command:
+```bash
+dc_shell> list_Attributes -app
+```
+![listatte](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/486dea21-9854-4ade-bb18-11acc33b5683)
+
+The following image shows the output of the tcl script. 
+![lib2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/62a8fdf0-b5e6-4e28-b40f-8c1fe16a07d1)
+
+The script is as follows:
+```tcl
+set my_list [list sky130_fd_sc_hd_tt_025c_1v80/sky130_fd_sc_hd_and3b_2 \
+sky130_fd_sc_hd_tt_025c_1v80/sky130_fd_sc_hd_and3b_4 \
+sky130_fd_sc_hd_tt_025c_1v80/sky130_fd_sc_hd_and4_1 \
+sky130_fd_sc_hd_tt_025c_1v80/sky130_fd_sc_hd_and4_2 \
+sky130_fd_sc_hd_tt_025c_1v80/sky130_fd_sc_hd_and4_4 \
+sky130_fd_sc_hd_tt_025c_1v80/sky130_fd_sc_hd_and4b_1 \
+sky130_fd_sc_hd_tt_025c_1v80/sky130_fd_sc_hd_and4b_2 \
+sky130_fd_sc_hd_tt_025c_1v80/sky130_fd_sc_hd_and4b_4 ] 
+
+#for each cell, find output name and its functionality
+
+foreach my_cell $my_list {
+foreach_in_collection my_lib_pin [get_lib_pins ${my_cell}/* ] {
+set my_lib_pin_name [get_object_name $my_lib_pin];
+set a [get_lib_attribute $my_lib_pin_name direction];
+if {a ==2} {
+set fn [get_lib_attribute $my_lib_pin_name function];
+echo "$my_lib_pin_name $a $fn";
+}
+}
+}
+```
+
+
 
 
 

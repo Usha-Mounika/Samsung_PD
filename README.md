@@ -1472,7 +1472,7 @@ Now the output of the code is as follows:
 STA stands for Static Timing Analysis. 
 - Every path has delay constraints, the maximum delay constraint (setup condition) and minimum delay constraint (hold condition). 
 - The setup condition states the maximim delay the combinational circuit can have. The hold condition defines the minimum combinational delay.
-- The clock period is fixed as it is defined per our requirements. The clock-to-q delay and setup, hold values are specific for flipflops. So, The parameter that can be varied is combinational delay. So, the setup and hold equations can be written as follows: 
+- The clock period is fixed as it is defined as per our requirements. The clock-to-q delay and setup, hold values are specific for flipflops. So, The parameter that can be varied is combinational delay. So, the setup and hold equations can be written as follows: 
 ![equations](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9cd6be7b-7d60-437f-8311-8fb013db5448)
 
 - This defines the minimum and maximum constraint on the combinational delay so that neither setup nor hold is violated.
@@ -1484,7 +1484,7 @@ There comes a repercussion of minimum delay on this circuit. When the clock is p
 The new hold equation includes the push period as shown.In the following figure, data from launch cannot arrive before the hold window of capture flop as follows:
 ![clock push](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d3ae021f-486f-44f8-8d65-0a7441be496b)
 
-**Water Bucket Analogy**:
+#### Water Bucket Analogy :
 Let us consider two taps having different inflow. The faster inflow fills the bucket in less time than that of slower inflow.So, the less inflow causes more delay and more inflow results less delay. Hence, delay is a function of inflow. Here, inflow of water translates to inflow of current(input transition). So, faster current sourcing (faster rise) will have less delay and vice-versa.
 
 Although inflow of taps are same, when the size of buckets vary (i.e., 5 and 25 gallons) then the larger bucket takes more time to fill than smaller bucket. So, Delay is a function of bucket size (which is analogous to load capacitance).
@@ -1493,12 +1493,13 @@ So, *Delay of a cell is a fuction of input transition*(inflow) *and output load*
 
 Let us assume two gates in a design are far from each other (say long net length from gate1 to gate2). This long net causes more capacitance.Thus, the delay of gate1 will increase due to load capacitance. The output load can be high not only due to long nets but also due to large number of loads connected(high fanout). The capacitance of all these load pins are summed and causes high output capacitance at the gate resulting more delay.
 
-**Timing Arcs**:
+### Timing Arcs
 It contains the delay information of every input pin to every output pin that it can control. 
 
 In a combinational circuit, 
 - In a 2x1 multiplexer, the output may change due to change in sel though no change in i0 or i1. Similarly, the change in i0 or i1 causes change in output. So, the timing arcs are from i0-->y, i1-->y or  sel -->y. The timing arc contain delay information in these arcs.
 - In an AND gate, the output may change due to change in A or B.So, the timing arcs are from A-->y or B-->y.
+  
 In a sequential circuit,
 - The D flipflop have the timing arc clock to q (as the output changes after occurence of clock edge) and clock to D (for setup and hold).
 - The D latch has delay from clock to q, clock to D, D to q(This is because the latch works on levels, onelevel makes flop transparent and other makes it opaque. Though clock is constant, change in D causes change in Q for a latch).
@@ -1514,7 +1515,7 @@ The following table shows the occurence of flop/Latch and the timing arc taken o
 <summary> Constraints </summary>
 <br>
 	
-**Timing Paths**:
+### Timing Paths
 A Critical Path is the path that gives the maximum delay in a circuit. It determines the speed of the operation of the circuit. By reducing the cell delay in a critical path, the frequency of operation of the circuit can be done. This reduction in cell delay is nothing but making the tool pick faster cells. This can be done by defining constraints. This can be illustrated with the following example of timing path:
 
 A Timing Path can be defined by the Start point and the endpoint. The Startpoint and Endpoint of a timing path are the points, within the delays are being calculated.
@@ -1522,8 +1523,8 @@ A Startpoint can be an input port or clock pin of a register. An Endpoint can be
 The timing paths can start at one of these startpoints and end at one of these endpoints.
 - clock to D (reg2reg timing paths) : constrained by clock
 - (IO timing paths)
- - clock to output (reg2out timing paths) : constrained by output external delay and clock period
- - input to D (in2reg timing paths) : constrained by input external delay and clock period
+   - clock to output (reg2out timing paths) : constrained by output external delay and clock period
+   - input to D (in2reg timing paths) : constrained by input external delay and clock period
 - input to output (IO paths are not present ideally)
 This constraining of input and output delays is known as IO delay modelling. IO delay modelling is done mostly based on standard interface specifications.
  The IO Budgeting is done based on the interactions with other modules (how much external and internal delays to be specified). The IO paths need to be constrained for both setup and hold constraints.
@@ -1534,13 +1535,14 @@ For example, Consider the frequency of design to be 500MHz(So, delay will be 2ns
 The clock definition limits the delay in all the reg-to-reg timing paths.
 Once the clock period is defined, the tool picks cells from .lib (which contains the registers and information of clk-to-q delay, setup time). 
 So, It picks the cells for combinational delay in such a way that the limited condition on period is satisfied.
-**Input and Output external delay**:
+#### Input and Output external delay
 The input ports are also an output of another external register, which may be clocked by same or different clock as register. The output ports may be D input of another external register. 
 These external registers also must satisfy the timing conditions. As there is a boundary around the design, these external registers may be assumed as ports. Inorder to meet this timing, the input logic and output logic must be optimized such that no timing violations occur.
+![fig](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e75b4aa4-1e46-4f44-913b-c7a5484620fa)
 
 The input external delay and output external delay are the two constraints, that limit the combinational design delay. 
 The external delays are usually defined inorder to constrain the combinational logic before the external world from using the clock period. They are usually constrained by 30-70 rule i.e., internal delay constrained to 30% of clock period (combinational and setup)and external delay constrained to 70% of clock period.
-**Input transition and output capacitance**:
+#### Input transition and output capacitance
 As the external delays are specified, the clock period gets budgeted as external delay, combinational logic delay and setup time.
 This budgeting is when signal are ideal i.e., with zero transition at input and no load at output. We know that cell delay is a function of input transition and output capacitance. 
 So, when there is either transition time of signal at input or load capacitance at the output port, the delays increase and the combinational delay infringes into setup time budget. This causes a violation. 
@@ -1551,21 +1553,23 @@ So, The input transition and output load needs to be constrained such that tool 
 <br>
 	
 The .lib contains the information such as units of R,L,C, power, current, output capacitance, max transition, delay model used etc ...
-**Output Capacitance**:	
+![lib (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5552eb55-3e45-4193-85eb-c551b3bcca0f)
+
+#### Output Capacitance	
 The output capacitance needs to be constrained. If the fanout of a cell is high, the input capacitance of each cell(load) and net capacitance of net connecting the consecutive cells (if net is long, capacitance will be more) and output pin capacitance of the cell sum up to the output capacitance of that cell.
 As capacitance is high, the charging time is slow, so more input transition which may jeopardize the circuit. The worst can be logic '0' being seen instead of logic '1', which is undesired. Inorder to avoid this, the tool needs to be constrained on output capacitance.
 When the output capacitance is higher than constrained, the tool breaks the net and buffers the net so that the fanout gets divided among buffers, not the cell and the cell drives the buffers.
-**Lookup Table**:
+#### Lookup Table
 The lookup table is a table that contains cell delay values as a function of input transition and output capacitance. the input transition values are take as row and load capacitance values are taken as columns. 
 The cell having a certain input transition time and output capacitance are mapped to a delay value.
 If these transition and capacitance values are not present in the table, the range/interval (between which two values the cap and tran exist) of values are considered and interpolated to obtain a new delay value corresponding to that input transition and output capacitance.   
 The power consumed by the cell is also specified interms of lookup table (LUT).
-**Different flavors of cells**:
+#### Different flavors of cells
 The cells are available in different flavors. For example, an AND gate is available with different area(wider and narrower transistors).
 The .lib also gives information regarding the power pins such as n-well connection, p-well connection etc.. 
 The .lib also gives the input pin capacitance and the max transition allowed for each pin, whether pin is clocked or not and for output pin, it specifies the direction, logic function etc..
 All of these are known as attributes which can be obtained in the dc_shell by using commands with attributes.
-**Timing Unateness**:
+#### Timing Unateness
 Unateness helps the tool in understanding how to propagate the transition.
 Positive unateness: For a rise in input, the output may rise or no change but it never falls. AND gate, OR gate follows positive unateness.
 Negative unateness: For a rise in input, the output may fall or no change but it never rises. NOT gate, NAND gate, NOR gate follows negative unateness.

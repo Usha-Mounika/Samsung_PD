@@ -1469,6 +1469,33 @@ Now the output of the code is as follows:
 <summary>Introduction to STA </summary>
 <br>	
 
+STA stands for Static Timing Analysis. Every path has delay constraints, the maximum delay constraint (setup condition) and minimum delay constraint (hold condition). 
+The setup condition states the maximim delay the combinational circuit can have. The hold condition defines the minimum combinational delay.The clock period is fixed as it is defined per our requirements. The clock-to-q delay and setup, hold values are specific for flipflops. So, The parameter that can be varied is combinational delay. So, the setup and hold equations can be written as follows: 
+![equations](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9cd6be7b-7d60-437f-8311-8fb013db5448)
+
+This defines the minimum and maximum constraint on the combinational delay so that neither setup nor hold is violated.
+
+Let us consider an example of combinational delay being 8ns and clock period of 5 ns, then the clock delay to capture flop is increased the adding delay to the clock path of capture clock. This causes a waveform as below. Now, the required time is increased (the period from 1st cycle of launch flop to 2nd cycle of capture flop). There comes a repercussion of minimum delay on this circuit. When the clock is pushed, the hold window of capture flop moves with it. So, data cannot arrive before the hold window. So, the new hold equation includes the push period as shown.In the following figure, data from launch cannot arrive before the hold window of capture flop as follows:
+![clock push](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d3ae021f-486f-44f8-8d65-0a7441be496b)
+
+**Water Bucket Analogy**:
+Let us consider two taps having different inflow. The faster inflow fills the bucket in less time than that of slower inflow.So, the less inflow causes more delay and more inflow results less delay. Hence, delay is a function of inflow. Here, inflow of water translates to inflow of current(input transition). So, faster current sourcing (faster rise) will have less delay and vice-versa.
+Although inflow of taps are same, when the size of buckets vary (i.e., 5 and 25 gallons) then the larger bucket takes more time to fill than smaller bucket. So, Delay is a function of bucket size (which is analogous to load capacitance).
+So, *Delay of a cell is a fuction of input transition*(inflow) *and output load*(bucket size).
+Let us assume two gates in a design are far from each other (say long net length from gate1 to gate2). This long net causes more capacitance.Thus, the delay of gate1 will increase due to load capacitance. The output load can be high not only due to long nets but also due to large number of loads connected(high fanout). The capacitance of all these load pins are summed and causes high output capacitance at the gate resulting more delay.
+
+**Timing Arcs**:
+It contains the delay information of every input pin to every output pin that it can control. 
+In a combinational circuit, 
+In a 2x1 multiplexer, the output may change due to change in sel though no change in i0 or i1. Similarly, the change in i0 or i1 causes change in output. So, the timing arcs are from i0-->y, i1-->y or 
+sel -->y. The timing arc contain delay information in these arcs.
+In an AND gate, the output may change due to change in A or B.So, the timing arcs are from A-->y or B-->y.
+In a sequential circuit,
+The D flipflop have the timing arc clock to q (as the output changes after occurence of clock edge) and clock to D (for setup and hold).
+The D latch has delay from clock to q, clock to D, D to q(This is because the latch works on levels, onelevel makes flop transparent and other makes it opaque. Though clock is constant, change in D causes change in Q for a latch).
+The following table shows the occurence of flop/Latch and the timing arc taken occurence of flop/latch i.e., positive edge/level or negative edge/level. Setup/Hold is around the sampling point of clock.
+![info](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e97903c2-bc1b-4af2-abb7-90a0c13d2a4b)
+
 </details>
 <details>
 <summary> Constraints </summary>

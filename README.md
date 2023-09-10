@@ -1678,6 +1678,8 @@ But there will be a delay (∆) to reach the distant (capture) flop than the nea
 
 *Skew is the difference in clock arrival time across the chip*.
 Let us consider a clock arriving to two flops launch with two clock buffers and capture with one buffer. This would reduce available window by one buffer delay period.So, the timing may be clean post synthesis, but it fails after CTS.
+Skew can be either positive or negative. A positive skew helps setup by increasing violation but improves hold constraint. A negative skew makes the arrival time more stringent helps setup and might violate hold.
+    - Thold +Tskew < Tckq + Tcomb
 
 CTS will balance the clocks, but the skew still cannot be reduced to zero.
 ![skew](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7cd6bd01-d0ff-4c06-8494-8478672477e8)
@@ -1833,15 +1835,33 @@ A clock gets created but the clock cannot propagate as it is on input pin. This 
 The following image shows the different waveforms defined for a clock. The clock creation switches need not follow any order. This is illustrated in right side of image.
 ![8+9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/281ea60a-a612-419f-9a6c-eee3508615e6)
 
+#### clock modelling
+The following image shows defining clock latency and uncertainty. FOr clock latency, when *source* switch is used, it defines source latency, else defines network latency default.
+The clock uncertainty is specified with *-setup* (max) and *-hold*(min) switches.
+*report_timing* command is used to check every cell delay, transition and fanout etc.. The report_timing by default gives setup constraint of violation.
+Slack is the difference between required time and arrival time of a timing path. Arrival time is the sum of clk-to-q delay and combinational delay. Required time is the clock period minus setup time and uncertainty (if any).
+Let us consider the reg2reg timing path that ends at REGC_reg. As the clock is not defined in the design, it is showing as unconstrained. 
+![4steps4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7c9d72c0-3348-4f52-b6c0-923fadd07672)
 
+When a clock is defined, the timing path is showing that timng is met with a positive slack of 9.55ns which is very huge.
+![4steps3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/62b27169-7a85-4404-b43e-fe3ef9871c2a)
 
+Let us define the clock constraints such as uncertainty and latency as follows:
+![4steps1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cacc6f10-40f2-4896-bf79-da4a9e1262cf)
 
+The following timing report shows that slack was reduced to 9.05ns, due to addtion of uncertainty and latency.
+![4steps5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d5422c62-261a-49a3-ae46-324d30e4022a)
 
+The corresponding timing report shows the hold report (minimum constraint) for the same reg2reg timing path. Here, the uncertainty is added for a hold path.
+![4steps6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6e6043e2-ef22-4571-b39a-1529548f892a)
 
+The *report_port* gives the information about all the constraints on the port.The following image shows all the consraints on the port.
+![report_port](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a6a1acec-72bb-49a8-b0a4-0170d6b30ecd)
 
+The following image shows that in2reg and reg2out paths are unconstrained as IO constraints are not defined yet.
+![uncon io path](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9a577ff5-9ec1-4bb2-b101-66f5cb3de9ae)
 
-
-
+#### IO constraints
 
 
  

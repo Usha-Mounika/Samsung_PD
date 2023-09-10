@@ -1667,21 +1667,30 @@ So, the clock needs to modelled for Synthesis stage such that no violations occu
 - Period :The frequency at which it needs to operate.
 - Source Latency : Time taken by the clock source to generate clock.
 - Clock Network Latency : Time taken by the clock distribution network.
+  ![latency](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b4383dc6-badb-427f-8cc6-de685b4ba6bf)
+
 - Clock Skew : Clock path delay mismatches which causes difference in the arrival of the clock.
 - Jitter : Stochastic variations in the arrival of clock edge.
 The clock network is practical post CST stage. So, the modelled network latency and skew must be removed as the actual clock network is present now. This removes the extra pessimism defined.
 #### Skew
 In ideal case, the clock is assumed to arrive at launch and capture flops at the same time. In the practical design, the clock is at fixed position and the flipflops are placed such that place is optimized. 
 But there will be a delay (∆) to reach the distant (capture) flop than the nearer (launch) flop when routed.If the nets are long, there will be buffers placed causing delay, so clock may take more time to reach. So, this would cause a violation reducing the arrival time.
+
 *Skew is the difference in clock arrival time across the chip*.
 Let us consider a clock arriving to two flops launch with two clock buffers and capture with one buffer. This would reduce available window by one buffer delay period.So, the timing may be clean post synthesis, but it fails after CTS.
+
 CTS will balance the clocks, but the skew still cannot be reduced to zero.
+![skew](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7cd6bd01-d0ff-4c06-8494-8478672477e8)
+
 
 #### Jitter
 The clock sources have inherent variations in the period due to stochastic effects. This is known as jitter
 The edges do not occur with zero transition. So, there will be a window in which these edges arrive. The arrival of edge varies from cycle to cycle.
+![clock](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fa13fdfc-a401-438a-bc95-5d7c9e5a4212)
+
 *Jitter is the fluctuation in the timing of clock edges*.Jitter is due to the clock generator.
 Let us consider a clock of 100MHz (of period 10ns) having a jitter of 100ps.If the launch flop is assumed to start second cycle at 10ns, the capture flop might have second cycle at 9.9ns. This causes the reduce in clock available clock window to 9.9ns which would cause a violation. 
+
 There are two types of Jitter:
  - Duty cycle Jitter - This causes a variation in ON period thus changing the duty cycle ( as duty cycle = Ton/Tperiod)
  - Period Jitter - This occurs within a clock cycle, The consecutive cycles occuring before or after the specified period.
@@ -1693,4 +1702,29 @@ The clock skew and clock jitter are collectively known as clock uncertainty. Dur
 <br>
 	
 All the constraints must be written as commands in the SDC for the tool to understand.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </details>

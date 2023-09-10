@@ -1701,30 +1701,98 @@ The clock skew and clock jitter are collectively known as clock uncertainty. Dur
 <summary> SDC constraints</summary>
 <br>
 	
-All the constraints must be written as commands in the SDC for the tool to understand.
+All the constraints must be written as commands in the SDC (follows tcl format)for the tool to understand.
+Ports are nothing but primary IOs in the design. A net is a connection of two or more pins or a pin and a port. The following design shows ports and nets in the design. Let us consider this design to understand the constraints.
+![ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/55a085aa-376b-4517-9b23-b54aa04de08a)
 
+ All the names (such as ports, pins, nets) are case sensitive.
+ ### get_* 
+ querying commands to get the specific details of design
+#### get_ports
+This command is used to query the ports in the design. So, the get_ports can be used:
+```bash
+ get_ports *    #to obtain all ports in design
+get_ports clk  #to obtain port named clk
+get_ports *clk* #to obtain all ports containing string 'clk' in their name
+get_ports * -filter "direction == in" #to obtain all input ports in design
+get_ports * -filter "direction == out" #to obtain all output ports in design
+```
+#### get_clocks
+This command is used to query the clocks in the design. So, the get_clocks can be used:
+```bash
+ get_clocks *    #to obtain all clocks in design
+get_clocks clk   #to obtain clock named clk
+get_ports *clk*  #to obtain all clocks containing string 'clk' in their name
+get_clocks * -filter "period > 10"  #to obtain all clocks in design with period more than 10
+get_attribute [get_clocks my_clk] period"  #to obtain attribute period of the clock my_clk
+get_attribute [get_clocks my_clk] is_generated  #to determine whether clock is master ot generated
+report_clocks my_clk  #gives detailed information about clocks
+```
+#### get_cells
+This command is used to query the cells in the design. There are types of cells in a design such as hierarchical cells, physical cells.
+- Physical cells (standard cells) are predefined building blocks that contain the logic gates and other components necessary to implement various digital functions.
+Physical cells are used to create the layout of the digital logic in the chip.
+```bash
+get_cells * -hier #lists all the cells in the design (both physical and hierarchical cells)
+```
+- Hierarchical cells are a methodology used in VLSI design to manage the complexity of large circuits.
+![cell](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7f38f6e4-4d35-4a28-aed2-1099228ed733)
 
+In the above design, the *is_hierarchical* attribute can be used as follows. The is_hierarchical attribute is a boolean function that gives either true or false.
+```bash
+dc_shell> get_attribute [get_cells u_combo_logic] is_hierarchical
+true
+dc_shell> get_attribute [get_cells u_combo_logic/U1] is_hierarchical
+false
+```
+Similarly y pin is physical pin and out_1 is hierarchical pin.
+### Clock Distribution
+ The command to create clock is *create_clock*.
+```bash
+dc_shell> create_clock -name <clock_name> -per <PERIOD> [clock_definition point]
+```
+The clock definition point would be output of generator (can be a cell or a port or a pin).
+Clocks must be created only on valid generation points i.e., clock generators (PLL, oscillators) or primary IO pins(external clocks).
+Clocks should not be generated on hierarchical pins which are not clock generators.
+ #### Clock uncertainty and latency
+The uncertainty and latency are also defined as follows:
+```bash
+create_clock -name MY_CLK -period 10 [get_ports clk]
+set_clock_latency 3 MY_CLK  #This is the latency, modelling clock delay in network
+set_clock_uncertainty 0.5 MY_CLK #This is for setting clock network (jitter & skew)
+```
+#### Waveform
+The clock defintion command defines 50% duty cycle and for a period of 10ns, the rise edge wil be a 0,10 and fall edge will be at 5ns by default.
+The waveform is usually defined as 
+```bash
+ -wave { <starting rise edge> <first fall edge>}
+```
+The ON period is usually defined with -wave and the period is adjusted such that remaining cycle is OFF period. This can be illustrated with following definitons and waveform
+![waveform](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/37a5aa4f-351d-475e-9840-0e6d2bd3c5aa)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+### Constraining IO paths
+The input ports and output ports are constrained with respectto MY_CLK genrated on port clk. These constraint require a window of the period during which it can vary. This is done using *-min* and *-max* switches
+#### Input ports
+The input ports are constrained with clock period, input transition and input delay.
+The following commands are used to constraint the input ports of a design:
+```bash
+set_input_delay -max 3 -clock[get_clocks MY_CLK] [get_ports IN_*]
+set_input_delay -min 0.5 -clock[get_clocks MY_CLK] [get_ports IN_*]
+set_input_transition -max 1.5 [get_ports IN_*]
+set_input_transition -min 0.75 [get_ports IN_*]
+```
+#### Output ports
+The output ports are constrained with clock period,output delay and output load.
+The following commands are used to constraint the output ports of a design:
+```bash
+set_output_delay -max 3 -clock[get_clocks MY_CLK] [get_ports OUT_Y]
+set_output_delay -min 0.5 -clock[get_clocks MY_CLK] [get_ports OUT_Y]
+set_output_load -max 80 [get_ports OUT_Y]
+set_output_load -min 20 [get_ports OUT_Y]
+```
+</details>
+<details>
+<summary> Lab on SDC commands/summary>
+<br>
+	
 </details>

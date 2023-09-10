@@ -1855,13 +1855,39 @@ The following timing report shows that slack was reduced to 9.05ns, due to addti
 The corresponding timing report shows the hold report (minimum constraint) for the same reg2reg timing path. Here, the uncertainty is added for a hold path.
 ![4steps6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6e6043e2-ef22-4571-b39a-1529548f892a)
 
-The *report_port* gives the information about all the constraints on the port.The following image shows all the consraints on the port.
+The *report_port* gives the information about all the constraints on the port.The following image shows all the consraints on the port. Nothing is constrained so it is viewed as follows:
 ![report_port](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a6a1acec-72bb-49a8-b0a4-0170d6b30ecd)
 
 The following image shows that in2reg and reg2out paths are unconstrained as IO constraints are not defined yet.
 ![uncon io path](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9a577ff5-9ec1-4bb2-b101-66f5cb3de9ae)
 
 #### IO constraints
+
+The following image shows that the input delay is constrained to 5ns so the timing report is as follows:
+![123](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fed2afce-c712-4f97-9763-6b3f661f0d7a)
+
+The following image shows that hold timing path is unconstrained
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
  

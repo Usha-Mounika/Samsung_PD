@@ -1792,7 +1792,57 @@ set_output_load -min 20 [get_ports OUT_Y]
 ```
 </details>
 <details>
-<summary> Lab on SDC commands/summary>
+<summary> Lab on SDC commands</summary>
 <br>
 	
+Let us synthesize a design as follows:
+The synthesize is linked with libraries as shown. So, by giving behavioral code as input, we link and compile and synthesize logic level netlist. The design infereed all the 3 registers as shown.
+![step1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/691542ad-6798-4178-8aed-50c849ee04cf)
+
+The expected behavior of the circuit is:
+![expected](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6f797872-1d02-4efe-b91e-61691d1d6b51)
+Let us look few query commands as follows:
+The *get_ports* gives a collection of ports present in the design. Inorder to print all the names, we use *get_object_name* else it prints the pointer such as_sel3. The ports can be input or output,so, to know the direction of a port, the tcl script is as follows. The following *get_cells* command shows that all cells are physical cells and there are no hierarchical cells present in the design.The REGC_reg is the instance name in the design. Reference name is the name of the3 physical cell in .lib.Here, the ref_name dfrtp signifies d flipflop with asynchronouus reset positive edge triggered true output(Q).
+![steps2 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/351e0cca-8c48-4163-b1f4-f28f16244817)
+After writing the netlist, let us look at ddc file using design_vision.The ddc file contains all the information in the cell. The ddc file is given to tool using *read_ddc* command.
+![steps3 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e2433af8-cd90-4b11-92b2-6b14fd5cd9e5)
+The schematic would look as follows. The reset is an active low pin so an inverter is connected before it.
+![steps4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2092f16e-6192-4ebd-99eb-fd6fb521ef29)
+The following circuit is the optimized implementation of the expected circuit.
+![change](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/55d4aea4-6baa-482f-bfe7-ae08a3ba19cc)
+The following image shows all nets present in design usign *get_nets* command. All the pins connected to a particular net are obtained by *all_connected* command.
+![steps6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b616abfe-98fc-403b-aa02-458450ce78c4)
+In a digital design, a net can only have one driver. Multi-driven nets corrupts the logic level of design.In a latch, where gates are connected badk forth, it is multi-driven within a standard cell, so sizing of transistor would be taken care of. 
+But, when using different standard cells, multi-driven nets would corrupt logic level in the design. The above script also shows that there is only driver on net  n8
+and no of nets being driven can be many.
+
+#### get_pins 
+The following image shows that get_pins gives a collection of all pins in design.So, the various attributes such as direction, whether pin is clock or not can be illustrated.
+![2steps1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/dc4bdd74-7650-4102-822f-c3d5904b20ec)
+The following image shows that output ports do not have an attribute clock so we first print all pins with direction. The *regexp* command is used to compare two strings. It is same as strcmp in C. It returns boolean value whether same or not.So, The script for printing only clock pin is as follows:
+![3+4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e41aac42-e641-4c62-b666-c61a4734b865)
+#### get_clocks
+The following image shows defining a clock on a port, attributes such as period, is_generated, clocks(attribute used to find the clock being propagated on port) and information returned by report_clocks.
+The report_clocks shows that whther it is master/generated, period,waveform. The *current_design* gives you the name of the design being worked on.
+![5+6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/76829269-3e5c-4ed7-8a6f-e98e7256f098)
+
+The clock should be properly defined on a port, not on any input pins (where clock should not propagate). Let us consider a clock at REGC_reg as follows. The input pin on REGC is NAND gate. So, clock defined on Y pin of NAND gate as shown. 
+A clock gets created but the clock cannot propagate as it is on input pin. This corrupts the entire design. The *remove_clock* can be used to remove unnecessary clocks in the design.
+![2steps7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6678b0c6-bb4b-408b-a7b9-f24bc74a1fbb)
+
+The following image shows the different waveforms defined for a clock. The clock creation switches need not follow any order. This is illustrated in right side of image.
+![8+9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/281ea60a-a612-419f-9a6c-eee3508615e6)
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 </details>

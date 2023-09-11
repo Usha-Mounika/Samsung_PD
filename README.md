@@ -1866,20 +1866,46 @@ The following image shows that in2reg and reg2out paths are unconstrained as IO 
 The following image shows that the input delay is constrained to 5ns so the timing report is as follows:
 ![123](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fed2afce-c712-4f97-9763-6b3f661f0d7a)
 
-The following image shows that hold timing path is unconstrained
+The following image shows that hold timing path is unconstrained as input delay -min is not specified. So, after constraining min delay the timing report is as follows:
+![56](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ebd2f25a-0e75-4465-861e-f12b11bbea51)
 
+The following image shows the timing report after defining input transition. The cells delay got increased after defining transitio so arrival time increased and thus reduced slack.
+![89](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8826ef41-d86e-4d31-8104-b6706c02786d)
 
+Now Let us define the output constraints, after defining output delay, the timing report is as follows:
+![1112](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a20354f0-da7c-4d49-8d1c-feadcdf4b53e)
 
+After defining the load or capacitance, the timing report is as follows:
+![1314](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/791e129b-b61e-432a-8f3e-2a74064745c4)
 
+Now, after defining the min load capacitance the hold report is as follows:
+![5steps15](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f6e5ad43-ec9b-4250-a183-d6561742ef8d)
 
+### Generated clock
+The clock for external world and input module can't be physically same due to long routing length. These long nets include buffers thus increasing the clock network delay. So, To avoid this, the generated clock is defined at another point so logically and physcially clocks would be same.
+The generated clocks are always defined with respect to master. Master clock is the main clock source or Primary IO pins. The command is as follows:
+```bash
+create_generated_clock -name MYGEN_CLK -master [get_clocks MY_CLK] -source [get_ports clk] -div 1 [get_ports out_clk]
+```
+The command shows that the generated clock MYGEN_CLK is derived from master clock MY_CLK defined at clk port with a divide factor of 1. The generated clock is defined at output port out_clk.
+All implementation tools propagate the clock downstream based on timing arcs. All timing arcs from definition point will see clock propagation by default.
+The creation of gnerated clock can be illustrated as follows:
+![lab3_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3adfdcd3-66fe-485d-83cf-1c56c49cbc58)
 
+Let us model the out2 reg path with generated clock as follows:
+![lab3_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3cfbac30-374f-4152-94bf-026e297a7804)
 
+ Now let us modify our design by adding another output register as follows:
+ ![lab3_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fe1a7ac8-9c7a-44cd-9c25-86607ca22c6b)
+ 
+So, After resetting the design and linking it, there are 4 registers in design as follows:
+![lab3_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/24da76e9-7dd4-428f-a8dd-2896f1a5988c)
 
+Let us define all the constraints in a file and source it as follows:
+![lab3_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/edc86c2b-ed40-4360-b965-641b85a221d5)
 
-
-
-
-
+Now, the report_clocks reports all the clocks in design as follows:
+![lab3_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d9d7d6ff-0c62-40a6-b01d-cb844320eec3)
 
 
 

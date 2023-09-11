@@ -1907,6 +1907,102 @@ Let us define all the constraints in a file and source it as follows:
 Now, the report_clocks reports all the clocks in design as follows:
 ![lab3_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d9d7d6ff-0c62-40a6-b01d-cb844320eec3)
 
+</details>
+<details>
+<summary> IO delays</summary>
+<br>
+
+ The constraint on IO delays are input delay, output delay. Let us discuss them in detail.
+ #### set_input_delay
+ The following command says that data comes to the input port IN_A 3ns after the arrival of clock edge. So, the 3ns of the total period (10ns) is constrained for input delay. So the available time for combinational delay reduces for setup constraint.
+ ```bash
+create_clock -name myclk -per 10 [get_ports clk]
+set_input_delay -max 3 - clock myclk [get_ports IN_A]
+set_input_delay -min 1 - clock myclk [get_ports IN_A]
+```
+If this input delay defined is negative, the combinational gets an additional time. This can be explained as, When the clock and data were routed, the clock got delayed, but data arrives on time.
+Usually, positive delay implies data arrival after clock edge. Negative delay implies data arrival before clock edge.In other words, Negative delay means clock relatively getting pushed out with respect to data.
+In the hold constraint, When input delay is positive, the data arrives after 1ns of clock period.This helps meetimg hold time as the data arrives after the hold window. 
+When it is negative, the data arrives prior to the hold window, which causes failure. So, additional changes must be made to delay the data arrival.
+
+For an input port, if multiple external registers are being connected (i.e., more timing paths exist to one endpoint with different startpoints), then the input delay can be constrained more than once using -add switch. 
+If one of these paths is a negative edge triggered and capture is positive edge_triggered, this can be specified using -clock_fall switch.
+This can be illustrated as follows:
+```bash
+set_input_delay -max 2 -clock MY_CLK [get_ports IN_A]
+set_input_delay -max 3 -clock MY_CLK -clock_fall -add [get_ports IN_A]
+```
+
+**The positive delay tightens the path for maximum constraint and relaxes the path for minimum constraint.The negative delay relaxes the path for maximum constraint and tightens the path for minimum constraint.**
+ #### set_output_delay
+ The following command says that data needs 3ns to reach the external flop. So, the 3ns of the total period (10ns) is constrained for output delay. So the available time for combinational delay reduces.
+ ```bash
+create_clock -name myclk -per 10 [get_ports clk]
+set_output_delay -max 3 - clock myclk [get_ports OUT_Y]
+set_output_delay -min 1 - clock myclk [get_ports OUT_Y]
+```
+Similarly, The positive delay tightens the path for maximum constraint and relaxes the path for minimum constraint.The negative delay relaxes the path for maximum constraint and tightens the path for minimum constraint.The hold is independent of the clock period because launch and cature flops are checked at same instant.
+Also, the add switch and clock switch is also same for output delay that can be given as follows:
+```bash
+set_output_delay -max 2 -clock MY_CLK [get_ports OUT_Y]
+set_output_delay -max 3 -clock MY_CLK -clock_fall -add [get_ports OUT_Y]
+```
+The clock_fall switch is to specify that annotated delay is with respect to negative edge. The add switch is to append the constraint to pre-exisiting constraints but not to overwrite.
+
+#### How to constraint IO path?
+Inorder to constrain a pure combinational logic (without any flops), the command set_max_latency is used or a virtual clock can be defined. 
+The command is defined as folows:
+```bash
+set_max_latency 1.0 -from [get_ports IN_C] -to [get_ports OUT_Z] 
+```
+This means the data from port IN_C to OUT_Z should arrive within 1ns.
+**A virtual clock do not have latency and no definition point**.
+A virtual clock is an imaginary clock for budgeting the time. The virtual clock can be defined as follows:
+```bash
+create_clock -name my_vclk -period 5
+set_input_delay -max 1.5 -clock my_vclk [get_ports IN_C]
+set_output_delay -max 2.5 -clock my_vclk [get_ports OUT_Z]
+```
+#### set_driving_cell
+The set_driving_cell command is used for module level IOs (such as where same technology can be used). 
+The set_input_transition command can be used for top level primary IOs where two different chips may be connected and the transition is specified by the interface. Both these commands ca nbe used alternatively. The set_driving cell command is more accurate and recommended for all internal timing paths.
+
+The driving cell is defined so that the input transition can be modelled depending upon the load/fanout on the input port/pin. The driving cell command can be illustrated as follows:
+ set_driving_cell -lib_cell <lib_cell_name> [ports]
+```bash
+set_driving_cell -lib_cell sky130_fd_sc_hd _buf_1 [all inputs]
+```
+### Lab
+Now let us consider the same design with an in2out path added (lab14_circuit.v). The Behavioral code is as follows:
+```verilog
+module lab8_circuit (input rst, input clk , input IN_A , input IN_B , output OUT_Y , output out_clk , output reg out_div_clk , input IN_C , input IN_D , output OUT_Z );
+reg REGA , REGB , REGC ; 
+
+always @ (posedge clk , posedge rst)
+begin
+	if(rst)
+	begin
+		REGA <= 1'b0;
+		REGB <= 1'b0;
+		REGC <= 1'b0;
+		out_div_clk <= 1'b0;
+	end
+	else
+	begin
+		REGA <= IN_A | IN_B;
+		REGB <= IN_A ^ IN_B;
+		REGC <= !(REGA & REGB);
+		out_div_clk <= ~out_div_clk; 
+	end
+end
+
+assign OUT_Y = ~REGC;
+
+assign out_clk = clk;
+assign OUT_Z = IN_C ^ IN_D ;
+
+endmodule
+```
 
 
 
@@ -1916,5 +2012,7 @@ Now, the report_clocks reports all the clocks in design as follows:
 
 
 
- 
+
+
+
 </details>

@@ -1667,8 +1667,6 @@ So, the clock needs to modelled for Synthesis stage such that no violations occu
 - Period :The frequency at which it needs to operate.
 - Source Latency : Time taken by the clock source to generate clock.
 - Clock Network Latency : Time taken by the clock distribution network.
-  ![latency](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b4383dc6-badb-427f-8cc6-de685b4ba6bf)
-
 - Clock Skew : Clock path delay mismatches which causes difference in the arrival of the clock.
 - Jitter : Stochastic variations in the arrival of clock edge.
 The clock network is practical post CST stage. So, the modelled network latency and skew must be removed as the actual clock network is present now. This removes the extra pessimism defined.
@@ -1678,6 +1676,11 @@ But there will be a delay (∆) to reach the distant (capture) flop than the nea
 
 *Skew is the difference in clock arrival time across the chip*.
 Let us consider a clock arriving to two flops launch with two clock buffers and capture with one buffer. This would reduce available window by one buffer delay period.So, the timing may be clean post synthesis, but it fails after CTS.
+ - Local Skew : The difference in clock arrival between two consecutive/related pins of flops.
+ -  Global Skew : The difference in clock arrival between the longest path and shortest path.
+ - Positive skew: if the capture clock comes late than the launch clock.
+ - Negative skew: if the capture clock comes early than the launch clock.
+ - Useful skew: if the clock is skewed intentionally to resolve setup violation
 Skew can be either positive or negative. A positive skew helps setup by increasing violation but improves hold constraint. A negative skew makes the arrival time more stringent helps setup and might violate hold.
     - Thold +Tskew < Tckq + Tcomb
 
@@ -1756,7 +1759,14 @@ dc_shell> create_clock -name <clock_name> -per <PERIOD> [clock_definition point]
 The clock definition point would be output of generator (can be a cell or a port or a pin).
 Clocks must be created only on valid generation points i.e., clock generators (PLL, oscillators) or primary IO pins(external clocks).
 Clocks should not be generated on hierarchical pins which are not clock generators.
- #### Clock uncertainty and latency
+ #### Clock uncertainty and clock latency
+ Clock latency : The total time it takes from the clock source to an end point. There are two types of latency as follows:
+- Source latency: Source latency is also called insertion delay. The delay from the clock source/origin to the clock definition points.
+- Network latency: The delay from the clock definition points (create_clock) to the flip-flop clock pins.
+   ![latency](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b4383dc6-badb-427f-8cc6-de685b4ba6bf)
+  
+  Network latency gets ignored once the clock tree is built as it is the estimate delay of the clock tree prior to synthesis.
+The clock uncertainty is the skew,jitter and other pessimism of a clock. Inter-clock uncertainties for clock domain boundaries will also take into account the skew between the clocks for setup and hold checks
 The uncertainty and latency are also defined as follows:
 ```bash
 create_clock -name MY_CLK -period 10 [get_ports clk]
@@ -1771,6 +1781,35 @@ The waveform is usually defined as
 ```
 The ON period is usually defined with -wave and the period is adjusted such that remaining cycle is OFF period. This can be illustrated with following definitons and waveform
 ![waveform](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/37a5aa4f-351d-475e-9840-0e6d2bd3c5aa)
+#### Half-Cycle Paths
+ The Half Cycle paths occur when two flops are triggered by different clock edge (such as lauch by positive and capture by negative and vice-versa). This would make setup more stringent as the available period would be from rise edge to fall edge i.e., ON period.It relaxes the hold by half path with huge slack.
+![hcp](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/750393ce-4754-4eb9-989b-a36f1d4e2f0e)
+
+#### Multi-Cycle paths
+A multiple cycle path occurs when the data takes more than one clock cycle to reach the capture flop. So, These paths are set as multi-cycle paths inorder to avoid violation. This is done by:
+```bash
+set_multicycle_path 3 –setup –from [get_pins UFF0/Q] –to [get_pins UFF1/D]
+set_multicycle_path 2 -hold -from [get_pins UFF0/Q] -to [get_pins UFF1/D]
+```
+Here, both setup and hold are constrained because hold check always happens at n-1 position of setup by default. So, inorder to avoid this, the hold moves back the check to 0th cycle (by 2 cycles back).This can be illustrated as follows:
+![mcp](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1c601e2e-f7eb-479e-a0c9-259f3cada0e0)
+
+#### False Paths
+A false path is a path whose functional operation need not be constrained in design. These paths are set as false paths as follows:
+```bash
+set_false_path -from [get_clocks clockA] -to [get_clocks clockB]
+```
+#### Asynchronous timing Checks
+The asynchronous checks can be either recovery or removal checks.
+
+**Removal Checks**
+
+Removal check ensures there is adequate time between an active edge of clock and release of the asynchronous signals such as set, reset. This is done in order to ensure the clock edge has no effect and does not cause any change in the values It is a min path check like hold check. All asynchronous timing checks are assigned to default path groups and the endpoint signifies it is removal timing check
+
+**Recovery Checks**
+Recovery check ensures that there is minimum amount of time between asynchronous signal becoming inactive and arrival of next active edge of clockIt ensures the design has enough time to recover and respond back to the clocks that once the asynchronous signal inactivates.It is a max path check like the setup check. The Endpoint in the report indicates the check is a recovery check against the clock
+
+![removerecover](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/aea8e8c3-c69b-427c-89ca-4fe351f28fc5)
 
 ### Constraining IO paths
 The input ports and output ports are constrained with respectto MY_CLK genrated on port clk. These constraint require a window of the period during which it can vary. This is done using *-min* and *-max* switches
@@ -1783,6 +1822,8 @@ set_input_delay -min 0.5 -clock[get_clocks MY_CLK] [get_ports IN_*]
 set_input_transition -max 1.5 [get_ports IN_*]
 set_input_transition -min 0.75 [get_ports IN_*]
 ```
+-rise and –fall options to specify slew for rising and falling edges
+-min and –max options to specify constraints in various operating conditions
 #### Output ports
 The output ports are constrained with clock period,output delay and output load.
 The following commands are used to constraint the output ports of a design:
@@ -1883,6 +1924,10 @@ Now, after defining the min load capacitance the hold report is as follows:
 
 ### Generated clock
 The clock for external world and input module can't be physically same due to long routing length. These long nets include buffers thus increasing the clock network delay. So, To avoid this, the generated clock is defined at another point so logically and physcially clocks would be same.
+Creation of a new master clock instead of generated clocks has below disadvantages:
+• More clock domains to deal with
+• Requires additional constraints to be specified
+• Source latency specifications need to be defined all over again for the new master clocks
 The generated clocks are always defined with respect to master. Master clock is the main clock source or Primary IO pins. The command is as follows:
 ```bash
 create_generated_clock -name MYGEN_CLK -master [get_clocks MY_CLK] -source [get_ports clk] -div 1 [get_ports out_clk]

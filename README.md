@@ -1912,7 +1912,7 @@ Now, the report_clocks reports all the clocks in design as follows:
 <summary> IO delays</summary>
 <br>
 
- The constraint on IO delays are input delay, output delay. Let us discuss them in detail.
+ The constraint on IO delays are input delay, output delay. Let us discuss them in detail. 
  #### set_input_delay
  The following command says that data comes to the input port IN_A 3ns after the arrival of clock edge. So, the 3ns of the total period (10ns) is constrained for input delay. So the available time for combinational delay reduces for setup constraint.
  ```bash
@@ -1974,6 +1974,7 @@ set_driving_cell -lib_cell sky130_fd_sc_hd _buf_1 [all inputs]
 ```
 ### Lab
 Now let us consider the same design with an in2out path added (lab14_circuit.v). The Behavioral code is as follows:
+
 ```verilog
 module lab8_circuit (input rst, input clk , input IN_A , input IN_B , output OUT_Y , output out_clk , output reg out_div_clk , input IN_C , input IN_D , output OUT_Z );
 reg REGA , REGB , REGC ; 
@@ -2003,16 +2004,48 @@ assign OUT_Z = IN_C ^ IN_D ;
 
 endmodule
 ```
+The following image shows the expected behaviour of the design.
+![expected des](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/847eac50-206c-441a-9343-6494b8c5e73a)
+
+The below shows that there are 4 flipflops after modifying the design.So, all the constraints are sourced using lab8_cons.tcl file. When clocks are reported, all clocks in the design are inferred as follows:
+![12](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/627bc493-34ea-4e90-aaf8-fe2ac64310d5)
+
+The left image shows that before compilation timing report infers SEQGEN cells and after compile the lib_cells are read as shown on right image.
+![35](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f24b556a-f9fd-4f78-8932-92598b561858)
+
+The left image shows that the path with pure combinational logic is unconstrained. The right image shows the usage of commands such as 
+- all_inputs : returns all the inputs in design
+- all_outputs : returns all the outputs in design
+- all_registers : returns all the registers in design
+- all_clocks : returns all clock in design
+- all_fanout : returns all pins connected as load to given port/pin
+- all registers -clock \<clock_name\> : returns the registers clocked with the given clock
+  The image also shows there is no timing path between any input port to output port directly.
+![78](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c0c680d9-badd-4501-a3ba-e40c7bfd60ff)
+
+- all_fanin : returns all the driving cells to a port/pin
+- all_fanin -flat -startpoints_only : returns only startpoints of a timing path connected as driver
+- all_fanout -flat -endpoints only : returns only  endpoints of a timing path connected as load
+The following image shows all cells that are fanout of reg A and their ref_name
+![last10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/90ca8841-1bee-49f1-8c44-069d0c5c8588)
+
+The following image shows that when max delay is constrained, it violates the path. When it is compiled again, the path is met as the tool optimizes the logic by choosing appropriate cells.
+```bash
+set_max_delay 0.1 -from [all_inputs] -to [get_ports OUT_Z]
+```
+![1112](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d3e6b2d6-4e54-46a8-a9db-910668eb5c90)
+
+The following image shows the schematic view of the design after writing out ddc file.
+![last13](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9b06f74a-c37c-44c6-af84-bc9911036b20)
 
 
+The following image shows the clock report before and after defining the virtual clock. A there is no clock before, the path is pure combinational hence it is unconstrained.
+A virtual clock do not have a definition point as follows:
+![1718](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4e3642f2-5068-4dd1-9b33-2c84e3a46e7d)
 
+The following image shows that constraining the design has violated a path. The last image shows the timing was met after compiling the design after constraining it.
+![202122](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4d5e9434-fac3-459e-ac0a-fe48799ad6bd)
 
-
-
-
-
-
-
-
-
+The following image shows the constraints on all ports of design. Here, the pure combinational logic has a period of 10ns, input delay constrained to 5ns and output delay constrained to 4.9ns, limiting the period of EX-OR gate to 0.1ns or 100ps.
+![last22](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cd0f1f88-378f-48f9-ab01-1c152373810f)
 </details>

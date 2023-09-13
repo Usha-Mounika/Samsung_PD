@@ -2218,28 +2218,100 @@ The following image shows the output of dff_const5.v The two flipflops are retai
 <summary> Special Optimizations</summary>
 <br>
 
+### Register Retiming
+This can be explained through an example. Let us consider the following design with a huge combinational delay of 48ns and the setup of flops can be 1ns each. This is the critical path of the design, hence limiting the circuit to operate at a frequency of 20MHz. 
+This can be avoided by adding more flops to the design. As these new reg2reg paths have huge positive slack upto 48ns. The combinational logic can be sliced and shared among this flipflops. Thus improving the performance of the design. 
+![vid1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c5a1fb2b-336f-46dd-bd8d-81acffe27c66)
 
+The tool do not share the logic equally, it optimizes the design to the extent. So, If it is shared as shown, the delay of the design now will be 20ns in the critical path. This, Improving the performance of the design to 50 MHz. 
+If the design is optimized, the intermediate values cannot be defined. So, The optimization of tool is hard to calculate. SO, Any bug in subsequent design makes debugging more complex. The repercussion of not using it is sub-optimal design and using is complex behaviour at intermediate stages.
+#### Lab
+The following code is a 4-bit multiplier multiplying two 4-bit numbers and three 8-bit registers through which data is propagated to output.
+![lab3_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9550579c-514a-4f9e-ad67-abdc3938bbea)
 
+The following image shows that there are three 8-bit registerswith asynchronous reset.
+![lab3_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/28e6c425-bd46-483a-85ae-80d7ccbd437e)
 
+The following images show the synthesized design withGUI of multiplier(sub_module) and complete design.
+![lab3_8_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/703818b3-6d72-4266-83cc-295b6b29e1c8)
 
+![lab3_8_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cd3308de-e7f9-4915-abeb-24d3733fcc39)
 
+The following image shows the timing path which violates worst delay in the design.
+![lab3_10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3958f6eb-5f3a-4996-8aee-b221ee44fbb7)
 
+The following image is obtained after using the command as follows:
+```bash
+dc_shell> compile_ultra -retime
+```
+![lab3_11](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/804efb6c-bb46-4ea2-933f-1a4a048de809)
 
-#### Boundary Optimization
-The Boundary Optimization can be explained through an example. Consider a top module having internal sub module, the combinational logic at output port of sub module and external logic can be optimized such that area or power consumation reduces. So, The optimization os done without any regard to boundary such that design is remodelled. This can be explained in the following lab:
+### Boundary Optimization
+The Boundary Optimization can be explained through an example. Consider a top module having internal sub module, the combinational logic at output port of sub module and external logic can be optimized such that area or power consumation reduces.It dissolves the boundary of the submodule, merges the logic to obtain the opyimal logic and implements the design. So, The optimization os done without any regard to boundary such that design is remodelled. The optimization do not preserve the hierarchy so the intermediate signals in the netlist were removed by the tool in optization. So, Debugging becomes complex as some hierarchical modules and intermediate signals are absent.
+The Boundary optimizations are done using the switch as follows:
+- set_boundary_optimization <design> true|false
+```bash
+set_boundary_optimization u_im false
+```
+#### Lab
+The folowing image shows the behavioral code of boundary_check.v.
+![lab3_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/34f8271b-4873-4dc1-80f1-31f1672f8df3)
 
 In the following code, im is the internal module which is a 3-bit counter. Upon reaching, 111 it gives cnt_roll as enable to 4-bit register.
+The following image shows that the design consists of 3-bit counter and 4-bit register with asynchronous reset
+![lab3_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5242d41b-97f3-4d46-995d-c1189bd49e0a)
+
+The following image shows the design with hierarchical module u_im in the design. The Boundary Optimization is not done in this design
+![lab3_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fe0722c0-7d4b-4951-9e70-53b8103d0318)
+
+In the dc_shell, the boundary optimization is done so it cannot find any hierarchies but design vision can show the hierachical pins of sub_module as above.
+![lab3_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1eaf7f31-df42-46ff-8f64-2441df12161e)
+
+The Boundary optimized design is as follows:
+![lab3_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d07ea9c1-cb1a-400b-9f16-d099e1297195)
 
 
 During functional ECOs, If any bugs occur, it can be directly changed in netlist only if hierarchies are preserved, otherwise the synthesis run of complete design may take huge time.
 There is no thumb rule to set the set_boundary_optimization to either true or false. It completely depends on the need of design.
-#### Register Retiming
-The following code is a 4-bit multiplier multiplying two 4-bit numbers and three 8-bit registers through which data is propagated to output.
 
+#### Multi-Cycle Paths
+Let us consider the following design. Assume all the flops work at some clock frequency of 100MHz. The multiplier may have a delay of 15ns, and the total delay might account to 16ns. 
+![vidi-1-2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7017a5c0-28da-490c-8255-72afe79fa869)
+
+But the design implies the output requires two clock cycles to get data. The enable to select requires one clock cycle and select to output requires another clock cycle. 
+Such timing paths are defined as multi-cycle paths so that tool do not over optimize the design. The over optimization may cause violations at other paths which is unnecessary.
+This definition of multi-cycle path is done as follows:
+```tcl
+set_multicycle_path -setup 2 -to prod_reg[*]/D -through [all_inputs]
+```
+This can be done after careful understanding of design else single cycle paths shiuld not be defined that may corrupts the whole design.
+
+#### False Paths
+False paths are the paths that are invalid for STA.If the launch and capture flops have no temporal correlation between edges, then the path can be regarded as false path.
+Different clocks are not always asyncronous, the clocks generated from same master and master will have a relation which can't make it a false path. 
+The path from a constant selection line of multiplexer to register cannot be a timing path, so considered as false path.
 
 #### Isolating Outputs
-When there are more number of outputs to be connected after implementation of design, this may cause a violation of internal delays as cell delay is a function of load capacitance. Inordr to avoid internal failure, we isolate by inserting a buffer at output port.
-So, the buffer drives the external load.Now, the internal paths are decoupled from output paths.
+When there are more number of outputs to be connected after implementation of design, this may cause a violation of internal delays as cell delay is a function of load capacitance. Inorder to avoid internal failure, we isolate by inserting a buffer at output port. So, the buffer drives the external load.Now, the internal paths are decoupled from output paths..This is illustrated in the following design.
+![load](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ebe027ad-18f9-46aa-83ca-1fc2a0bbd3c7)
+The command to isolate ports is:
+```tcl
+set_isolate_ports -type buffer [get_ports OUT_Y]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

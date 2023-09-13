@@ -11,6 +11,7 @@ A brief description of what this training summarizes :
 -  [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
 -  [Day7 : Basic SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day7)
 -  [Day8 : Advanced SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day8)
+-  [Day9 : Optimization in Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day9)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -2108,13 +2109,17 @@ The combinational logic can be optimized by squeezing the logic design such that
    - Direct Optimization
  In the constant propagation, when one input is made constant, the remaining circuit can be simplified. As discussed before, the (AB+C)' can be reduced to C'.
 Thus optimizing the area and power.
+
 - Boolean Logic Optimization
    - K-Map
    - Quine McKluskey
  Consider a nested ternary operator circuit that would ocntain 3 multiplexers. As discussed before, when it is optimized it can be reduced to an exnor gate.
+![comb](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/141d7e56-63d4-4fc3-ab42-ab586aaf8af1)
+
 #### Resource Sharing:
 Consider a ternary operator y=sel?a*b:c*d. This multiplies two numbers when sel changes. A multiplier is a large circuit consuming more area. So, two multiplexers can be used such that y=(sel?a:c)*(sel?b:d). So, same sel can be used for both multiplexers and the same output is obtained with less area.
 Thus area and power are optimized.
+![comb2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e18629f7-623b-4ccc-b51a-6a34860f2da2)
 
 #### Logic Sharing:
 The logic can be shared when multiple gates can use the logic as intermediate one. For example, Consider a design having y=a&b&c, z=(a&b)|c.
@@ -2125,6 +2130,8 @@ So two 2-input AND gates and one OR gate will consume less power and area than t
 A Balanced implementation gives equal time to all the timing arcs (i.e., delay from input to output pin). A Preferential implementaion gives less delay time to late arriving signal and more time depending on their margins. 
 Let us consider an example. Assuming no 5-input AND gate in the design. The design can be implemented in the following ways:
 The left side image shows equal delay between a-->y and e-->y, whereas the right image shows more delay for a-->y and less delay for e-->y. If e is a very tight delay i.e.,late arriving signal (with huge external delay) that it cannot withstand 2 gate delay, the second one is preferred for its implementation to meet the timing.
+![combi](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d9176cd2-25a4-488e-84d1-81994b57e982)
+
 ### Sequential Logic Optimizations
 The Sequential Optimization can be done by
 - Basic
@@ -2138,7 +2145,8 @@ The Sequential Optimization can be done by
 
      An example for this can be a flop with asynchronous set and D pin connected to high (can be optimized as connected to Vss)or a flop with asynchronous reset and D pin connected to low(can be optimized as connected to Vdd)). But a flop with asynchronous set and D input connected to Vss or asynchronous reset and D input connected to Vdd, cannot be optimized, it retains in the circuit.
      Let us consider the following circuit which has a sequential propagation (flop) and logic. Now, these circuit gets reduced to an inverter as follows:
-     
+     ![seq](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e2591069-24af-47b2-8e60-8ae22ccf84d4)
+
 #### Optimization of Unused Outputs:  
 The unused outputs in a design need not be generated. As discussed before, let us consider a 4-bit up counter where q is assigned cnt\[0\]. As the remaining outputs(cnt\[1\] cnt\[2\] cnt\[3\]) are unused,the design can be reduced to a single flop that toggles when enabled. This is done with one flop and multiplexer with inverter, instead of 4 registers to count.
   But If we require the cnt\[1\] in future, The tool can make suboptimal changes while designing such that no violations occur.So,This can be done by tool using following boolean variables:
@@ -2150,8 +2158,71 @@ The unused outputs in a design need not be generated. As discussed before, let u
      If the variable is set to true, this replicates the registers in cloning optimization so that timing is met.
 #### Lab
 
+**Combinational Optimization**:
+
+ The following image shows the behavioral codes of different designs being synthesized as follows:
+ ![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4f013901-2945-456c-bcc5-891fa92044ce)
+
+The following image shows the steps of synthesis to synthesize opt_check.v The design shows there is a multiplexer(ternary operator) in the design.The unconstrained path uses lib cells after linking and compilation as follows:
+![23](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2d98bfa0-b8bd-4ed4-b64b-6336cec7a6cb)
+
+The following image the synthesized design of opt_check. Initially, it has a multiplexer in the design but after optimization, the design is reduced to and gate and an inverter.
+![lab1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c056b68d-9720-4510-9a9b-8f6bdc527eea)
+
+Similarly, the following image shows the ternary operator of opt_check2.v is reduced to an OR gate after synthesis as follows:
+![lab1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f7e87238-c863-4658-8482-0a57acaf4c4e)
+
+The opt_check3.v is reduced to a 3-input AND gate as follows:
+![lab1_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cd4b7055-2de8-4bca-add7-d0baddc71481)
+
+The nested ternary operator which would have three multiplexers in opt_check4 is reduced to an EX_NOR gate as follows:
+![lab1_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/efa3821f-d7a5-4c8a-bebc-41b2380ef164)
+
+Let us consider the timing path of this circuit. When it is constrained to maximum delay of 60ps, the timing report is unconstrained. If a slower gate is used, after compilation, the tool picks a faster gate to meet the timing violation as follows:
+![89](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/30e35a91-7a12-402c-a15a-3699eb2568e2)
+
+**Sequential Optimization**:
+
+The following image shows the behavioral code of the designs as follows:
+![lab2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/dc089b09-1bb5-4b9b-ac84-9a9e9d3246f6)
+
+The following image shows that the design consists of one flipflop with asynchronous reset. This shows the steps of synthesis of dff_const1.v
+![lab2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c501e414-2a65-4f4e-b21b-15288b6ad110)
+
+The following image shows the design synthesized of dff_const1.v It shows a flipflop input connected to logic high through a tie cell and an asynchronous reset condition as defined in the code.
+![lab2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/57247827-b5a0-47fd-a0f8-ac548b081f88)
+
 #### Tie cell
+
 We know that, the source terminal is connected to PMOS and gate terminal is connected to input pin in a CMOS design. The gate terminal of CMOS is very sensitive because of gate oxide.So, the gate terminal should not be allowed to see any surges thus the VDD (or logic high) is not directly connected to input pin.The **TIE cells** are used for driving 1'b1 or 1'b0.
+
+The following image shows the synthesized circuit of dff_const2.v The circuit is fully optimized as the variable compile_seqmap_propagate_constants is set to true. 
+![lab2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7df131f1-9667-4f21-8bfc-b57eb6487754)
+
+If the boolean variable is set to false, the design is as follows:
+![lab2_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/473fcc87-24f7-4c7a-9a01-f3fc768ad30c)
+
+The following image shows the output of the dff_const3.v This design is retained as it exhibits a set-reset relation between flipflops.
+![lab2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bc3b7819-6bb1-498e-9161-6aeb382a6534)
+
+The following image shows the output of dff_const4.v  The design is sub-optimized as the variable is set to false.
+![lab2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2526840f-69d6-4d04-97b9-0164d8466f87)
+
+When it is optimized(variable set to true), the following output is obtained as follows: 
+![lab2_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c0f81b29-9398-407f-ac60-b7c965ea691d)
+
+The following image shows the output of dff_const5.v The two flipflops are retained as the design has set and reset behaviour.
+![lab2_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/51abe4f1-31dd-418b-a4e2-03ebc02f5b29)
+</details>
+<details>
+<summary> Special Optimizations</summary>
+<br>
+
+
+
+
+
+
 
 
 #### Boundary Optimization

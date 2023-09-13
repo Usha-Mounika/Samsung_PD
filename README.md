@@ -2237,7 +2237,7 @@ The following images show the synthesized design withGUI of multiplier(sub_modul
 
 ![lab3_8_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cd3308de-e7f9-4915-abeb-24d3733fcc39)
 
-The following image shows the timing path which violates worst delay in the design.
+The following image shows the timing path which violates worst delay in the design at input port.
 ![lab3_10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3958f6eb-5f3a-4996-8aee-b221ee44fbb7)
 
 The following image is obtained after using the command as follows:
@@ -2245,6 +2245,10 @@ The following image is obtained after using the command as follows:
 dc_shell> compile_ultra -retime
 ```
 ![lab3_11](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/804efb6c-bb46-4ea2-933f-1a4a048de809)
+
+Now the violated slack has reduced and violation is at output delay.
+![lab3_12](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8da0471d-c99f-4c54-859d-ff4da31d67ba)
+
 
 ### Boundary Optimization
 The Boundary Optimization can be explained through an example. Consider a top module having internal sub module, the combinational logic at output port of sub module and external logic can be optimized such that area or power consumation reduces.It dissolves the boundary of the submodule, merges the logic to obtain the opyimal logic and implements the design. So, The optimization os done without any regard to boundary such that design is remodelled. The optimization do not preserve the hierarchy so the intermediate signals in the netlist were removed by the tool in optization. So, Debugging becomes complex as some hierarchical modules and intermediate signals are absent.
@@ -2274,7 +2278,7 @@ The Boundary optimized design is as follows:
 During functional ECOs, If any bugs occur, it can be directly changed in netlist only if hierarchies are preserved, otherwise the synthesis run of complete design may take huge time.
 There is no thumb rule to set the set_boundary_optimization to either true or false. It completely depends on the need of design.
 
-#### Multi-Cycle Paths
+### Multi-Cycle Paths
 Let us consider the following design. Assume all the flops work at some clock frequency of 100MHz. The multiplier may have a delay of 15ns, and the total delay might account to 16ns. 
 ![vidi-1-2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7017a5c0-28da-490c-8255-72afe79fa869)
 
@@ -2285,19 +2289,58 @@ This definition of multi-cycle path is done as follows:
 set_multicycle_path -setup 2 -to prod_reg[*]/D -through [all_inputs]
 ```
 This can be done after careful understanding of design else single cycle paths shiuld not be defined that may corrupts the whole design.
+#### Lab
+The following image shows the behavioral code of mcp_check.v
+![lab4_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/adb8e888-d622-4cb3-b762-8af12b49a616)
+
+The following image shows that the design constains a 16-bit register for multiplier output and a flop for enable.
+![lab4_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/feb5bf34-4599-46b7-a2b6-e26659bae51c)
+
+The following image shows the constraints defined in a tcl file for mcp_check
+![lab4_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ba8ba68f-09cb-4522-82cb-1baa77811b69)
+
+The following image shows the initial violation before compilation and the violation after compilation
+![37](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0339220d-9448-4891-b748-3b6793e10a5b)
+
+Now, the multi-cycle path is set and the violated slack is reduced as follows:
+![lab4_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/930b4b55-73cd-4360-b184-175358a05251)
+
+The command should infer about the startpoint also because the single cycle paths should never get affected(relaxed) because of multi cycle paths.
+The following image shows that all timing paths met the setup violation.
+![89](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/24259146-e5d2-4a77-a550-42b7f078bab5)
+
+But the hold is violated as it is not constrained as follows:
+![lab4_11](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/33f3aea8-4bdc-43a1-a0e3-d28224a72aa2)
+
+So, After defining hold, the timing is met as follows:
+![1213](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/aa3559e3-c6ab-4280-bd53-e30e40bb046a)
+
+Here the flop is overloaded with 0.4 fF, so by adding buffers to isolate output ports, all the timing violations are met as follows:
+![1415](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c35dcd33-83bb-41aa-90e2-368747bee2e7)
+
 
 #### False Paths
 False paths are the paths that are invalid for STA.If the launch and capture flops have no temporal correlation between edges, then the path can be regarded as false path.
 Different clocks are not always asyncronous, the clocks generated from same master and master will have a relation which can't make it a false path. 
 The path from a constant selection line of multiplexer to register cannot be a timing path, so considered as false path.
 
-#### Isolating Outputs
+### Isolating Outputs
 When there are more number of outputs to be connected after implementation of design, this may cause a violation of internal delays as cell delay is a function of load capacitance. Inorder to avoid internal failure, we isolate by inserting a buffer at output port. So, the buffer drives the external load.Now, the internal paths are decoupled from output paths..This is illustrated in the following design.
 ![load](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ebe027ad-18f9-46aa-83ca-1fc2a0bbd3c7)
 The command to isolate ports is:
 ```tcl
 set_isolate_ports -type buffer [get_ports OUT_Y]
 ```
+#### Lab
+Let us consider the behavioral code of check_boundary as before. The following image shows the synthesized design before dissolving the boundary.
+The highlighted net shows that the output of registers goes to output ports and also input of registers through AOI cells.
+![lab3_15](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cb617976-b2b5-444f-87cb-953ae2b26dbf)
+
+After dissolving the boundary, there is no isolation implemented. So, By using set_isolate_ports command the design is isolated from external load.
+![lab3_15_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9e3bf41b-33bd-4fe1-9516-fdb7d603dd18)
+
+After insertion of buffers, the design is as follows:
+![lab3_15_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/54b7584e-4dac-4148-8f62-794246a8c005)
 
 
 

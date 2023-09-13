@@ -2219,6 +2219,7 @@ The following image shows the output of dff_const5.v The two flipflops are retai
 <br>
 
 ### Register Retiming
+Regiater Retiming is also known as Pipelining.Pipelining is a technique that breaks combinational paths by inserting registers.
 This can be explained through an example. Let us consider the following design with a huge combinational delay of 48ns and the setup of flops can be 1ns each. This is the critical path of the design, hence limiting the circuit to operate at a frequency of 20MHz. 
 This can be avoided by adding more flops to the design. As these new reg2reg paths have huge positive slack upto 48ns. The combinational logic can be sliced and shared among this flipflops. Thus improving the performance of the design. 
 ![vid1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c5a1fb2b-336f-46dd-bd8d-81acffe27c66)
@@ -2284,10 +2285,18 @@ Let us consider the following design. Assume all the flops work at some clock fr
 
 But the design implies the output requires two clock cycles to get data. The enable to select requires one clock cycle and select to output requires another clock cycle. 
 Such timing paths are defined as multi-cycle paths so that tool do not over optimize the design. The over optimization may cause violations at other paths which is unnecessary.
+#### How paths are timed MCP?
+For a single cycle path, the setup check is done at the consecutive edge of the flop and hold is done at the same edge of the flop.
+*Hold is always checked edge before setup.*
+For a half cycle path, the setup check is done at the subsequent fall edge of the flop and hold is done at the previous falling edge of the flop. In a half cycle path, setup is very stringent and hold is relaxed.
+Fir a multicycle path, the -setup switch specifies the number of cycles after the launch edge, it needs to check setup and the -hold switch specifies the number of cycles the launch edge moves to check with capture.
+
 This definition of multi-cycle path is done as follows:
 ```tcl
 set_multicycle_path -setup 2 -to prod_reg[*]/D -through [all_inputs]
+set_multicycle_path -hold 1 -to prod_reg[*]/D -through [all_inputs]
 ```
+The above commands for a clock period of 5ns check setup from 0ns to 10ns at capture and hold at 0ns for both the flops.
 This can be done after careful understanding of design else single cycle paths shiuld not be defined that may corrupts the whole design.
 #### Lab
 The following image shows the behavioral code of mcp_check.v
@@ -2323,6 +2332,10 @@ Here the flop is overloaded with 0.4 fF, so by adding buffers to isolate output 
 False paths are the paths that are invalid for STA.If the launch and capture flops have no temporal correlation between edges, then the path can be regarded as false path.
 Different clocks are not always asyncronous, the clocks generated from same master and master will have a relation which can't make it a false path. 
 The path from a constant selection line of multiplexer to register cannot be a timing path, so considered as false path.
+The false path can be specified as
+```tcl
+set_false_path –through <>
+```
 
 ### Isolating Outputs
 When there are more number of outputs to be connected after implementation of design, this may cause a violation of internal delays as cell delay is a function of load capacitance. Inorder to avoid internal failure, we isolate by inserting a buffer at output port. So, the buffer drives the external load.Now, the internal paths are decoupled from output paths..This is illustrated in the following design.

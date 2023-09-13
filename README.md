@@ -2166,6 +2166,10 @@ There is no thumb rule to set the set_boundary_optimization to either true or fa
 The following code is a 4-bit multiplier multiplying two 4-bit numbers and three 8-bit registers through which data is propagated to output.
 
 
+#### Isolating Outputs
+When there are more number of outputs to be connected after implementation of design, this may cause a violation of internal delays as cell delay is a function of load capacitance. Inordr to avoid internal failure, we isolate by inserting a buffer at output port.
+So, the buffer drives the external load.Now, the internal paths are decoupled from output paths.
+
 
 
 

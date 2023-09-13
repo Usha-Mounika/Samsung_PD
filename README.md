@@ -2094,3 +2094,84 @@ The following image shows that constraining the design has violated a path. The 
 The following image shows the constraints on all ports of design. Here, the pure combinational logic has a period of 10ns, input delay constrained to 5ns and output delay constrained to 4.9ns, limiting the period of EX-OR gate to 0.1ns or 100ps.
 ![last22](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cd0f1f88-378f-48f9-ab01-1c152373810f)
 </details>
+
+## [Day9 : Optimization in Synhesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day9)
+<details>
+<summary> Combinational and Sequential Optimizations</summary>
+<br>
+
+The optimization goals are usually cost function based optimizations.
+The goals of synthesis are to meet timing, area and power (also called PPA). The over optimization of one goal may worsen another goal. For example, When faster cells are used for timing, they occupy more area and consume more power. The timing goals are IO delay,clock period and max delay.
+### Combinational Logic Optimizations
+The combinational logic can be optimized by squeezing the logic design such that area and power are saved. The Combinational logic can be done by
+- Constant Propagation
+   - Direct Optimization
+ In the constant propagation, when one input is made constant, the remaining circuit can be simplified. As discussed before, the (AB+C)' can be reduced to C'.
+Thus optimizing the area and power.
+- Boolean Logic Optimization
+   - K-Map
+   - Quine McKluskey
+ Consider a nested ternary operator circuit that would ocntain 3 multiplexers. As discussed before, when it is optimized it can be reduced to an exnor gate.
+#### Resource Sharing:
+Consider a ternary operator y=sel?a*b:c*d. This multiplies two numbers when sel changes. A multiplier is a large circuit consuming more area. So, two multiplexers can be used such that y=(sel?a:c)*(sel?b:d). So, same sel can be used for both multiplexers and the same output is obtained with less area.
+Thus area and power are optimized.
+
+#### Logic Sharing:
+The logic can be shared when multiple gates can use the logic as intermediate one. For example, Consider a design having y=a&b&c, z=(a&b)|c.
+This usually requires one 3 input AND gate(consumes more area &power), one 2-input AND gate and one 2-input OR gate. But, Both logic have an AND gate in common. 
+So two 2-input AND gates and one OR gate will consume less power and area than the prior circuit.
+
+#### Balanced Implementation and Preferential Implementation:
+A Balanced implementation gives equal time to all the timing arcs (i.e., delay from input to output pin). A Preferential implementaion gives less delay time to late arriving signal and more time depending on their margins. 
+Let us consider an example. Assuming no 5-input AND gate in the design. The design can be implemented in the following ways:
+The left side image shows equal delay between a-->y and e-->y, whereas the right image shows more delay for a-->y and less delay for e-->y. If e is a very tight delay i.e.,late arriving signal (with huge external delay) that it cannot withstand 2 gate delay, the second one is preferred for its implementation to meet the timing.
+### Sequential Logic Optimizations
+The Sequential Optimization can be done by
+- Basic
+   - Sequential Constant Propagation
+   - Retiming
+   - Unused Flop Removal
+   - Clock Gating
+- Advanced
+   - State Optimization
+   - Sequential logic Cloning
+
+     An example for this can be a flop with asynchronous set and D pin connected to high (can be optimized as connected to Vss)or a flop with asynchronous reset and D pin connected to low(can be optimized as connected to Vdd)). But a flop with asynchronous set and D input connected to Vss or asynchronous reset and D input connected to Vdd, cannot be optimized, it retains in the circuit.
+     Let us consider the following circuit which has a sequential propagation (flop) and logic. Now, these circuit gets reduced to an inverter as follows:
+     
+#### Optimization of Unused Outputs:  
+The unused outputs in a design need not be generated. As discussed before, let us consider a 4-bit up counter where q is assigned cnt\[0\]. As the remaining outputs(cnt\[1\] cnt\[2\] cnt\[3\]) are unused,the design can be reduced to a single flop that toggles when enabled. This is done with one flop and multiplexer with inverter, instead of 4 registers to count.
+  But If we require the cnt\[1\] in future, The tool can make suboptimal changes while designing such that no violations occur.So,This can be done by tool using following boolean variables:
+  - compile_seqmap_propagate_constants
+     If this variable is not set to true, the sequential constant propagating circuits are retained in circuit and not optimized.
+  - compile_delete_unloaded_sequential_cells
+     If the variable is not set to true, it doesn't remove the counter cells as discussed, it retains all counters in the circuit.
+  - compile_register_replication
+     If the variable is set to true, this replicates the registers in cloning optimization so that timing is met.
+#### Lab
+
+#### Tie cell
+We know that, the source terminal is connected to PMOS and gate terminal is connected to input pin in a CMOS design. The gate terminal of CMOS is very sensitive because of gate oxide.So, the gate terminal should not be allowed to see any surges thus the VDD (or logic high) is not directly connected to input pin.The **TIE cells** are used for driving 1'b1 or 1'b0.
+
+
+#### Boundary Optimization
+The Boundary Optimization can be explained through an example. Consider a top module having internal sub module, the combinational logic at output port of sub module and external logic can be optimized such that area or power consumation reduces. So, The optimization os done without any regard to boundary such that design is remodelled. This can be explained in the following lab:
+
+In the following code, im is the internal module which is a 3-bit counter. Upon reaching, 111 it gives cnt_roll as enable to 4-bit register.
+
+
+During functional ECOs, If any bugs occur, it can be directly changed in netlist only if hierarchies are preserved, otherwise the synthesis run of complete design may take huge time.
+There is no thumb rule to set the set_boundary_optimization to either true or false. It completely depends on the need of design.
+#### Register Retiming
+The following code is a 4-bit multiplier multiplying two 4-bit numbers and three 8-bit registers through which data is propagated to output.
+
+
+
+
+
+
+
+
+
+
+</details>

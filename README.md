@@ -2427,9 +2427,20 @@ The cell delay may be high or low, but the overall arrival time is considered by
 <summary>Labs</summary>
 <br>	
 
+The following image shows the steps of synthesizing the netlist from the behavioral design.
+![lab2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/609a2a80-1eeb-4a97-8513-61ce512ca8ed)
 
+The following image shows the check_timing and report_constraints output. The constraints shows MET and unconstrained endpoints are listed as the constraints are not defined yet. 
+![lab2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7d6468e8-9065-4120-a234-b685a123a1f2)
 
+After defining the constraints, the check_timing shows some of endpoints are defined as follows: 
+![lab2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d9bae563-7903-4684-9de2-9219bba816a9)
 
+The following report shows that the timing paths met the violation.
+![lab2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7186bf72-843b-40ab-b674-8980b7948ec0)
+
+The following image shows the report_constraints that some constraints are violated 
+![lab2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f3cdfa6f-a7bb-4a92-9b07-6fb90177112c)
 
 
 

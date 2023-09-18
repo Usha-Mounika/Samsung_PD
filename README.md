@@ -2427,29 +2427,95 @@ The cell delay may be high or low, but the overall arrival time is considered by
 <summary>Labs</summary>
 <br>	
 
-The following image shows the steps of synthesizing the netlist from the behavioral design.
+The following image shows the steps of synthesizing the netlist from the behavioral design. The check_design implies a feedthrough path in the design and inport clock and output clock are connected directly.
 ![lab2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/609a2a80-1eeb-4a97-8513-61ce512ca8ed)
 
-The following image shows the check_timing and report_constraints output. The constraints shows MET and unconstrained endpoints are listed as the constraints are not defined yet. 
+The following image shows the check_timing and report_constraints output. The check_timing shows whether the design is properly constrained or not. The constraints shows MET and unconstrained endpoints are listed as the constraints are not defined yet. The report_constraints shows the default constraints loaded in the tool memory.
 ![lab2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7d6468e8-9065-4120-a234-b685a123a1f2)
 
-After defining the constraints, the check_timing shows some of endpoints are defined as follows: 
+After defining the constraints, the check_timing shows some of endpoints are defined. So, only the clock ports are not defined. This is illustrated as follows: 
 ![lab2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d9bae563-7903-4684-9de2-9219bba816a9)
 
 The following report shows that the timing paths met the violation.
 ![lab2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7186bf72-843b-40ab-b674-8980b7948ec0)
 
-The following image shows the report_constraints that some constraints are violated 
+The following image shows the report_constraints that there is no negative slack. So, the constraints are MET.
 ![lab2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f3cdfa6f-a7bb-4a92-9b07-6fb90177112c)
 
+Let us consider another design of 128 bit multiplexer.The code below is a 4:1 mux and above is 128:1 mux. The Behavioral code is as follows:
+![lab2_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8f1fd23e-608e-48ac-9866-ba12e0c4ad6d)
 
+Now, let us read the design and synthesize the netlist as follows. The design infers a latch but after the synthesis, there will only be gates.
+![lab2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a2f67bc4-e229-4bd1-a870-ec5ac1d4c43a)
 
+The following image shows the generated list is a pure combinational logic design.
+![lab2_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9d433d7e-9d5d-4f8a-b855-2ab0d6cb2b1c)
 
+The following image shows there are no sequential cells in the design. The latch is inferred because always statement is used and y is assigned in for loop. The reoirt_timing shows it has so many fanouts such as 16, 17. The fanout can increase the capacitance as it shows the net with fanout of 17 has a capacitance of 40fF.
+![lab2_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c940ffd7-db98-4376-b194-174cadf35afd)
 
+The following image shows the check_timing report. The report shows y is unconstrained so the set_max_delay constraints all feedthrough paths so it gets constrained. Now, the timing gets violated.
+![1112](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2fa1e9c1-abe4-4324-8ade-6b71a3f380c0)
 
+Now, The capacitance needs to be constrained to a less value such as 0.025pF. So, The following nets are being violated for capacitance. This can be illustrated with report_constraints command.
+![lab2_13](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d1e33f4d-acf0-4bd2-8110-0feb7b615277)
 
+Now, after compile_ultra, there is no unconstrained endpoint due to set_max_delay command.
+![lab2_14](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/26415e07-c5f5-4680-bb06-8855883c35e4)
 
+The report_constraint shows that all constraints MET as the set_max_capacitance is defined. The set_max_capacitance is used for breaking/buffering the high fanout net. If net is loaded bad, it can cause timing issues.
+![lab2_15](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/609deffb-b8d3-4977-b516-552c19edb62c)
 
+Now, the capacitance is defined below 25fF for each cell as shown below after constraining it. The fanout is optimized and split such that transition and capacitance is optimized so the cell delays are reduced.
+![1618](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e3b3bac1-35f1-4fcc-9989-5ca0aee19991)
 
+As the number of inputs increase, the fanout of selectline increases. When fanout is high, the net will be heavily loaded and this is called High Fanout Net (HFN).
+Let us consider the following design. The enable pin is ANDed with input. Thus the load on enable pin is very high. The Behavioral code is as follows:
+```verilog
+module en_128 (input [127:0] x , output y , input en);
+  assign y[127:0] = en ?x[127:0] :128'b0;
+endmodule
+```
+The following image shows the steps to synthesize the netlist as follows:
+![lab2_19](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/88bb9d0e-01e0-42f7-99b8-5ac34175b3d4)
+
+Now, the report_timing shows the unconstrained path as follows. It has a fanout of 128 which results a high capacitance of 0.2pF
+![lab2_20](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1003e7ee-a93e-4e0e-a6cb-58334259c604)
+
+Let us constraint the capacitance to 30fF on current design. So, the capacitance is violated by huge amount as follows:
+![lab2_21](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/220f3c3b-095b-47dd-8292-d422539b8a8d)
+
+By compiling the design, the capacitance is now limited to 0.03 pF and fanout is reduced to 17 as follows:
+![lab2_22](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7d212cf4-52da-481d-ac6b-a6f898c05f08)
+
+The design in ddc can be viewed as follows:
+![lab2_23](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2b3a1a5c-33e0-489d-9a44-7cce60561758)
+
+![lab2_24](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/98134c88-ec40-48d1-87b9-3dd104eb4fd0)
+
+The enable is not driving all the cells now. It is driving a set of selective cells through a buffer as follows:
+![lab2_25](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cb688063-f77c-476b-a123-29db5e1de1b2)
+
+![lab2_26](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/89063c25-8b3e-470a-a8ac-4c4993472bcf)
+
+The following image shows that the transition is not optimized yet. So, The set_max_transition is used to constrain it.The transition is high if it is 0.36 so it can be constrained to 0.15. The report_constraint shows that transition is violated. The cost implies the constraint that needs to be optimized by the tool. As capacitance has no cost, it will not be optiized further, only transition wil be optimized.
+![lab2_27](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a5da2b96-dfc5-437d-bc6a-eb7f9723bdf9)
+
+The report_constraint shows all the pins violating the transition as follows:
+![lab2_30](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/01eba79e-db94-4b2d-b5bd-3fcc41791e8d)
+
+Now, after compiling the design, there are no violated constraints as follows. The leakage power is ignored as the constraint to define it is obsolete.
+![lab2_28](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d91a7a74-55b0-4e25-81c8-b33de6aa35d9)
  
+So, the check_timing shows only the unconstrained endpoints as follows:
+![lab2_29](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d4399e74-c735-4991-a7f7-bbd4c0f085a3)
+
+Now, the transition is limited to 150ps in the timing report.
+![lab2_31](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c8b6645b-9cd0-484b-93f1-ff53765769c7)
+
+The following image shows the same path before compilation and after compilation such that transition and cell delays are improved. The tool upsized the buffer so the transition reduced thus AND gate delay reduced. The slack improved from 442 ps to 254 ps as input transition is a function of cell delay.
+![33](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4d4e5869-5f74-4af4-a9ae-04218f59fca6)
+
+The max_capacitance and max_transition should be constrained because the tool takes the values from lib if not defined. This are usually very high making the design sub-optimum.
+check_design ensures the quality of design is proper or not. check_timing ensures all constraints are implemented. report_constraints shows constraints violated if any.
 </details>

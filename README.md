@@ -12,6 +12,7 @@ A brief description of what this training summarizes :
 -  [Day7 : Basic SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day7)
 -  [Day8 : Advanced SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day8)
 -  [Day9 : Optimization in Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day9)
+-  [Day10 : QOR](https://www.github.com/Usha-Mounika/Samsung_PD#Day10)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -2354,27 +2355,52 @@ After dissolving the boundary, there is no isolation implemented. So, By using s
 
 After insertion of buffers, the design is as follows:
 ![lab3_15_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/54b7584e-4dac-4148-8f62-794246a8c005)
+</details>
+
+## [Day10 : QOR](https://www.github.com/Usha-Mounika/Samsung_PD#Day10)
+<details>
+<summary>report_timing</summary>
+<br>	
+
+ #### Propagation delay
+No two timing arcs will have same propagation delay. This can be explained using CMOS structure as follows:
+![nand](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/86f54055-7667-4ab1-9f3d-44d795d4e8f2)
+
+In the above image, the pull-up or PMOS act as the current sourcing path and pull-down or NMOS is the current-sinking path. In the truth table, when both inputs are zero, both PMOS transistors drive the output thus faster rise in output.
+When one of the input changes to 1, only one transistor sources the output and the rise of output varies. So, the timing arc varies from each input to output and for each rise or fall.
+### report_timing
+The report_timing is used to analyse the report of a timing path that gives information such as cell delays, transition, capacitance, the slack etc..
+The report_timing command gives the setup delay of a timing path with two significant digits by default. The following are the different ways to use report_timing command as follows:
+- report_timing -from DFF_A/clk
+- report_timing -from DFF_A/clk -to DFF_C/D
+- report_timing -fall_from DFF_A/clk
+- report_timing -rise_from DFF_B/clk
+- report_timing -delay_type min -to DFF_C/D
+- report_timing -delay_type min -through INV/a
+- report_timing -delay_type max -through AND/b
+- report_timing -rise_from DFF_B/clk -delay_type max -nets -cap -trans -sig 4 
+
+Let us consider the following timing paths of design. The following design have 3 flops and 2 timing paths i.e., from A to C and B to C. The different arc delays are given to gates and flops. So, the delay of different timing paths are calculated as follows:
+![eg1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/be2901bc-cdc5-4980-892f-189b43b58945)
+
+The timing path from DFF_B to DFF_C gives the minimum delay of 1ns and path from DFF_A to DFF_C gives the maximum delay of 1.65ns. So, when startpoint is not specified, the delay_type max reports A to C path and delay_type min specifies B to C path.
+
+The time or the sum of the delays in the timing path shown is called the arrival time of a timing path. 
+Let us assume a clock of 5ns in the circuit. Assuming there are no latency and uncertainty, the data at DFF_C needs to be stable by 4.5ns(Tclk-Tsu). This is known as the required time of the flop.
+- The report_timing -rise_to DFF_C/D reports the A to C path of 1.5ns for max delay and B to C path of 1.15ns for min delay. 
+- The Setup Slack is the required time minus arrival time. So, The timing path A to C for setup  has a positive slack of 4.5-1.65=2.85ns. The positive slack implies that timing is MET and no violation present.
+- The Hold Slack is the arrival time minus required time. The data should change after 0.1ns. So, The timing path B to C for hold has a positive slack of 1.0-0.1ns=0.9ns. The hold condiiton is also MET.
+
+The following image shows 4 timing paths in the design. The -max_paths switch is used to obtain n maxpaths in the design. The report_timing -max_paths 2 gives the 2 timing reports of slack -1vand -1.2ns.
+- The max_paths gives the worst violated path per endpoint, not the worst violated paths in the design. 
+- The nworst switch gives n worst violated paths per endpoint.
+- These switches when used combined, the max_paths states number of paths to be reported and nworst states number of paths per endpoint can be picked.
+![eg2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/07024cd3-8cfe-456a-8992-b94055706493)
+</details>
+<details>
+<summary>Labs</summary>
+<br>	
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 </details>

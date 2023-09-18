@@ -2396,10 +2396,48 @@ The following image shows 4 timing paths in the design. The -max_paths switch is
 - The nworst switch gives n worst violated paths per endpoint.
 - These switches when used combined, the max_paths states number of paths to be reported and nworst states number of paths per endpoint can be picked.
 ![eg2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/07024cd3-8cfe-456a-8992-b94055706493)
+
+Let us consider the design. The right side of image shows the behavioral code of the design. The left side of image shows the constraints to be defined for the design.
+![lab1_1 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/96ee33b4-4945-47f4-b60b-4387b7abf738)
+
+The following image shows the setps of synthesizing netlist from benavioral code. The image shows that the design consists of 4 flops with asynchronous reset.
+![lab1_2 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9c888288-f8de-48e8-8c77-d11bf606d56e)
+
+The following image shows the timing report of setup. 
+![lab1_3 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4bada9b9-8c7e-4bfe-a887-3f9ad2b5e57d)
+
+It infers that
+- The delay type defined is max.
+- The launch edge and capture edge occur at different instants.
+- The library setup time is defined.
+- The slack is obtained by required time minus arrival time.
+  
+The following image shows the timing report considering fall_from IN_A and right image shows rise_from IN_A. The r indicates rise and f indicates fall delay being considered. The U14 cell has a less delay for rise to fall arc(113ps) than the fall to rise arc (248ps) as the gate is an inverter (negative unateness). The library setup time is different for a rise transition and fall transition. The delay varies between rise_from and fall_from of a timing path. The slack also shows a variation of 200ps as below:
+![lab1_5 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1e189c4e-3d16-407d-93f3-a9b944b04c01)
+
+The following shows the hold (min) condition of a timing path. It defines library hold time. The launch edge and capture edge are calculated at same instant. The slack is arrival time minus required time.
+![lab1_6 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/645a0ea4-235d-4d44-8390-0fa51ec7afa3)
+
+The following image shows that the timing report through a cell for setup and hold gives different cell delay. The U14 cell has 25 ps (for setup at rise transition) and 60ps (for hold at fall transition). 
+The cell delay may be high or low, but the overall arrival time is considered by the path to be reported as worst violating timing path.
+![8+9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d46bc08a-945e-4065-b17b-193f7f3cae57)
+
 </details>
 <details>
 <summary>Labs</summary>
 <br>	
+
+
+
+
+
+
+
+
+
+
+
+
 
 
  

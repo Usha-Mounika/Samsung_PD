@@ -13,6 +13,7 @@ A brief description of what this training summarizes :
 -  [Day8 : Advanced SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day8)
 -  [Day9 : Optimization in Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day9)
 -  [Day10 : QOR](https://www.github.com/Usha-Mounika/Samsung_PD#Day10)
+-  [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/Samsung_PD#Day11)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -2364,16 +2365,22 @@ After insertion of buffers, the design is as follows:
 	
 The following constraints are defined for a synthesis.tcl to constrain a design
 - clock : Master clock, generated clock and virtual clock (if any)
+  
     create_clock, create_generated_clock
 - Practicalities of clock :Latency and  Uncertainty (Skew + jitter for pre-cts and jitter for post-cts)
+  
    set_clock_uncertainty, set_clock_uncertainty
 - Input delay and output delay
+  
 set_input_delay, set_output_delay
 - Input transition/Driving cell
+  
    set_input_transition, set_driving_cell
 - Output load
+  
    set_load
 - max capacitance, max transition and area
+  
    set_max_capacitance, set_max_transition, set_max_area
 
 The DC flow for synthesizing netlist is
@@ -2564,4 +2571,51 @@ The following image shows the same path before compilation and after compilation
 
 The max_capacitance and max_transition should be constrained because the tool takes the values from lib if not defined. This are usually very high making the design sub-optimum.
 check_design ensures the quality of design is proper or not. check_timing ensures all constraints are implemented. report_constraints shows constraints violated if any.
+</details>
+
+## [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/Samsung_PD#Day11)
+<details>
+<summary> SnapDragon Processor</summary>
+<br>
+
+The Processor used in Samsung F23 Ultra is Qualcomm SM7225 Snapdragon 750G 5G (8 nm technology). 
+ 1. Manufacturing Process (Node):
+
+The Qualcomm Snapdragon 750G 5G is manufactured using an 8nm process technology. This process node provides a good balance between power efficiency and performance.
+2. CPU Cores:
+
+The CPU architecture of this processor includes a combination of eight Kryo cores. These consist of two high-performance cores and six power-efficient cores.
+The high-performance cores are typically based on ARM Cortex-A77 or custom Qualcomm Kryo cores, while the power-efficient cores are based on Cortex-A55 or similar designs.
+3. GPU (Graphics Processing Unit):
+
+The processor features an Adreno GPU, which provides excellent graphics performance for gaming and multimedia tasks.
+The GPU in the Snapdragon 750G is designed to handle graphics-intensive applications and supports APIs like OpenGL ES, Vulkan, and DirectX.
+4. 5G Connectivity:
+
+One of the key features of this processor is its integrated 5G modem, which supports both sub-6 GHz and mmWave 5G bands.
+It offers faster download and upload speeds, low latency, and improved network connectivity compared to 4G LTE.
+5. AI and Machine Learning:
+
+The Snapdragon 750G includes AI processing capabilities, thanks to its Hexagon DSP and AI Engine.
+These components enable on-device AI tasks such as image recognition, voice commands, and other machine learning applications.
+6. ISP (Image Signal Processor):
+
+The Image Signal Processor in this processor enhances camera capabilities, supporting features like multi-camera setups, advanced image processing, and HDR photography.
+7. Connectivity:
+
+In addition to 5G, the Snapdragon 750G offers a range of connectivity options, including Wi-Fi, Bluetooth, and NFC, making it suitable for various IoT and mobile devices.
+8. Security:
+
+Security features such as secure boot and a trusted execution environment (TEE) are integrated to protect user data and enhance device security.
+9. Cache Hierarchy:
+
+Like other Qualcomm processors, it features a hierarchical cache system with L1, L2, and sometimes L3 caches for improved data access and latency reduction.
+10. Power Management:
+
+The processor employs power-efficient technologies to optimize energy consumption and extend battery life, including dynamic voltage and frequency scaling (DVFS).
+11. Customization:
+
+Manufacturers can customize the Snapdragon 750G for specific devices or applications, enabling optimization and differentiation in the market.
+Please note that the specific features and capabilities of a processor can vary depending on the implementation in different devices. It's essential to consult the official Qualcomm documentation or device-specific information for precise details about the architecture and features of a particular Snapdragon 750G-powered device.
+
 </details>

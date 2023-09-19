@@ -2359,6 +2359,47 @@ After insertion of buffers, the design is as follows:
 
 ## [Day10 : QOR](https://www.github.com/Usha-Mounika/Samsung_PD#Day10)
 <details>
+<summary>Summary</summary>
+<br>
+	
+The following constraints are defined for a synthesis.tcl to constrain a design
+- clock : Master clock, generated clock and virtual clock (if any)
+    create_clock, create_generated_clock
+- Practicalities of clock :Latency and  Uncertainty (Skew + jitter for pre-cts and jitter for post-cts)
+   set_clock_uncertainty, set_clock_uncertainty
+- Input delay and output delay
+set_input_delay, set_output_delay
+- Input transition/Driving cell
+   set_input_transition, set_driving_cell
+- Output load
+   set_load
+- max capacitance, max transition and area
+   set_max_capacitance, set_max_transition, set_max_area
+
+The DC flow for synthesizing netlist is
+- read_verilog
+- read_db
+- check_design
+- source constraints
+- check_timing
+- compile_ultra
+- report_constraints -all_violators
+- report_area
+- report_timing
+- write
+
+The various synthesis knobs for optimization are
+- Boundary Optimization
+- Retiming
+- Constant Propagation
+- Unused flop removal
+- Isolate ports
+
+ When all these constraints are met with good margin, the QOR is good. The DC flow can be illustrated as follows:
+ ![flow](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/798ecb6a-62e6-49ec-acf5-d3e678cb8dd8)
+
+</details>
+<details>
 <summary>report_timing</summary>
 <br>	
 
@@ -2384,7 +2425,10 @@ Let us consider the following timing paths of design. The following design have 
 ![eg1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/be2901bc-cdc5-4980-892f-189b43b58945)
 
 The timing path from DFF_B to DFF_C gives the minimum delay of 1ns and path from DFF_A to DFF_C gives the maximum delay of 1.65ns. So, when startpoint is not specified, the delay_type max reports A to C path and delay_type min specifies B to C path.
-
+For the circuit to work at the specified cycle time, the clock signal’s rising edge should always arrive later (or at the same time) than your data signal, which means that your slack should be non-negative.
+- check_design checks for design consistency. E.g.: Will report a feedthrough, as we take out_clk in some of our examples directly from the defined clock.
+- check_timing checks for the specification of constraints, and also let us know if the provided constraints are enough. It might not specify proper end-points to be constrained, that we need to justify.
+- report_constraints provides us with a glimpse as to how our design is feasible in terms of electrical parameters such as power and capacitance.
 The time or the sum of the delays in the timing path shown is called the arrival time of a timing path. 
 Let us assume a clock of 5ns in the circuit. Assuming there are no latency and uncertainty, the data at DFF_C needs to be stable by 4.5ns(Tclk-Tsu). This is known as the required time of the flop.
 - The report_timing -rise_to DFF_C/D reports the A to C path of 1.5ns for max delay and B to C path of 1.15ns for min delay. 
@@ -2470,6 +2514,8 @@ Now, the capacitance is defined below 25fF for each cell as shown below after co
 ![1618](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e3b3bac1-35f1-4fcc-9989-5ca0aee19991)
 
 As the number of inputs increase, the fanout of selectline increases. When fanout is high, the net will be heavily loaded and this is called High Fanout Net (HFN).
+The fan-out is the number of gate inputs driven by the output of another single logic gate. Generally clock nets, reset, scan, enable nets are High Fanout Nets.
+- A high fan-out corresponds to a very high capacitance load, which in turn translates to timing violation, because of a high transition time which adds up in the delay calculation.
 Let us consider the following design. The enable pin is ANDed with input. Thus the load on enable pin is very high. The Behavioral code is as follows:
 ```verilog
 module en_128 (input [127:0] x , output y , input en);

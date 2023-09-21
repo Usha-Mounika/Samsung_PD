@@ -14,6 +14,7 @@ A brief description of what this training summarizes :
 -  [Day9 : Optimization in Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day9)
 -  [Day10 : QOR](https://www.github.com/Usha-Mounika/Samsung_PD#Day10)
 -  [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/Samsung_PD#Day11)
+-  [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/Samsung_PD#Day12)
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -2575,47 +2576,218 @@ check_design ensures the quality of design is proper or not. check_timing ensure
 
 ## [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/Samsung_PD#Day11)
 <details>
-<summary> SnapDragon Processor</summary>
+<summary> Introduction </summary>
 <br>
+	
+## SoC
+SoC is a single-die chip that has some different IP cores on it. These IPs could vary from  microprocessors to 5G broadband modems.
+An SoC consists of hardware functional units, including microprocessors that run software code,  as well as a communications subsystem to connect, control, direct and interface between these functional modules.
+It refers to an integrated circuit (IC) or semiconductor device that integrates all or most of the components and functionality of a complete electronic system onto a single chip. 
+The SoC is basically a combination of:
+- Microprocessor or Microcontroller: The central processing unit (CPU) or microcontroller is the brain of the system and performs computation and control tasks.
+- Memory: SOC chips often include various types of memory, such as RAM and ROM
+- Input/Output Interfaces: SOC devices provide interfaces for connecting to various external devices, such as sensors, displays,interfaces like USB, Ethernet, or Wi-Fi.
+- Peripheral Interfaces: SOC chips may integrate various peripheral interfaces like GPIO (General-Purpose Input/Output), UART (Universal Asynchronous Receiver-Transmitter)...
+- Power Management: SOC devices often incorporate power management units to efficiently regulate power consumption, including voltage regulators, sleep modes, and power gating.
+- Clock Management: They may include clock generators and management units to control and synchronize the timing of various components within the chip.
+  There are different types of SoCs such as mobile SoC, IoT SoCs, Automotive SoCs, Networking SoCs, Industrial SoCs, FPGA SoCs...
+ #### Why SoC?
+- Integration: SoCs integrate multiple components and functions of an entire electronic system onto a single chip. This integration simplifies the design, reduces component count, and saves space on printed circuit boards (PCBs). It leads to more compact and power-efficient devices.
+- Power Efficiency: SoCs are designed to be highly power-efficient. By integrating components on a single chip, the distance that signals need to travel is minimized, reducing power consumption.
+- Size Reduction: SoCs enable the design of smaller and more portable devices. This is especially important for applications like smartphones, wearables, and IoT sensors where size constraints are significant.
+- Performance Optimization: SoCs can be optimized for specific workloads or applications. For example, specialized accelerators for artificial intelligence or digital signal processing can be integrated for enhanced performance.
 
+## Mobile Processor
 The Processor used in Samsung F23 Ultra is Qualcomm SM7225 Snapdragon 750G 5G (8 nm technology). 
+
  1. Manufacturing Process (Node):
-
 The Qualcomm Snapdragon 750G 5G is manufactured using an 8nm process technology. This process node provides a good balance between power efficiency and performance.
-2. CPU Cores:
 
-The CPU architecture of this processor includes a combination of eight Kryo cores. These consist of two high-performance cores and six power-efficient cores.
+2. CPU Cores:The CPU architecture of this processor includes a combination of eight Kryo cores. These consist of two high-performance cores and six power-efficient cores.
 The high-performance cores are typically based on ARM Cortex-A77 or custom Qualcomm Kryo cores, while the power-efficient cores are based on Cortex-A55 or similar designs.
+
 3. GPU (Graphics Processing Unit):
+The processor features an Adreno GPU, which provides excellent graphics performance for gaming and multimedia tasks.The GPU in the Snapdragon 750G is designed to handle graphics-intensive applications and supports APIs like OpenGL ES, Vulkan, and DirectX.
 
-The processor features an Adreno GPU, which provides excellent graphics performance for gaming and multimedia tasks.
-The GPU in the Snapdragon 750G is designed to handle graphics-intensive applications and supports APIs like OpenGL ES, Vulkan, and DirectX.
 4. 5G Connectivity:
+One of the key features of this processor is its integrated 5G modem, which supports both sub-6 GHz and mmWave 5G bands.It offers faster download and upload speeds, low latency, and improved network connectivity compared to 4G LTE.
 
-One of the key features of this processor is its integrated 5G modem, which supports both sub-6 GHz and mmWave 5G bands.
-It offers faster download and upload speeds, low latency, and improved network connectivity compared to 4G LTE.
-5. AI and Machine Learning:
+5. AI and Machine Learning:The Snapdragon 750G includes AI processing capabilities, thanks to its Hexagon DSP and AI Engine. These components enable on-device AI tasks such as image recognition, voice commands, and other machine learning applications.
 
-The Snapdragon 750G includes AI processing capabilities, thanks to its Hexagon DSP and AI Engine.
-These components enable on-device AI tasks such as image recognition, voice commands, and other machine learning applications.
-6. ISP (Image Signal Processor):
+6. ISP (Image Signal Processor): The Image Signal Processor in this processor enhances camera capabilities, supporting features like multi-camera setups, advanced image processing, and HDR photography.
 
-The Image Signal Processor in this processor enhances camera capabilities, supporting features like multi-camera setups, advanced image processing, and HDR photography.
-7. Connectivity:
+7. Connectivity: In addition to 5G, the Snapdragon 750G offers a range of connectivity options, including Wi-Fi, Bluetooth, and NFC, making it suitable for various IoT and mobile devices.
 
-In addition to 5G, the Snapdragon 750G offers a range of connectivity options, including Wi-Fi, Bluetooth, and NFC, making it suitable for various IoT and mobile devices.
-8. Security:
+8. Security: Security features such as secure boot and a trusted execution environment (TEE) are integrated to protect user data and enhance device security.
 
-Security features such as secure boot and a trusted execution environment (TEE) are integrated to protect user data and enhance device security.
-9. Cache Hierarchy:
+9. Cache Hierarchy: Like other Qualcomm processors, it features a hierarchical cache system with L1, L2, and sometimes L3 caches for improved data access and latency reduction.
 
-Like other Qualcomm processors, it features a hierarchical cache system with L1, L2, and sometimes L3 caches for improved data access and latency reduction.
-10. Power Management:
+10. Power Management: The processor employs power-efficient technologies to optimize energy consumption and extend battery life, including dynamic voltage and frequency scaling (DVFS).
 
-The processor employs power-efficient technologies to optimize energy consumption and extend battery life, including dynamic voltage and frequency scaling (DVFS).
-11. Customization:
+11. Customization: Manufacturers can customize the Snapdragon 750G for specific devices or applications, enabling optimization and differentiation in the market.
 
-Manufacturers can customize the Snapdragon 750G for specific devices or applications, enabling optimization and differentiation in the market.
-Please note that the specific features and capabilities of a processor can vary depending on the implementation in different devices. It's essential to consult the official Qualcomm documentation or device-specific information for precise details about the architecture and features of a particular Snapdragon 750G-powered device.
+
+
+</details>
+
+## [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/Samsung_PD#Day12)
+<details>
+<summary>4-bit adder</summary>
+<br>	
+	
+The 4-bit full-adder is a basic combinational design with output a sum and a carry. The full adder takes 3-inputs i.e., two numbers being added and carry input from the previous stage. 
+The truth table of a full-adder is as follows:
+	
+ ![adder ckt](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6fe2214b-04cb-452a-9b68-fc77143bb59a)
+	
+The following image shows the behavioral code of a 4-bit adder as follows:
+![lab2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/506ad83f-3b75-4bf5-871e-d5b2c1c094e0)
+
+The code defines a module in which two 4 bit inputs were taken and a 1 bit input and generates a 1 bit input and a 4 bit sum. The code defines the inputs and outputs as arguments.
+The always statement is used to change the output when there is change in any one of the input and begin-end statement is used here for assigning the output values.
+The following image is the testbench written for the 4-bit adder as follows:
+![lab4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/396e4de5-d3a4-46cc-a5be-f3232d58bdab)
+
+The inputs are defined in the testbench and the unit under test (uut) is assigned values that should be used for output waveform. The $dumpfile and $dumpvars is used to dump the vcd format file that can be viewed with the gtkwave. The variables are assigned values using Non-Blocking statements. 
+The $monitor command prints the output of the code in the format specifier with the variables used. The for loop is defined to assign different values to the variables in a random manner ($random is used). 
+So, The 5 different values are assigned as follows:
+![lab3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8e7ecdf8-6840-4c5c-ab24-4d951fe898e5)
+
+I have used the hex format specifiers so inputs are viewed in hexadecimal numbers.
+</details>
+<details>
+<summary>BabySoC</summary>
+<br>	
+	
+### System on Chip
+
+SoC is a single-die chip that has some different IP cores on it. These IPs could vary from microprocessors (completely digital) to 5G broadband modems (completely analog).
+Modeling and simulation is the use of a physical or logical representation of a given system to generate data and help determine decisions or make predictions about the system.
+Models are representations that can aid in defining, analyzing, and communicating a set of concepts.
+Modelling can be 
+- Behavioral Modelling
+- Structural Modelling
+- Gate level Modelling
+- Layout level Modelling
+  Simulation enables engineers to test, analyze, and validate integrated circuits before physical fabrication. It plays a crucial role in ensuring the functionality, performance, and reliability of complex VLSI designs. The Simulations hrlps in early evaluation, functional validation of the design.The simulation can be timing, functional or power simulation.
+  The simulation involves modelling, test bench development, analysis, validation and Optimization.
+
+  Let us model the BabySoC that contains a PLL, DAC and RISC V processor. So, the design has three IP cores and a wrapper and a testbench.
+  The module is fed with input signals such that PLL generates the clock and processor executes the instructions and the output is converted to analog by DAC.
+  #### RVMYTH
+  RVMYTH stands for RISC V processor. The RISC processor is used as it has following advantages compared with CISC:
+
+
+| RISC                                      | CISC                                      |
+|-------------------------------------------|-------------------------------------------|
+| Abbreviated as Reduced Instruction Set Computer. | Abbreviated as Complex Instruction Set Computer. |
+| It is a microprocessor architecture that uses small instruction set of uniform length. | Complex and variable-length instructions with a wide range of addressing modes. |
+| Small instruction set, typically 100-200 instructions. | Large instruction set, often exceeding 1000 instructions. |
+| Generally faster execution of instructions due to simplicity and predictability. | May have slower instruction execution due to complexity but can complete tasks in fewer instructions. |
+| Highly amenable to pipelining, allowing for efficient instruction processing. | May have more challenging pipelining due to variable-length and complex instructions. |
+| Rely more on load/store architecture, minimizing memory access in instructions. | May include memory access within complex instructions. |
+| Code tends to be more compact and efficient. | Code can be larger due to complex instructions, potentially leading to larger memory requirements. |
+| Typically more power-efficient due to simplified instruction set. | May consume more power due to complex instructions and decoding logic. |
+|Registers are used for procedure arguments and return addresses. | The stack is used for procedure arguments and return addresses. |
+| Examples are ARM, MIPS, PowerPC.| Examples are x86, x86-64 (Intel and AMD processors).|
+|It doesn't support arrays.| It has a large number of instructions. It supports arrays.
+##### Why RISC V is preferred?
+- Open Source and Open Standards: RISC-V is an open standard ISA, which means anyone can freely use, modify, and implement it without licensing fees or legal restrictions. 
+- Scalability: RISC-V is designed to be scalable, accommodating a wide range of implementations from small, power-efficient embedded systems to high-performance servers and supercomputers.
+- Security: The open-source nature of RISC-V allows for greater scrutiny of the ISA, which can lead to improved security.
+- Vendor Neutrality: RISC-V's openness reduces vendor lock-in and encourages competition among chip manufacturers.
+
+The "I" in RISC-V stands for the integer base ISA, and it defines the core set of integer instructions that are common to all RISC-V processors. The "32I" and "64I" variants specify the integer base ISAs for 32-bit and 64-bit RISC-V processors, respectively.
+The instruction set of 32 bit and 64 bit are mostly same, but extensions such as the "M" extension for integer multiplication and division are used.
+The 64I RISC processor means that data registers are 64 bits wide, and arithmetic, logical, and immediate operations work with 64-bit operands. This modularity and extensibility are some of the key strengths of the RISC-V ISA.
+![single cycle](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ed40aadf-8183-46a1-aa94-06616105d5b0)
+
+Pipelining is a technique for breaking down a sequential process into various sub-operations and executing each sub-operation in its own dedicated segment that runs in parallel with all other segments.
+- Fetch: Fetches the instruction from memory or instruction cache.
+- Decode: Decodes the instruction to determine the operation to be performed and the operands.
+- Execute: Executes the operation, which may involve arithmetic, logic, or memory operations.
+- Memory: Accesses memory for data read or write operations.
+- Write-back: Writes the result back to the register file or memory.
+
+  The steps for the simulation are as follows:
+  ```bash
+  $iverilog mythcore_test.v tb_mythcore_test.v
+  $./a.out
+  $gtkwave tb_mythcore_test.vcd
+  ```
+
+  The following image shows the output simulated wave of RVMYTH processor. Upon reset, all values are ignored.
+  ![lab1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7669efb5-31f6-460e-b85a-cf42d9ce365f)
+
+#### Phase Locked Loop (PLL)
+A phase-locked loop (PLL) is an electronic circuit with a voltage or voltage-driven oscillator that constantly adjusts to match the frequency of an input signal.
+The off-chip clock causes delay due to long nets as they supply more blocks(resulting jitter). Clock Accuracy is not attained due to ppm error.
+The ppm error is parts per million error. For example, 20 ppm error will cause 51 sec error in a month. Processor cannot take such huge error is operation is done in the order of micro and nano seconds.
+The following image shows the block diagram as follows:
+![PLL](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fc7a959a-50f1-4733-8896-212cd9251772)
+
+
+- A Phase detector is a multiplier and it produces two frequency components at its output − sum of the frequencies fref and fosc and difference of frequencies fref & fosc.
+- An active low pass filter produces a DC voltage at its output, after eliminating high frequency component present in the output of the phase detector. It also amplifies the signal.
+- A VCO produces a signal having a certain frequency, when there is no input applied to it. This frequency can be shifted to either side by applying a DC voltage to it. Therefore, the frequency deviation is directly proportional to the DC voltage present at the output of a low pass filter.
+PLL operates in free running mode when no input is applied to it. WHen there is input, the output signal frequency changes (called capture mode). The signal frequency changes until it equals the input signal frequency (called lock mode).
+ The steps for the simulation are as follows:
+  ```bash
+  $iverilog avsd_pll_1v8.v pll_tb.v
+  $./a.out
+  $gtkwave test.vcd
+  ```
+The simulated output of PLL is as follows:
+![lab5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6d60ca7d-64dc-4cff-9256-4442e4539d28)
+
+The following image shows the enable of VCO is always high.  The reference input and VCO input are shown. 
+
+#### Digital to Analog Converter (DAC)
+The  Digital to Analog Converter (DAC) converts a digital input signal into an analog output signal. The digital signal is represented with a binary code, which is a combination of bits 0 and 1. A Digital to Analog Converter (DAC) consists of a number of binary inputs and a single output.
+ The number of binary inputs of a DAC will be a power of two.
+There are two types of DACs :
+![DAC](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/75069b32-f517-45aa-8b72-ec3474816b90)
+
+- Weighted Resistor DAC
+  
+    A weighted resistor DAC produces an analog output, which is almost equal to the digital (binary) input by using binary weighted resistors in the inverting adder circuit.
+- R-2R Ladder DAC
+  
+  The R-2R Ladder DAC solves the disadvantages of binary weighted resistor DAC. R-2R Ladder DAC produces an analog output, which is almost equal to the digital (binary) input by using a R-2R ladder network in the inverting adder circuit.
+  
+ The steps for the simulation are as follows:
+  ```bash
+  $iverilog avsddac.v avsddac_tb_test.v
+  $./a.out
+  $gtkwave avsddac_tb_test.vcd
+  ```
+The following image shows the output waveform of the DAC. The voltage Vref is 3.3V as shown.
+![lab8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7efe0299-6d67-48dd-bc8a-58642a8f0903)
+
+The steps for the simulation are as follows:
+  ```bash
+  $iverilog rvmyth_pll.v rvmyth_pll_tb.v
+  $./a.out
+  $gtkwave test1.vcd
+```
+The interfacing of PLL and RVMYTH gave a simulated output as follows:
+![lab7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fe83fd0f-d998-435e-b3ab-5da1d7149ab5)
+
+ The steps for the simulation are as follows:
+  ```bash
+  $iverilog rvmyth_avsddac.v rvmyth_avsddac_TB.v
+  $./a.out
+  $gtkwave rvmyth_avsddac.vcd
+  ```
+The interfacing of DAC and RVMYTH gave the folowing simulated output:
+![lab6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a2c69cc1-b72d-44dd-b496-a5f0cd89a6dc)
+
+### Modelling Baby SOC
+The Baby SoC consists of 3 IP cores and a wrapper as follows:
+![babysoc](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cb51bcd5-114a-48fe-87c7-367be355173c)
+
+
+Now, the top module SoC simulated output wave is as follows:
+![lab9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/926934b4-6066-49a4-b10c-4debac9bc39a)
 
 </details>

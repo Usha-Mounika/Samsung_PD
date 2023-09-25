@@ -2795,7 +2795,6 @@ The interfacing of DAC and RVMYTH gave the folowing simulated output:
 The Baby SoC consists of 3 IP cores and a wrapper as follows:
 ![babysoc](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cb51bcd5-114a-48fe-87c7-367be355173c)
 
-
 Now, the top module SoC simulated output wave is as follows:
 ![lab9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/926934b4-6066-49a4-b10c-4debac9bc39a)
 
@@ -2806,6 +2805,11 @@ Now, the top module SoC simulated output wave is as follows:
 <summary>Post-Synthesis of Full-Adder</summary>
 <br>	
 
+- Pre-synthesis simulation is done according to the logic designed for(functionality).
+- Post synthesis simulation / ‘gate level simulation’ is done after synthesis considering each and every gate delays into account. It reports the violations in both functionality and timing.
+- This verifies any mismatches in the design. There are different RTL coding styles that may cause synthesis mismatch such as casex, casez and synopsys directives such as full_case, parallel_case etc..
+  These directives infer the tool about design such that it is optimized. But Their usage mostly causes a mismatch.
+- Simply, RTL simulation is pre-synthesis, GLS is post-synthesis. RTL simulation is a zero delay environment and events generally occur on the active clock edge. GLS can be zero delay also, but is more often used in unit delay or full timing mode. 
 The Full-Adder output as discussed for the pre-synthesis simulation matches with the post-simulation output.The following are the sequnece of steps for simulating the output.
 ```bash
 iverilog full_add_net.v tb_add4.v primitives.v sky130_fd_sc_hd.v
@@ -2820,6 +2824,8 @@ The post-simulation output is as follows:
 
 The inputs a and b are given to each full adder and the carry from previous stage is given as input to the next stage. The following sequence of commands writes the netlist and ddc format as follows:
 ```bash
+set target_library /home/usha.m/DC_WORKSHOP/lib/sky130_fd_sc_hd__tt_025C_1v80.db
+set link_library {* /home/usha.m/DC_WORKSHOP/lib/sky130_fd_sc_hd__tt_025C_1v80.db}
 read_verilog add4.v
 link
 compile_ultra
@@ -2837,9 +2843,21 @@ The schematic of the full-adder can be viewed as follows:
 
 The post-synthesis of the RISC-V processor RVMYTH is as follows:
 ![lab1 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d3e6c836-6f60-4749-bda9-a36f5d3e3590)
+
+The .lib file, also known as a library file, is a critical component of the design flow. It contains information about standard cell libraries, which are pre-designed and pre-characterized digital logic cells used in the creation of digital integrated circuits.
+The .db file, often called a "technology database," stores essential information about the semiconductor process, including cell libraries, transistor models, and process parameters, used by electronic design automation (EDA) tools for chip design and analysis.
+A file is converted from .lib to .db using lc shell. The lc shell converts the human readable .lib file into machine readable .db file.
+The steps for converting .lib to .db are
+```bash
+read_lib avsddac.lib
+write_lib library -format db -output write_lib library -format db -output avsddac.db
+```
+
 The commands used for generating the out netlist are as follows:
 ```bash
 read_verilog mythcore_test.v
+set target_library /home/usha.m/DC_WORKSHOP/lib/sky130_fd_sc_hd__tt_025C_1v80.db
+set link_library {* /home/usha.m/DC_WORKSHOP/lib/sky130_fd_sc_hd__tt_025C_1v80.db}
 link
 compile_ultra
 write -f verilog -out rvmyth_net.v
@@ -2850,25 +2868,71 @@ current_design core
 write -f verilog -out rvmyth_net.v
 ```
 The processor output increments in the same way as at the pre-synthesis stage, So, the logic is properly defined.
+The iverilog uses flags such as -D to define preprocessor macros, which can be used to conditionally include or exclude portions of your Verilog code during compilation. These macros can be very helpful for creating flexible and configurable designs.
+- -DFUNCTIONAL : This flag defines a preprocessor macro named FUNCTIONAL. When compiled, the code inside the ifdef block will be included, and the code inside the else block will be excluded.
+- -DUNIT_DELAY=#\<value\> : The -DUNIT_DELAY=#1 command you provided is used to define a preprocessor macro named UNIT_DELAY with a value of 1 when invoking the iverilog compiler. This macro definition can be useful when you want to parameterize or configure your Verilog code based on the value of UNIT_DELAY.
+  It defines UNIT_DELAY with a value of 1, and the Verilog code inside the ifdef block will be included in the compilation, resulting in a wire with a range of \[0:0\]. If you compile without that flag, the code inside the else block will be included instead, resulting in a wire with a range of \[1:0\].
+  The sky130_fd_sc_hd.v file is changed, especially the end if statement is changed from ```endif SKY130_FD_SC_HD__LPFLOW_BLEEDER_FUNCTIONAL_V``` to ```endif //SKY130_FD_SC_HD__LPFLOW_BLEEDER_FUNCTIONAL_V``` when iverilog command prompted errors.
 The following commands are used to simulate the output waveform.
 ```bash
 iverilog -DFUNCTIONAL -DUNIT_DELAY=#1 rvmyth_net.v tb_mythcore_test.v primitives.v sky130_fd_sc_hd.v
 ./a.out
 gtkwave tb_mythcore_test.vcd
 ```
+#### BabySoC
 The post-synthesis of the BabySoC is as follows:
+The Behavioral code of the BabySoC top module is as follows:
+```verilog
+module vsdbabysoc (
+   output wire OUT,
+   //
+   input  wire reset,
+   //
+   input  wire VCO_IN,
+   input  wire ENb_CP,
+   input  wire ENb_VCO,
+   input  wire REF,
+   //
+   // input  wire VREFL,
+   input  wire VREFH
+);
 
+   wire CLK;
+   wire [9:0] RV_TO_DAC;
+
+   core test (
+      .out(RV_TO_DAC),
+      .clk(CLK),
+      .reset(reset)
+   );
+
+   avsdpll pll (
+      .CLK(CLK),
+      .VCO_IN(VCO_IN),
+      .ENb_CP(ENb_CP),
+      .ENb_VCO(ENb_VCO),
+      .REF(REF)
+   );
+
+   avsddac dac (
+      .OUT(OUT),
+      .D(RV_TO_DAC),
+      // .VREFL(VREFL),
+      .VREFH(VREFH)
+   );
+   
+endmodule
+```
 The following commands are used to simulate the output waveform.
 ```bash
 iverilog -DFUNCTIONAL -DUNIT_DELAY=#1 rvmyth_net.v testbench.v primitives.v sky130_fd_sc_hd.v avsddac.v avsdpll.v vsdbabysoc.v
 ./a.out
 gtkwave dump.vcd
 ```
+The multiple modules defined in the top module are given as arguments to iverilog command so that all files included in design can be read and the output is simulated.
+
 ![lab2 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e4cfc812-5e14-4e04-bbf1-b471ecc0fb7c)
 
 So, The output of Pre-Synthesis simulation and Post-synthesis simulation are obtained same. So, the logical correctness of the design is verified.
 
 </details>
-
-
-

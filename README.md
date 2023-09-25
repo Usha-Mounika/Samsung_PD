@@ -2870,9 +2870,13 @@ write -f verilog -out rvmyth_net.v
 The processor output increments in the same way as at the pre-synthesis stage, So, the logic is properly defined.
 The iverilog uses flags such as -D to define preprocessor macros, which can be used to conditionally include or exclude portions of your Verilog code during compilation. These macros can be very helpful for creating flexible and configurable designs.
 - -DFUNCTIONAL : This flag defines a preprocessor macro named FUNCTIONAL. When compiled, the code inside the ifdef block will be included, and the code inside the else block will be excluded.
+  
 - -DUNIT_DELAY=#\<value\> : The -DUNIT_DELAY=#1 command you provided is used to define a preprocessor macro named UNIT_DELAY with a value of 1 when invoking the iverilog compiler. This macro definition can be useful when you want to parameterize or configure your Verilog code based on the value of UNIT_DELAY.
+  
   It defines UNIT_DELAY with a value of 1, and the Verilog code inside the ifdef block will be included in the compilation, resulting in a wire with a range of \[0:0\]. If you compile without that flag, the code inside the else block will be included instead, resulting in a wire with a range of \[1:0\].
+  
   The sky130_fd_sc_hd.v file is changed, especially the end if statement is changed from ```endif SKY130_FD_SC_HD__LPFLOW_BLEEDER_FUNCTIONAL_V``` to ```endif //SKY130_FD_SC_HD__LPFLOW_BLEEDER_FUNCTIONAL_V``` when iverilog command prompted errors.
+  
 The following commands are used to simulate the output waveform.
 ```bash
 iverilog -DFUNCTIONAL -DUNIT_DELAY=#1 rvmyth_net.v tb_mythcore_test.v primitives.v sky130_fd_sc_hd.v

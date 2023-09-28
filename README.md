@@ -2962,17 +2962,79 @@ The PVT corners refer to specific combinations of Process, Voltage, and Temperat
 ![graph](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/da097aa2-24d3-446c-9882-97c62305715b)
 
 In order to make our chip to work after fabrication in all the possible conditions, we simulate it at different corners of process, voltage, and temperature. These conditions are called corners. All these three parameters directly affect the delay of the cell.
-
-
 </details>
 <details>
 <summary>Timing Analysis</summary>
 <br>
+	
+The Timing delay of a path varies for each PVT corner being used. Let us consider the following corners and their delays as follows:
+The following image shows the setup delay and qor when there are noconstraints defined.
+![lab1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f72ad3e9-7c87-4114-92c3-356d23911c7e)
 
+![lab3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e6b9a88e-7fb5-4012-8a6e-96247cdd76a0)
 
+The following reports show the timing and QoR for each corner as follows:
+- ff_100C_1v65
+![lab4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bbda4675-0530-41f9-8729-d63776f37753)
 
+![lab4_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5d766fa4-d762-4adb-868e-b12c909aa22a)
 
+- ff_100C_1v95
+![lab5 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/aba2dd7f-101c-4d38-9c07-2cc720b7dcb9)
 
+![lab5_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a0ba7780-7da8-44dc-886b-84a2f8caf163)
 
+- ff_n40C_1v56
+![lab6 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1abc536e-6e5a-4ca8-ba6c-81467b738f39)
+
+![lab6_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2ac1c9ab-9d99-4aec-8c05-3dba869395f4)
+
+- ff_n40C_1v65
+![lab7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4ebc94fc-76f2-4098-8532-0e6d898e75e3)
+
+![lab7_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f640e6f4-2d56-4650-afea-a853c17607e5)
+
+- ff_n40C_1v76
+![lab8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7ad5b645-9eb3-4667-aadd-076b8b447032)
+  
+![lab8_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/97eb933a-abdb-4f5c-aedd-12e5b6c6c305)
+
+- ss_100C_1v40
+![lab9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1116a797-9042-487e-86f7-ca7b20287b8b)
+
+![lab9_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ae01d4c8-746c-4bda-abcf-f13f730b2aa7)
+
+- ss_100C_1v60
+![lab10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e137971c-44bc-4116-b7a9-7dff1bc6396b)
+
+![lab10_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0e9893b2-71de-452f-8129-fcbbdae3fc79)
+
+- ss_n40C_1v28
+![lab11](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/03af12fc-6c00-4e51-8c72-17aa9ba52b08)
+
+![lab11_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bb26e863-a7e2-4d08-b82f-567979a6a647)
+
+- ss_n40C_1v35
+![lab12](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/882674cd-03fe-476d-9506-449c8ece8b83)
+
+![lab12_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e36080fd-db74-43b4-8d61-4b8abd25029f)
+
+- ss_n40C_1v40
+![lab13](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/54aabbdf-0036-4674-8232-04cfd63729a0)
+
+![lab13_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/da277e49-b479-4480-9f46-081423bb0582)
+  
+- ss_n40C_1v44
+![lab14(1v44)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9c6bac77-fdfa-4279-8a89-59a333ab0d7c)
+
+![lab14_2(1v46)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e27064c6-728b-469b-a8f1-7563d57d3567)
+
+- ss_n40C_1v76
+![lab15](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7f382d0b-4c73-4809-b2a7-fbf26de4d073)
+
+![lab15_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b25761f8-8416-41cb-a36c-ddb869a5b835)
+
+- tt_025C_1v80
+![lab16_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6c2a8c22-e355-4a05-abb6-133dbe93f7e7)
 
 </details>

@@ -3104,13 +3104,18 @@ Now The following graphs illustrate the change in slack from slow process to fas
 This graph shows that the WNS is mostly 0.00 for fast corners and the setup violates for slow corners. WNS stands for Worst Negative Slack, the setup violated slack of the most critical path in the design.
 ![WNS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9a9cf657-ebdc-4677-8448-403e06108eb3)
 
+
 This graph shows the TNS of the design. TNS stands for Total Negative Slack, which is the sum of all the violated setup slack in the design.
 ![TNS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d3d16394-057c-4b25-812d-960210bea127)
 
+
 This graph shows that the WHS is mostly 0.00 for slow corners and the hold violates for fast corners. WHS stands for Worst Hold Slack, the hold violated slack of the most critical path in the design.
+
 ![WHS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/923ea37f-193e-474e-b6a2-861c66864e9f)
+
 
 This graph shows the THS of the design. THS stands for Total Hold Slack, which is the sum of all the violated hold slack in the design.
 ![THS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ae3f65ea-ff5c-42b6-940c-086a1515f0ee)
+
 
 </details>

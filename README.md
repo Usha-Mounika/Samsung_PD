@@ -16,6 +16,8 @@ A brief description of what this training summarizes :
 -  [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/Samsung_PD#Day11)
 -  [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/Samsung_PD#Day12)
 -  [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/Samsung_PD#Day13)
+-  [Day14 : Synopsys DC and timing analysis](https://www.github.com/Usha-Mounika/Samsung_PD#Day14)
+
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
 
@@ -2867,6 +2869,9 @@ The netlist being written here as out is the output of the clk_gate as it is def
 current_design core
 write -f verilog -out rvmyth_net.v
 ```
+The schematic view of RVMYTH processor is as follows:
+![lab5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6cd3b0ef-25c9-4011-9a6a-db007f5aefc8)
+
 The processor output increments in the same way as at the pre-synthesis stage, So, the logic is properly defined.
 The iverilog uses flags such as -D to define preprocessor macros, which can be used to conditionally include or exclude portions of your Verilog code during compilation. These macros can be very helpful for creating flexible and configurable designs.
 - -DFUNCTIONAL : This flag defines a preprocessor macro named FUNCTIONAL. When compiled, the code inside the ifdef block will be included, and the code inside the else block will be excluded.
@@ -2933,10 +2938,41 @@ iverilog -DFUNCTIONAL -DUNIT_DELAY=#1 rvmyth_net.v testbench.v primitives.v sky1
 ./a.out
 gtkwave dump.vcd
 ```
+The schematic view of the BabySoC simulated is as follows. Here, the PLL,DAC are assumed as blackboxes and the libs provide lef and timing information of the IPs.
+![lab6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f3b63d72-40ac-4f1f-84c3-c5702f727b2b)
+
 The multiple modules defined in the top module are given as arguments to iverilog command so that all files included in design can be read and the output is simulated.
 
 ![lab2 (1)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e4cfc812-5e14-4e04-bbf1-b471ecc0fb7c)
 
 So, The output of Pre-Synthesis simulation and Post-synthesis simulation are obtained same. So, the logical correctness of the design is verified.
+
+</details>
+
+## [Day14 : Synopsys DC and Timing Analysis](https://www.github.com/Usha-Mounika/Samsung_PD#Day14)
+<details>
+<summary>Introduction</summary>
+<br>	
+
+The PVT corners refer to specific combinations of Process, Voltage, and Temperature conditions that integrated circuits (ICs) or electronic devices operate under. These corners are crucial for designing and testing semiconductor devices and ensuring their functionality across different operating conditions.
+- Process Corner: The process corner represents variations in the manufacturing process, including factors like doping levels, gate oxide thickness, and lithography variations. Process variation is the deviation in parameters of the transistor during the fabrication.Process corners are typically categorized as slow (SS), nominal (TT), and fast (FF), referring to the worst-case, typical, and best-case process conditions, respectively.
+- Voltage Corner: Voltage corners refer to variations in the supply voltage (Vdd) of the electronic device. Common voltage corners include high voltage (HV) and low voltage (LV) corners. Different voltage levels can affect the speed and power consumption of the device.
+- Temperature Corner: Temperature corners account for the temperature range in which the device operates. Corners typically include low-temperature (LT) and high-temperature (HT) scenarios. Temperature variations can influence the device's performance, power consumption, and reliability.
+  The following graph illustrates the Delay with respect to change in PVT conditions assumin the other two to be ideal.
+![graph](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/da097aa2-24d3-446c-9882-97c62305715b)
+
+In order to make our chip to work after fabrication in all the possible conditions, we simulate it at different corners of process, voltage, and temperature. These conditions are called corners. All these three parameters directly affect the delay of the cell.
+
+
+</details>
+<details>
+<summary>Timing Analysis</summary>
+<br>
+
+
+
+
+
+
 
 </details>

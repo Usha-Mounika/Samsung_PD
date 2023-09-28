@@ -2966,8 +2966,70 @@ In order to make our chip to work after fabrication in all the possible conditio
 <details>
 <summary>Timing Analysis</summary>
 <br>
-	
-The Timing delay of a path varies for each PVT corner being used. Let us consider the following corners and their delays as follows:
+
+ The libs of the corners are provided in the git cloned. After cloning this repository, the libs are converted into db files using lc_shell by using following commands:
+ ```bash
+ read_lib <path to .lib file>
+write_lib <library file name> -format db -output <nameof db file>
+```
+It generates errors showing some pins were defined to cells. So, All these unwanted attributes to pins are removed (deleting the error line).
+Now The human readable library files are read and written into machine readable db files. Now, these files are synthesized using dc_shell with the following sequence of commands:
+```bash
+set target_library { sky130_PVT_corner.db , avsddac.db , avsdpll.db}
+set link_library {* sky130_PVT_corner.db , avsddac.db , avsdpll.db}
+read_verilog vsdbabysoc.v
+link
+source constraints.tcl
+compile_ultra
+report_timing
+report_qor
+```
+
+The constraints.tcl file is as follows:
+```tcl
+ set_units -time ns
+create_clock -name MYCLK -per 2 [get_pins pll/CLK];
+
+
+set_clock_latency -source 1 [get_clocks MYCLK]
+set_clock_uncertainty -setup 0.5 [get_clocks MYCLK]; 
+set_clock_uncertainty -hold 0.4 [get_clocks MYCLK]; 
+
+
+set_input_delay -max 1 -clock [get_clocks MYCLK] [all_inputs];
+set_input_delay -min 0.5 -clock [get_clocks MYCLK] [all_inputs];
+
+set_output_delay -max 1 -clock [get_clocks MYCLK] [all_outputs];
+set_output_delay -min 0.5 -clock [get_clocks MYCLK] [all_outputs];
+
+set_input_transition -max 0.2 [all_inputs];
+set_input_transition -min 0.1 [all_inputs];
+
+set_max_area  800;
+
+set_load -max 0.2 \[all_outputs];
+set_load -min 0.1 \[all_outputs];
+```
+
+The Timing delay of a path varies for each PVT corner being used.
+
+|Corner  	|WNS	|WHS	|THS	|TNS    |
+|---|---|---|---|---|
+|ff_100C_1v65   |   0   | 0.15  | 50.22 |   0   |
+|ff_100C_1v95   |   0   |  0.2  | 125.64|   0   |
+|ff_n40C_1v56   |0.19	|0.11	|7.19	|141.44 |
+|ff_n40C_1v76   |0	|0.18   |86.34	|0      |
+|ff_n40C_1v65	|0.02	|0.14	|42.33	|4.13   |
+|ss_100C_1v40	|3.38	|0	|0	|3488.63|
+|ss_100C_1v60	|1.83	|0	|0	|1884.76|
+| ss_n40C_1v28	|8.95	|0	|0	|9629.38|
+|ss_n40C_1v35	|6.03	|0	|0	|6433.23|
+| ss_n40C_1v40	|4.81	|0	|0	|5083.92|
+|ss_n40C_1v76	|1.21	|0	|0	|1221.33|
+|ss_n40C_1v44	|4.13	|0	|0	|4290.31|
+|tt_025C_1v80	|0.23	|0.09	|5.12	|187.25 |
+
+Let us consider the following corners and their delays as follows:
 The following image shows the setup delay and qor when there are noconstraints defined.
 ![lab1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f72ad3e9-7c87-4114-92c3-356d23911c7e)
 
@@ -3036,5 +3098,19 @@ The following reports show the timing and QoR for each corner as follows:
 
 - tt_025C_1v80
 ![lab16_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6c2a8c22-e355-4a05-abb6-133dbe93f7e7)
+
+Now The following graphs illustrate the change in slack from slow process to fast process, change in voltage and change in temperature as follows:
+
+This graph shows that the WNS is mostly 0.00 for fast corners and the setup violates for slow corners. WNS stands for Worst Negative Slack, the setup violated slack of the most critical path in the design.
+![WNS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9a9cf657-ebdc-4677-8448-403e06108eb3)
+
+This graph shows the TNS of the design. TNS stands for Total Negative Slack, which is the sum of all the violated setup slack in the design.
+![TNS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d3d16394-057c-4b25-812d-960210bea127)
+
+This graph shows that the WHS is mostly 0.00 for slow corners and the hold violates for fast corners. WHS stands for Worst Hold Slack, the hold violated slack of the most critical path in the design.
+![WHS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/923ea37f-193e-474e-b6a2-861c66864e9f)
+
+This graph shows the THS of the design. THS stands for Total Hold Slack, which is the sum of all the violated hold slack in the design.
+![THS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ae3f65ea-ff5c-42b6-940c-086a1515f0ee)
 
 </details>

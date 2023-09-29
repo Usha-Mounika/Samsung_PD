@@ -17,6 +17,7 @@ A brief description of what this training summarizes :
 -  [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/Samsung_PD#Day12)
 -  [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/Samsung_PD#Day13)
 -  [Day14 : Synopsys DC and timing analysis](https://www.github.com/Usha-Mounika/Samsung_PD#Day14)
+-  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD#Day15)
 
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
@@ -3117,5 +3118,93 @@ This graph shows that the WHS is mostly 0.00 for slow corners and the hold viola
 This graph shows the THS of the design. THS stands for Total Hold Slack, which is the sum of all the violated hold slack in the design.
 ![THS](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ae3f65ea-ff5c-42b6-940c-086a1515f0ee)
 
+</details>
 
+## [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD#Day15)
+<details>
+<summary>Introduction</summary>
+<br>	
+
+Anykind of electronic circuitry is fabricated on a board. The board typically consists of a process along with many interfaces such as JTAG and DAC etc..
+A particular chip would look as follows:
+![img](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/69cc5fe2-2e06-4772-87da-a41623bba8f6)
+
+This is a package of QFN-48( Quad Flat No Leads with 48 pins). All these pins work interfaced with other packages on the design board.
+The size of this package is 7mmx7mm. There are various kinds of packages available in different sizes.
+A chip usually sits at the centre of the package. The outbounds are used to communicate data from external world to the chip.
+A chip contains various components such as Pads, core and die.
+- Pads are used to send signals inside the chip to external pins and vice-versa.
+- Core is place where the digital logic is present.
+- Die is the size of chip, being manufactured on the silicon wafer.
+
+The RISCV SoC looks as follows:
+![img2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d527d090-57df-4e92-9d5e-67f51b5fe67e)
+
+In this design, PLL,DAC, SRAM are Foundry IPs and SPI, RISCV are macros. The macros contain pure digital logic whereas the IPs are Intellectual Properties that are desgined externally and placed in the design.
+
+The RISC V Instruction Set Architecture defines the way of interacting with the computer. When a task is to be performed on the layout, the task needs to converted to assembly code and then to machine understandable binary format and the output is processed. A HDL is used to interact between the layout and the instruction set architecture.
+
+The following image shows the overview of the architecture to layout design. The task to be perfomred in the application software is governed through the Operation system, that handles IO functions and low level system functions. The application software compiles, and the .exe file is converted to assembly language and the nbinary fomat. This binary format links with the HDL code and gnerates a synthesized netlist.
+![img3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a8b7ab2e-8336-4c1c-9970-602e081500ad)
+</details>
+
+<details>
+<summary>OpenLANE</summary>
+<br>	
+	
+The Digital ASIC design requires the Register Transfer lanfer language(RTL) models including models of all IPs used, the EDA tools and the PDK.
+There are various Open source inputs for Digital ASIC design like RTL models at opencores.org, github, EDA tools such as Qflow, OpenLane, PDK such as skywater for 130nm technology.
+The interface between the Fab and the designer is a set of files referred as Process Design Kit (PDK). The PDK is a collection of files used to model a fabrication process for the EDA tools used to design an IC such as device models, design rules, technology information etc..
+The 130nm technology executes single cycle at frequency greater than 300MHz, so pipelining can achieve a frequency of 1GHz. So, The frequency of operation is good.
+The  basic ASIC flow includes various stages such as Floorplan, Powerplan, placement, CTS and so on. The RTL to GDSII flow is as follows:
+![img4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f5b67b34-be4b-4a7d-a94e-8a375bb1fcc8)
+
+- Synthesis : Converts the RTL into a circuit of components of Standard Cell Library (SCL). This generated circuit is read through HDL and referred as netlist. The RTL and netlist have equivalent functionality.
+  The Standard cells have a regular layout. The standard cell height is always fixed, the width is varied as discrete multiples of site width. Each design has dillferent views/models such as  HDL view, SPICE view, ELectrical view, Layout view.
+- Floorplan and powerplan : Plans silicon area and robust power distribution.
+   - In chip Floor-Planning, The chip die is partitioned between different building blocks and places IO pads.
+   - In Macro Floor-Planning, The dimensions, pin locations, rows and routing tracks are defined.
+   - In Power-Planning, the power mesh is constructed.The power pads are connected to all cells through power rings, vertical and horizontal metal straps.
+   - The EMIR problem is avoided by using higher metal layers thus reducing the resistance.
+- Placement : Places the macros and cells in gate-level netlist on the wafer rows, aligned with sites. The connected cells are placed close such that reduces interconnet delay and to enable successful routing.
+    Placement is done in 2 ways.
+   - GLobal placement tries to find optimal position for all cells, which maynot be legal causing cells to overlap.
+   - In Detailed placement, the positions in global placement are minimally altered to make the design legal.
+- Clock Tree Synthesis : Clock must be routed before routing signals. The clock distribution network is created to deliver clock to all sequential cells with minimum skew, minimum latency. The clock network is a tree where clock source are roots and clocked elements are roots. The clock tree shapes can be H tree, Fish bone etc.
+- Routing : Signals are routed after the clock is routed. It implements the interconnect using the available metal layers as defined by PDK.
+   - PDK defines metal pitch, thickness, tracks, minimum width.
+   - It also defines vias to connect different metal segments together. Most routers are grid routers, constructed out of metal layer tracks.
+   - It uses divide and conquer approach. First, Global routing is done by coarse-grained grid to generate routing guides. Next the detailed routing used fine-grained grid to implement the actual wiring.
+- Sign Off: After routing, the final layout can be constructed after verification. This includes:
+   - Physical Verification: Design Rule Checking (DRC) and Layout vs Schematic (LVS)
+   - Static Timing Analysis : Ensures all timing constraints are defined and met.
+     
+The reference methodology created for the Opensource ASIC flow to avoid missing tools and their calibration is referred as Openlane. Openlane is started as an opensource flow for a true opensource tapeout experiment.
+Strive is a family of Open everything SoCs that has open PDKs, open EDAs and open RTL. The strive family has several members as follows:
+
+|SoC |Features|
+|---|---|
+|striVe|Sky130 SCL + Synthesized 1KBytes SRAM|
+|striVe 2 |Sky130 SCL + 1 KBytes OpenRAM block|
+|striVe 2a|striVe 2 with a single chip core module |
+|striVe 3|OSU SCL + Synthesized 1KBytes SRAM |
+|striVe 5|Sky130 SCL + 8x 1 KBytes OpenRAM banks|
+|striVe 6|striVe 2 with DFT|
+
+The main goal of OpenLane ASIC flow is to produce clean GDSII with no human intervention in the loop. Clean means with no timing violations, DRC violations, LVS violations.
+OpenLane can be used to harden Macros and chips. It has 2 modes of operation i.e., Autonomous or Interactive.
+ The Autonomous is an automated flow that waits for output after some time, the Interactive flow can check intermediate outputs, used to experimenting the design.
+The OpenLANE provides design space exploration to find best set of flow configurations. The following image shows the complete OpenLANE ASIC flow.
+![img4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c499ce7a-54c9-4eed-9003-27bddc232cd6)
+
+- The flow starts with RTL. The RTL is fed to ```Yosys``` with design constraitnts. This circuit can be optimized and mapped into cells from synthesis library using ```abc```. abc has to be guided using the optimization through scripts. OpenLANE has different ```abc``` scripts referred as synthesis strategies that target best timing. 
+- The ```synthesis exploration utility``` is used to generate a report of the delay, area affected by synthesis strategy.OpenLANE has ```Design exploration utility```which can be used to sweep design configurations and generate the best design to be chosen. It also uses regression for testing.The best design  configuration is recommended to go forth for the design for a clean layout.
+- After testing, Structure insertion is done. This step is enabled for testing after fabrication. The DFT stage uses ```Fault``` for scan insertion, automatic test pattern generation and compaction,  fault coverage and simulation. This step adds extra logic such as scanchain for testing. It can also add JTAG controller, that allows access of internal scan chains to external devices. 
+- The Physical implementation has various steps and OpenROAD does all the implementation such as End decoupling capacitors and tap cells insertion, placement, optimization, CTS and routing. 
+- After optimization, there may be some changes in gate-level netlist, so logical equivalence checking is performed.  This can be done using ```yosys```. Everytime netlist is changed, verification must be performed. The CTS modifies the netlist, placement optimization also modifies the netlist.
+- When a metal wire is fabricated, it can act as an antenna.Reactive ion etching causes charge to accumulate on the wire, this damaging gates during fabrication. This has two solutions:
+  - Bridging attaches a higher layer intermediary, it requires router awareness.
+  - To add antenna diode cell to leak away charges, these diodes are provided in libs.
+The preventive approach is to add fake antenna diode cell after placement and run the antenna checker. If any violations, replace the fake diode cdell with real one.
+The OpenLANE signoff checks DRC,LVS and STA. LVS and DRC uses ```magic``` and STA uses ```OpenSTA``` with parasitic extraction.
 </details>

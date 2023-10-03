@@ -3213,19 +3213,32 @@ The OpenLANE signoff checks DRC,LVS and STA. LVS and DRC uses ```magic``` and ST
 <summary>Lab on OpenLANE</summary>
 <br>	
 The OpenLANE is a flow, that comprises of many open-source EDA tools such as yosys for synthesis, OpenSTA for Static Timing Analysis. The OpenLANE completely cuts off the human intervention such that the inputs RTL, foundry PDKS being provided, the GDSII file is generated.
+	
 Let us explore the contents of our openlane working directory. This directory consists of openlane and pdks. In pdks, they contain timing libraries, lef files, tech lef, cell lef etc.. The open_pdks contain scripts that make the sky-water pdks, which are designed for commercial EDA tools, compatible with open-source EDA tools.
+
 The sky130A is the variant that is made compatible. This contains libs.ref and libs.tech. The libs.ref contains the process specific and libs.tech contains tool specific. As shown, the netgen,openlane are the tools and sky130_fd are process variants.
+
+![lab1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f554a452-8679-49d6-8335-146bccb41a9f)
+
 The sky130_fd_sc_hd is the process used for our design. The sky130 is the 130nm technology being used and fd is abbreviated as foundry, the sc stands for standard cell and hd stands for high density. 
 
 This sky130_fd_sc_hd contains the following files such as lef, tech lef, libs. The libs contain the information to various PVT corners and the lef and tech lef are as follows.
+![lab2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3b15f851-a5c8-4cd0-bc1b-74d44f9672d3)
 
 Now, inorder to run the openlane, we initialize the docker using the following command:
-```
-docker run -it -v $(pwd):/openLANE_flow -v $PDK_ROOT:$PDK_ROOT -e PDK_ROOT=$PDK_ROOT -u $(id -u $USER):$(id -g $USER) openlane:rc2
-```
+
+```docker run -it -v $(pwd):/openLANE_flow -v $PDK_ROOT:$PDK_ROOT -e PDK_ROOT=$PDK_ROOT -u $(id -u $USER):$(id -g $USER) openlane:rc2```
+
 But it is aliased as ```docker```
+
+![lab3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/dd7d7ac9-c6c3-42ea-b123-1ef7ca9816e7)
+
 Now Let us look at the design. There are various designs in the designs directory. Let us use picorv32a. In this, the src directory contains the RTL information such as the behavioral code (.v file), constraints file (.sdc file). The config.tcl bypasses any configuration already done to the lane. The design takes some default values to the attributes that are not defined.
 
+ The order of precedence is
+     - the attributes defined by PVT corner config.tcl
+     - attributes defined in config.tcl
+     - attributes default values of OpenLANE
 
 </details>
 

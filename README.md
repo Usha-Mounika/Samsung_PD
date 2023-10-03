@@ -18,6 +18,7 @@ A brief description of what this training summarizes :
 -  [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/Samsung_PD#Day13)
 -  [Day14 : Synopsys DC and timing analysis](https://www.github.com/Usha-Mounika/Samsung_PD#Day14)
 -  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD#Day15)
+-  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD#Day16)
 
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
@@ -3207,4 +3208,48 @@ The OpenLANE provides design space exploration to find best set of flow configur
   - To add antenna diode cell to leak away charges, these diodes are provided in libs.
 The preventive approach is to add fake antenna diode cell after placement and run the antenna checker. If any violations, replace the fake diode cdell with real one.
 The OpenLANE signoff checks DRC,LVS and STA. LVS and DRC uses ```magic``` and STA uses ```OpenSTA``` with parasitic extraction.
+</details>
+<details>
+<summary>Lab on OpenLANE</summary>
+<br>	
+The OpenLANE is a flow, that comprises of many open-source EDA tools such as yosys for synthesis, OpenSTA for Static Timing Analysis. The OpenLANE completely cuts off the human intervention such that the inputs RTL, foundry PDKS being provided, the GDSII file is generated.
+Let us explore the contents of our openlane working directory. This directory consists of openlane and pdks. In pdks, they contain timing libraries, lef files, tech lef, cell lef etc.. The open_pdks contain scripts that make the sky-water pdks, which are designed for commercial EDA tools, compatible with open-source EDA tools.
+The sky130A is the variant that is made compatible. This contains libs.ref and libs.tech. The libs.ref contains the process specific and libs.tech contains tool specific. As shown, the netgen,openlane are the tools and sky130_fd are process variants.
+The sky130_fd_sc_hd is the process used for our design. The sky130 is the 130nm technology being used and fd is abbreviated as foundry, the sc stands for standard cell and hd stands for high density. 
+
+This sky130_fd_sc_hd contains the following files such as lef, tech lef, libs. The libs contain the information to various PVT corners and the lef and tech lef are as follows.
+
+Now, inorder to run the openlane, we initialize the docker using the following command:
+```
+docker run -it -v $(pwd):/openLANE_flow -v $PDK_ROOT:$PDK_ROOT -e PDK_ROOT=$PDK_ROOT -u $(id -u $USER):$(id -g $USER) openlane:rc2
+```
+But it is aliased as ```docker```
+Now Let us look at the design. There are various designs in the designs directory. Let us use picorv32a. In this, the src directory contains the RTL information such as the behavioral code (.v file), constraints file (.sdc file). The config.tcl bypasses any configuration already done to the lane. The design takes some default values to the attributes that are not defined.
+
+
+</details>
+
+## [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD#Day16)
+
+<details>
+<summary>Introduction</summary>
+<br>	
+
+Floorplan considerations:
+- Height and Width of core and die
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </details>

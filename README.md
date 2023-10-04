@@ -3240,20 +3240,90 @@ Now Let us look at the design. There are various designs in the designs director
 - attributes defined in config.tcl
 - attributes default values of OpenLANE
 
+  The design has config.tcl and sky130 variant config.tcl for each and every PVT corner in every design as follows:
+  ![lab5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/92a60c4e-a535-4b3e-b730-1bb6b785425b)
+
+  The contents of config.tcl are as follows:
+  ![lab4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/75cfb31e-a19c-411d-8089-4bcadf3ba6ca)
+
+ The contents of sky130_fd_sc_hd vonfig.tcl are as follows:
+![lab6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/098873f4-6454-46d7-b670-e50e3981d953)
+
+Now, the design is prepared with the command as follows. It links all the lef files, lib files, macros, diodes etc..
+```tcl
+prep -design picorv32a
+```
+This can be viewed as follows:
+![lab7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ee2eca54-fcb8-4532-8da7-d26b5c0cd2fc)
+
+After the completion of this run, the runs directory is created and the reports, logs, results are all dumped to different direcotries as follows:
+![lab8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5a7eb18b-2919-4281-ab54-b8582b6c5439)
+
+The merged.lef contains the layer information, via information, macro information in the design as follows:
+![lab9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/35883d97-916e-4523-8b4a-fff7b7ff6f0b)
+
+![lab10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/aa46d080-c6e3-445a-9283-77dd71976012)
+
+The results files are empty as the design is not run.
+![lab11](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6be6a779-2d73-470c-a3b1-69ddc020c7c6)
+
+In the runs directory, a file is created to show all the defined values of attributes called config.tcl as follows:
+![lab12](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cde39ca3-76c3-4e4e-a8d0-94b81b0345c4)
+
+Now, the synthesis is fired using the command ```run_synthesis```. So, the synthesis was successfully done.
+![lab13](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d4faadb2-0834-44fd-bf38-6a75049a179f)
+
+The flop ratio is the number of flops to the number of cells in the design. As shown, there are 1613 flipflops in the design (dfxtp-D flipflop with positive trigger) and 14876 cells in the design. So,
+
+  Flopratio = No. of flops/No. of cells in design = 1613/14876 = 0.108.
+  
+  So, The flop count is 10.8% of cells in the design.
+  
+![lab14](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f60f4503-7bf9-4fc1-8348-ec49a0f75de2)
+
+The following image shows the synthesized netlist such that all cells are mapped to skywater 130nm technology.
+![lab15](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/05010d3e-9468-4b31-b9cd-8dd93f47a284)
+
+The following image shows that the design is violated. One of the report is violated with huge negative slack as follows:
+![lab16](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ec94cf32-f69f-443f-a6f3-df73c57ed617)
+
 </details>
 
 ## [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD#Day16)
 
 <details>
-<summary>Introduction</summary>
+<summary>Chip Floorplan Considerations</summary>
 <br>	
 
 Floorplan considerations:
 - Height and Width of core and die
+  Let us consider a simple netlist that has a reg-reg timing path with 2 flops and 2 combinational gates as follows:
+  
+  ![12](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/69b90b30-ef43-495a-8ddc-fd9700b7bdb8)
+
+The dimensions of core and die are the summation of the area of standard cells present in the design. 
+Let us assume that the area of the standard cell as 1sq. unit and the area of flipflop as 1 sq. unit.
+So, the minimum area occupied by the netlist is 4 sq. units, however may be placed.
+
+A core is the section of a chip where the fundamental logic of a design is placed.
+A die, which consists of core, is a small semiconductor material specimen on which the fundamental circuit is fabricated. The core is encapsulated with the die.
+When our design is placed on the core, the logic cells completely occupy the area of the core i.e., the utilization of area is 100%. So,
+   Utilization factor =   Area occupied by netlist/Total area of the core
+When the utilization factor is 1, there is no space left on die for any other optimization. So, ideally the utilization factor used is 50-60%.
+
+Aspect Ratio = Height/Width
+Whenever the aspect ratio is 1, it signifies a square chip. Otherwise, it is a rectangle.
+Let us now consider the following example that has a utilization factor of 0.5 and aspect ratio of 0.5. 
+The length of the die is 2 units and height is 4 units. So, aspect ratio=2/4=0.5. The area required by the logic is 4 units so the utilization factor = 4/2x4=1/2=0.5. 
+![34](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/93f030ae-cddb-4306-b91a-d3b8f2a1c317)
+
   Let us consider another core with area of 4x4 sq.units with the same netlist. So, The utilization factor now would be (2x2)/(4x4)= 0.25. So, Only 25% of area is utilized, the reamining area can be used for optimization.The aspect ratio here is 1, so it is a square chip. 
--Location of Preplaced Cells
+  ![123](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1832eb88-5287-44ea-a55d-f47a64f223ea)
+
+- Location of Preplaced Cells
  Preplaced cells are the piece of combinational logic such as macros, IPs that is being reused multiple times. The preplaced cells are placed based on the design scenario.The location of the preplaced cells need to be very well-defined.
  The preplaced cells can be understood with an example. Let us consider a combinational logic with 100k gates that can be granularised. Let us divide the circuit into two parts that can be seperated as two blocks.
+![34](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b873a560-8336-4b82-a3fe-76d7ce5e72ed)
 
 The IO pins of these blocks are extended and are seperated as two different IP modules, where the logic in the block is a black box. These blocks can be used multiple times on the netlist and designed only once. In other words, the block is designed as an IP and defined as blackbox in the main netlist and can be reused.
 
@@ -3262,10 +3332,13 @@ The arrangement of these IPs is referrred as floorplanning. These IPs have user-
 The tool places the remaining logical cells in the design onto chip. The tool do not touch the location of these pre-placed cells.
 
 These pre-placed cells needs to be surrounded with decoupling capacitors. When the output of a logic gate changes from 0 to 1, an amount of current is demanded by the output capacitance of the gate. It is the responsibility of Vdd to supply the necessary voltage for switching the logic in the design.Similary, From logic 1 to 0, the Vss should be able to handle the discharged currents by logic in the design. The physical wires that connect the design will have a drop as they have resistance, inductance and capacitance.
+![capacitance model](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/07f30b08-f84d-48a4-ba93-41858a8522ce)
 
 During switching operation, the circuit demands switching current. There will be a voltage drop across them and voltage will be Vdd-IRdrop. If this value goes below noise margin, due to IR drop, the logic 1 at output won't be detected as 1 at the input of circuit. As shown, any voltage between Vol and Vil is considered logic '0' and voltage between Voh and Vih is considered as logic '1' and the voltage between Vil and Vih is undefined region as the voltage may rise to Vih or degrade to Vil.
+![noise](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ffb2006a-7b5d-4486-b26f-a30da19d379a)
 
 The decoupling capacitors helps to overcome the noise due to long distance from the supply voltage. So, Addition of decoupling capacitor in parallel with circuit is done. So, Every time the circuit switches, it draws current from decoupling capacitor (Cd) as the RL network is used to replenish the charge into Cd.
+![decap](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8bcfa01e-5d14-4227-b1d0-558d26f2b894)
 
 *Addition of decoupling capacitor will avoid the problems of crosstalk and degradation of logic.*
 
@@ -3274,14 +3347,19 @@ The macros requires the current for each cell in the design when reused.Let us a
 The signal should propagate from the driver to load without any degradation. Assume that the driver is sending logic 0 to logic 1 to the load. It is not feasible to add decoupling capacitor to each cell in the logic. The critical blocks are added with decoupling capacitor.
 Consider the connect is a 16-bit bus, that has 16-bit logic, that is it charges and discharges as shown. The logic at output is connected to an inverter.
 This means all the capacitors which were charged to 'V' volts will have to discharge to '0' volts through single ground tap point. This will cause a bump in Ground tap point. If this bump exceeds the noise margin level, the output will be in a undefined region. (In undefined region, the output becomes unpredictable).
+![powerplan](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2c0c62a7-aeda-4fea-886e-c00cf8a5caac)
+
 Also, all capacitors which were 0 volts will charge to V volts through single Vdd tap point. This causes a voltage droop. If it goes beyond noise margin, it again becomes unpredictable. 
 All this occur due to a single Vdd point, if there are multiples power supply points then each capacitor can charge and discharge from its nearest points as shown.
 So, Powermesh is the exact solution to mitigate voltage droops and ground bounces.
 #### Pin placement
 The connectivity information between the gates is coded using VHDL/verilog language and is called the netlist. Let us consider an example. There are two timing paths driven by different clocks, two timing paths driven by two (interclocks)clocks (alternate flops)  and preplaced cells are connected in the design as shown.
+![placepin](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/831dfec7-b607-43b3-88a6-c866e6d3a2cf)
+
 The pins are usually placed in the region between die and the core. This area is reserved for pin location. The logical cell placement blockage is used to avoid tool from inserting cells in this region.
 Let us consider that the input ports are connected on the left hand side and the output ports are connected on the right hand side. The ordering of the ports is random, it depends on where the cells are planned to place. 
 The flipflops should not be placed on the preplaced cells, because their location is fixed. The clock port drives the cells continuously, so the least resistance path is required for the clock.
+
 ### Lab
 
 

@@ -3236,9 +3236,9 @@ But it is aliased as ```docker```
 Now Let us look at the design. There are various designs in the designs directory. Let us use picorv32a. In this, the src directory contains the RTL information such as the behavioral code (.v file), constraints file (.sdc file). The config.tcl bypasses any configuration already done to the lane. The design takes some default values to the attributes that are not defined.
 
  The order of precedence is
-     - the attributes defined by PVT corner config.tcl
-     - attributes defined in config.tcl
-     - attributes default values of OpenLANE
+- the attributes defined by PVT corner config.tcl
+- attributes defined in config.tcl
+- attributes default values of OpenLANE
 
 </details>
 
@@ -3250,6 +3250,45 @@ Now Let us look at the design. There are various designs in the designs director
 
 Floorplan considerations:
 - Height and Width of core and die
+  Let us consider another core with area of 4x4 sq.units with the same netlist. So, The utilization factor now would be (2x2)/(4x4)= 0.25. So, Only 25% of area is utilized, the reamining area can be used for optimization.The aspect ratio here is 1, so it is a square chip. 
+-Location of Preplaced Cells
+ Preplaced cells are the piece of combinational logic such as macros, IPs that is being reused multiple times. The preplaced cells are placed based on the design scenario.The location of the preplaced cells need to be very well-defined.
+ The preplaced cells can be understood with an example. Let us consider a combinational logic with 100k gates that can be granularised. Let us divide the circuit into two parts that can be seperated as two blocks.
+
+The IO pins of these blocks are extended and are seperated as two different IP modules, where the logic in the block is a black box. These blocks can be used multiple times on the netlist and designed only once. In other words, the block is designed as an IP and defined as blackbox in the main netlist and can be reused.
+
+These models functionality defined once and reused on the chip. This is done before actual placement and routing. The location of these cells is usually fixed. 
+The arrangement of these IPs is referrred as floorplanning. These IPs have user-defined locations, hence are placed in chip before automated place and route, and are called as pre-placed cells.
+The tool places the remaining logical cells in the design onto chip. The tool do not touch the location of these pre-placed cells.
+
+These pre-placed cells needs to be surrounded with decoupling capacitors. When the output of a logic gate changes from 0 to 1, an amount of current is demanded by the output capacitance of the gate. It is the responsibility of Vdd to supply the necessary voltage for switching the logic in the design.Similary, From logic 1 to 0, the Vss should be able to handle the discharged currents by logic in the design. The physical wires that connect the design will have a drop as they have resistance, inductance and capacitance.
+
+During switching operation, the circuit demands switching current. There will be a voltage drop across them and voltage will be Vdd-IRdrop. If this value goes below noise margin, due to IR drop, the logic 1 at output won't be detected as 1 at the input of circuit. As shown, any voltage between Vol and Vil is considered logic '0' and voltage between Voh and Vih is considered as logic '1' and the voltage between Vil and Vih is undefined region as the voltage may rise to Vih or degrade to Vil.
+
+The decoupling capacitors helps to overcome the noise due to long distance from the supply voltage. So, Addition of decoupling capacitor in parallel with circuit is done. So, Every time the circuit switches, it draws current from decoupling capacitor (Cd) as the RL network is used to replenish the charge into Cd.
+
+*Addition of decoupling capacitor will avoid the problems of crosstalk and degradation of logic.*
+
+#### Power Planning
+The macros requires the current for each cell in the design when reused.Let us assume a design where it ocntains various macros surrounded with decoupling capacitors. The Power Supply Vdd and Vss are connected as shown to each macro.Now, let the two macros connected as shown be the driver and load. 
+The signal should propagate from the driver to load without any degradation. Assume that the driver is sending logic 0 to logic 1 to the load. It is not feasible to add decoupling capacitor to each cell in the logic. The critical blocks are added with decoupling capacitor.
+Consider the connect is a 16-bit bus, that has 16-bit logic, that is it charges and discharges as shown. The logic at output is connected to an inverter.
+This means all the capacitors which were charged to 'V' volts will have to discharge to '0' volts through single ground tap point. This will cause a bump in Ground tap point. If this bump exceeds the noise margin level, the output will be in a undefined region. (In undefined region, the output becomes unpredictable).
+Also, all capacitors which were 0 volts will charge to V volts through single Vdd tap point. This causes a voltage droop. If it goes beyond noise margin, it again becomes unpredictable. 
+All this occur due to a single Vdd point, if there are multiples power supply points then each capacitor can charge and discharge from its nearest points as shown.
+So, Powermesh is the exact solution to mitigate voltage droops and ground bounces.
+#### Pin placement
+The connectivity information between the gates is coded using VHDL/verilog language and is called the netlist. Let us consider an example. There are two timing paths driven by different clocks, two timing paths driven by two (interclocks)clocks (alternate flops)  and preplaced cells are connected in the design as shown.
+The pins are usually placed in the region between die and the core. This area is reserved for pin location. The logical cell placement blockage is used to avoid tool from inserting cells in this region.
+Let us consider that the input ports are connected on the left hand side and the output ports are connected on the right hand side. The ordering of the ports is random, it depends on where the cells are planned to place. 
+The flipflops should not be placed on the preplaced cells, because their location is fixed. The clock port drives the cells continuously, so the least resistance path is required for the clock.
+### Lab
+
+
+
+
+
+
 
 
 

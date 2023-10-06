@@ -2,24 +2,24 @@
 
 A brief description of what this training summarizes : 
 
-- [Day0 : Setup Check](#Day0-SetupCheck)
-- [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day1)
-- [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day2)
--  [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day3)
--  [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day4)
--  [Day5 : DFT](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day5)
--  [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day6)
--  [Day7 : Basic SDC Constraints](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day7)
--  [Day8 : Advanced SDC Constraints](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day8)
--  [Day9 : Optimization in Synthesis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day9)
--  [Day10 : QOR](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day10)
--  [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day11)
--  [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day12)
--  [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/blob/master/README.md#Day13-Postsynthsim)
--  [Day14 : Synopsys DC and timing analysis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day14)
--  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD/master/README.md#Day15-InceptionofEDAandPDKs)
--  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day16-GoodfloorplanvsBadfloorplan)
--  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day17-StdCellCharacteriseExperiment)
+- [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
+- [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
+- [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/Samsung_PD#Day2)
+-  [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/Samsung_PD#Day3)
+-  [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/Samsung_PD#Day4)
+-  [Day5 : DFT](https://www.github.com/Usha-Mounika/Samsung_PD#Day5)
+-  [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
+-  [Day7 : Basic SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day7)
+-  [Day8 : Advanced SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day8)
+-  [Day9 : Optimization in Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day9)
+-  [Day10 : QOR](https://www.github.com/Usha-Mounika/Samsung_PD#Day10)
+-  [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/Samsung_PD#Day11)
+-  [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/Samsung_PD#Day12)
+-  [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/Samsung_PD#Day13)
+-  [Day14 : Synopsys DC and timing analysis](https://www.github.com/Usha-Mounika/Samsung_PD#Day14)
+-  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD#Day15)
+-  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD#Day16)
+-  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD#Day17)
 
 
 ## Day0 : Setup Check
@@ -92,7 +92,7 @@ The iverilog was setup.
 <img width="666" alt="iverilog" src="https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e649c3c3-d141-48f9-83ee-03a9ad5a669d">
 </details>
 
- ## [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day1)
+ ## [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
  
  <details>
 <summary>Introduction to RTL Design and Synthesis</summary>
@@ -262,7 +262,7 @@ The following code snippet is the generated netlist without switch (on left) and
 
 </details>
 
-## [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day2)
+## [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/Samsung_PD#Day2)
  <details>
 <summary>Introduction to timing .libs</summary>
 <br>
@@ -570,7 +570,7 @@ The synthesized circuit and netlist are:
 
 </details>
 
-## [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day3)
+## [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/Samsung_PD#Day3)
 
 <details>
 <summary> Combinational Optimization with examples </summary>
@@ -943,7 +943,7 @@ The synthesized circuit is:
 
 </details>	
 
-## [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day4)
+## [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/Samsung_PD#Day4)
 <details>
 <summary> GLS and Synthesis-simulation mismatch </summary>
 <br>
@@ -1072,7 +1072,7 @@ The simulated output is:
 In the RTL simulated output, though a or b is low, the output is high when c is high. This occurs due to the usage of blocking statements. The previous value of a|b  is used to and with c. So, the x mimics a flipflop. In the GLS si,ulated output, the output is clearly dependent only on the present inputs.
 </details>
 
-## [Day5 : DFT](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day5)
+## [Day5 : DFT](https://www.github.com/Usha-Mounika/Samsung_PD#Day5)
 <details>
 <summary>DFT</summary>
 <br>	
@@ -1128,7 +1128,7 @@ Scan chains are the elements in scan-based designs that are used to shift-in and
 4. Again assert scan_enable and shift out the data through scan_out
 </details>
 
-## [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day6)
+## [Day6 : Introduction to Logic Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day6)
 <details>
 <summary>Basics of Digital Logic design and RTL Synthesis</summary>
 <br>	 
@@ -1476,7 +1476,7 @@ Now the output of the code is as follows:
 
 </details>
 
-## [Day7 : Basic SDC Constraints](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day7)
+## [Day7 : Basic SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day7)
 <details>
 <summary>Introduction to STA </summary>
 <br>	
@@ -1664,7 +1664,7 @@ echo "$my_lib_pin_name $a $fn";
 ```
 </details>
 
-## [Day8 : Advanced SDC Constraints](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day8)
+## [Day8 : Advanced SDC Constraints](https://www.github.com/Usha-Mounika/Samsung_PD#Day8)
 
 <details>
 <summary> clock</summary>
@@ -2106,7 +2106,7 @@ The following image shows the constraints on all ports of design. Here, the pure
 ![last22](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cd0f1f88-378f-48f9-ab01-1c152373810f)
 </details>
 
-## [Day9 : Optimization in Synhesis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day9)
+## [Day9 : Optimization in Synhesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day9)
 <details>
 <summary> Combinational and Sequential Optimizations</summary>
 <br>
@@ -2366,7 +2366,7 @@ After insertion of buffers, the design is as follows:
 ![lab3_15_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/54b7584e-4dac-4148-8f62-794246a8c005)
 </details>
 
-## [Day10 : QOR](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day10)
+## [Day10 : QOR](https://www.github.com/Usha-Mounika/Samsung_PD#Day10)
 <details>
 <summary>Summary</summary>
 <br>
@@ -2581,7 +2581,7 @@ The max_capacitance and max_transition should be constrained because the tool ta
 check_design ensures the quality of design is proper or not. check_timing ensures all constraints are implemented. report_constraints shows constraints violated if any.
 </details>
 
-## [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day11)
+## [Day11 : Introduction to BabySoC](https://www.github.com/Usha-Mounika/Samsung_PD#Day11)
 <details>
 <summary> Introduction </summary>
 <br>
@@ -2637,7 +2637,7 @@ One of the key features of this processor is its integrated 5G modem, which supp
 
 </details>
 
-## [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day12)
+## [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/Samsung_PD#Day12)
 <details>
 <summary>4-bit adder</summary>
 <br>	
@@ -2805,7 +2805,7 @@ Now, the top module SoC simulated output wave is as follows:
 
 </details>
 
-## [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/blob/master/README.md#Day13-Postsynthsim)
+## [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/README.md#Day13-Postsynthsim)
 <details>
 <summary>Post-Synthesis of Full-Adder</summary>
 <br>	
@@ -3290,7 +3290,7 @@ The following image shows that the design is violated. One of the report is viol
 
 </details>
 
-## [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day16-GoodfloorplanvsBadfloorplan)
+## [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD#Day16)
 
 <details>
 <summary>Chip Floorplan Considerations</summary>
@@ -3473,7 +3473,7 @@ The threshold points must be chosen carefully. When chosen wrong, the cell delay
 If a circuit is not designed properly i.e., input has more transition then the slew (50% point) at input comes much later than the slew of output (50% point).
 </details>
 
-## [Day17 : Std Cell Characterize Experiment](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day17-StdCellCharacteriseExperiment)
+## [Day17 : Std Cell Characterize Experiment](https://www.github.com/Usha-Mounika/Samsung_PD#Day17)
 
 <details>
 <summary>CMOS Inverter Simulations</summary>

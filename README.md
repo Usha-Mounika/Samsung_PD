@@ -2,7 +2,7 @@
 
 A brief description of what this training summarizes : 
 
-- [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD/master/README.md#Day0-setupcheck)
+- [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day0-setupcheck)
 - [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day1)
 - [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day2)
 -  [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day3)
@@ -18,11 +18,11 @@ A brief description of what this training summarizes :
 -  [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/blob/master/README.md#Day13-Postsynthsim)
 -  [Day14 : Synopsys DC and timing analysis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day14)
 -  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD/master/README.md#Day15-InceptionofEDAandPDKs)
--  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/master/README.md#Day16-GoodfloorplanvsBadfloorplan)
--  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD/master/README.md#Day17-StdCellCharacteriseExperiment)
+-  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day16-GoodfloorplanvsBadfloorplan)
+-  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day17-StdCellCharacteriseExperiment)
 
 
-## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day0-setupcheck)
+## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day0-setupcheck)
 
 <details>
 <summary>dc_shell</summary>

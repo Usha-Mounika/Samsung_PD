@@ -3298,6 +3298,7 @@ The following image shows that the design is violated. One of the report is viol
 
 Floorplan considerations:
 - Height and Width of core and die
+  
   Let us consider a simple netlist that has a reg-reg timing path with 2 flops and 2 combinational gates as follows:
   
   ![12](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/69b90b30-ef43-495a-8ddc-fd9700b7bdb8)
@@ -3309,11 +3310,15 @@ So, the minimum area occupied by the netlist is 4 sq. units, however may be plac
 A core is the section of a chip where the fundamental logic of a design is placed.
 A die, which consists of core, is a small semiconductor material specimen on which the fundamental circuit is fabricated. The core is encapsulated with the die.
 When our design is placed on the core, the logic cells completely occupy the area of the core i.e., the utilization of area is 100%. So,
+
    Utilization factor =   Area occupied by netlist/Total area of the core
+   
 When the utilization factor is 1, there is no space left on die for any other optimization. So, ideally the utilization factor used is 50-60%.
 
 Aspect Ratio = Height/Width
+
 Whenever the aspect ratio is 1, it signifies a square chip. Otherwise, it is a rectangle.
+
 Let us now consider the following example that has a utilization factor of 0.5 and aspect ratio of 0.5. 
 The length of the die is 2 units and height is 4 units. So, aspect ratio=2/4=0.5. The area required by the logic is 4 units so the utilization factor = 4/2x4=1/2=0.5. 
 ![34](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/93f030ae-cddb-4306-b91a-d3b8f2a1c317)
@@ -3321,7 +3326,8 @@ The length of the die is 2 units and height is 4 units. So, aspect ratio=2/4=0.5
   Let us consider another core with area of 4x4 sq.units with the same netlist. So, The utilization factor now would be (2x2)/(4x4)= 0.25. So, Only 25% of area is utilized, the reamining area can be used for optimization.The aspect ratio here is 1, so it is a square chip. 
   ![123](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1832eb88-5287-44ea-a55d-f47a64f223ea)
 
-- Location of Preplaced Cells
+- **Location of Preplaced Cells**
+  
  Preplaced cells are the piece of combinational logic such as macros, IPs that is being reused multiple times. The preplaced cells are placed based on the design scenario.The location of the preplaced cells need to be very well-defined.
  The preplaced cells can be understood with an example. Let us consider a combinational logic with 100k gates that can be granularised. Let us divide the circuit into two parts that can be seperated as two blocks.
 ![34](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b873a560-8336-4b82-a3fe-76d7ce5e72ed)
@@ -3362,6 +3368,13 @@ Let us consider that the input ports are connected on the left hand side and the
 The flipflops should not be placed on the preplaced cells, because their location is fixed. The clock port drives the cells continuously, so the least resistance path is required for the clock.
 
 ### Lab
+
+
+
+
+
+
+
 
 
 </details>

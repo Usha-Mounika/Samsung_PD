@@ -2,7 +2,7 @@
 
 A brief description of what this training summarizes : 
 
-- [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day0-setupcheck)
+- [Day0 : Setup Check](#Day0-SetupCheck)
 - [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day1)
 - [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day2)
 -  [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/blob/master/Samsung_PD#Day3)
@@ -22,7 +22,7 @@ A brief description of what this training summarizes :
 -  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day17-StdCellCharacteriseExperiment)
 
 
-## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day0-setupcheck)
+## Day0 : Setup Check
 
 <details>
 <summary>dc_shell</summary>

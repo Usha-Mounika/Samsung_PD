@@ -3122,7 +3122,7 @@ This graph shows the THS of the design. THS stands for Total Hold Slack, which i
 
 </details>
 
-## [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD/master/Samsung_PD#Day15)
+## [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/Samsung_PD#Day15)
 <details>
 <summary>Introduction</summary>
 <br>	
@@ -3290,7 +3290,7 @@ The following image shows that the design is violated. One of the report is viol
 
 </details>
 
-## [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/master/README.md#Day16-GoodfloorplanvsBadfloorplan)
+## [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day16-GoodfloorplanvsBadfloorplan)
 
 <details>
 <summary>Chip Floorplan Considerations</summary>
@@ -3473,7 +3473,7 @@ The threshold points must be chosen carefully. When chosen wrong, the cell delay
 If a circuit is not designed properly i.e., input has more transition then the slew (50% point) at input comes much later than the slew of output (50% point).
 </details>
 
-## [Day17 : Std Cell Characterize Experiment](https://www.github.com/Usha-Mounika/Samsung_PD/master/README.md#Day17-StdCellCharacteriseExperiment)
+## [Day17 : Std Cell Characterize Experiment](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/README.md#Day17-StdCellCharacteriseExperiment)
 
 <details>
 <summary>CMOS Inverter Simulations</summary>

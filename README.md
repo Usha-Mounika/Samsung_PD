@@ -19,6 +19,7 @@ A brief description of what this training summarizes :
 -  [Day14 : Synopsys DC and timing analysis](https://www.github.com/Usha-Mounika/Samsung_PD#Day14)
 -  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD#Day15)
 -  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD#Day16)
+-  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD#Day17)
 
 
 ## [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
@@ -3363,18 +3364,80 @@ The flipflops should not be placed on the preplaced cells, because their locatio
 ### Lab
 
 
+</details>
+<details>
+<summary>Library Binding and Placement</summary>
+<br>	
+	
+#### Binding netlist with physical cells
+Each cell represented in synthesis as per functionality, has certain width and height. So, These cells information placed according to their size and shape in a file called library. The library contains the timing information and shape,size information of cells and condition on cells such as when condition.
+The library contains various flavours of cells that can be picked based on timing and area available on the floorplan.
+#### Placement on floorplan
+The floorplan has well-defined ports and pins in the design. The netlist has the physical view of logic gates as follows:
 
+The placement stage ensures that the pre-placed cells are unaffected i.e., no cells are placed on the pre-placed cell locations. The cells are placed in a way that it is relatively less distant from the ports connected to it.
+The Signal Intergrity is the faithful transmission of signal from one point to another point. The signal intergrity is maintained by repeaters which are basically buffers that recondition the original signal and make new signal that replicates original signal and send it to next stage.
+In the placement optimization stage, the wire length and capacitance are estimated such that the transition of signal is in permissible range.
+The Slew is dependent on the value of capacitance. For high value of capacitance, the amount required to charge is more, the slew will be bad.
+When the cells are placed farther, then the transition and capacitance will be more, so the length is cut down by inserting buffers so that the signal is not deteriorated.
+When the signal frequency is high, the delay cannot be wasted on nets, so they are placed close to each other to avoid any significant delay.
+The Buffers are inserted in the design assuming that clock is ideal as clock is not built yet. The data path is considered and when the length is greater than permissible values, depending upon the transition and slew, buffers are inserted.
+ The timing must be met in the placement stage because it is bound to go worst in the next stages especially routing stage.
+ #### Need for  characterization
+ IC flow:
+ - The process of converting functionality (Behavioral code) into legal hardware is referred to as Logic Synthesis. It is arrangement of gates for reproducing the original functinality described with RTL.
+ - Importing the netlist of logic synthesis and defining height and width of core and die in the floorplanning.
+ - The logic cells are placed in such a way that the timing is met in the placement stage.
+ - The CTS generates clock in such a way that skew is minimal i.e., all flops in design would get clock at almost same time. The clock buffers take care of equal fall and rise time of the signal.
+ -  The Routing follows some constraints inorder to connect one cell to another cell in design.
+ -  Static TIming Analysis is the last sign-off stage to check timing vilations in the flow.
 
+The cells are common in each stage.The cells are modelled such that the tool understands which cell to pick at each stage for better optimization.
 
+### Lab
+The placement being done is congestion aware, not for timing optimization.
+ - Global placement is a coarse placement where no legalization is happening.
+   Legalisation is nothing but the cells must be placed in the rows and must be abutted to each other and there should be no overlaps. The global placement reduces wire length. The openLANE uses HPW (Half parameter wirelength).
 
+   
+All the cells in the lower left corner are now placed along the core of the design. There are no DRCs and all standard cells are placed in their rows.
+Flooplan ensured that decap cells are at boundary of standard cells, tap cells are properly placed, IO cells are correctly placed. The Power distribution Network(PDN) is created during the floorplan.
+</details>
+<details>
+<summary>Cell Design and Characterization</summary>
+<br>	
 
+The flipflop, buffer, combiantional gates are called Standard cells. The library contains various information such as Standard cells, Decap cells, macros, IPs etc..
+The cells in library have different size and different functionality and different threshold voltage.The bigger buffers have higher drive strength.
 
-
-
-
-
-
-
+#### Cell Design flow
+The cell design can be explained as inputs, design steps and outputs. 
+#### Inputs
+   - Process Design Kits (PDKs)
+   - LVS & DRC rules
+     The tech file gives some rules such as extension over active, polywidth etc.. The active area is place where you place transistors. 
+   - SPICE models
+      The SPICE model parameters are the values provided by foundry.
+   - Library and User-defined Specifications
+ 	- The seperation of Power rail and ground rail defines the cell height. The cell width depends on the timing information.
+	- The typical cell has to work on the supply voltage provided by TOP level. The library cell is designed  and noise margin is defined based on this specification by TOP level
+        - Certain cells need to be designed with specified Metal layers, Pin locations are defined by TOP level, the drawn gate length may vary above or below specified value.
+#### Design Steps
+ The library cell is chosen that adheres with all the design specifications specified in the inputs.
+ - Circuit Design
+   The circuit design implements the function and models NMOS and PMOS in such a fashion that meeets the library requirements.The output of circuit design is circuit description language (cdl).
+ - Layout Design
+   - The design is implemented thorugh NMOS and PMOS transistors and obtain network graph for nmos and pmos.
+   - The art of layout is a combiantion of Euler's path and stick diagram. The Euler's path is the path being traced only once. The stick diagram is obtained from the Euler's path.
+   - The stick diagram is converted into typical layout adhering to the rules from inputs.
+ - Characterization
+    It helps to get timing, noise and power information.
+   In an extracted SPICE netlist, the resistance and capacitance of various cells will be defined.
+#### Outputs
+- CDL file : It is obtained as output of the cirucuit design step after modelling the circuit with NMOS and PMOS transistors.
+- GDSII file : The output of the layout design modelled with stick diagrams.
+- LEF basically defines height and width of cell
+- CIR file is the extracted parasitics of each cell called extracted spice netlist used to do characterization.
 
 
 

@@ -3431,18 +3431,53 @@ The cell design can be explained as inputs, design steps and outputs.
    - The art of layout is a combiantion of Euler's path and stick diagram. The Euler's path is the path being traced only once. The stick diagram is obtained from the Euler's path.
    - The stick diagram is converted into typical layout adhering to the rules from inputs.
  - Characterization
-    It helps to get timing, noise and power information.
-   In an extracted SPICE netlist, the resistance and capacitance of various cells will be defined.
+   It helps to get timing, noise and power information.In an extracted SPICE netlist, the resistance and capacitance of various cells will be defined.
+    - NMOS, PMOs models are read
+    - Extraced SPICE netlist is read
+    - Recognizing the behaviour of the cell(buffer)
+    - Reading sub-circuits of inverter
+    - Read in necessary power supplies
+    - Applying stimulus (Characterization setup)
+    - Applying necessary output capacitance
+    - Necessary simulation commands are given
+   These are carried out by GUNA simulator generationg outputs files that characterize timing, power and noise.
 #### Outputs
 - CDL file : It is obtained as output of the cirucuit design step after modelling the circuit with NMOS and PMOS transistors.
 - GDSII file : The output of the layout design modelled with stick diagrams.
 - LEF basically defines height and width of cell
 - CIR file is the extracted parasitics of each cell called extracted spice netlist used to do characterization.
 
+### General Timing Characterizatin Parameters
+GUNA software is a characterization software that works on variables available as inputs with us.Let us understand the syntax and symnatics of timing.lib, power.lib, noise.lib.
+The different threshold points of a waveform are called timing threshold definitions.
+- slew_low_rise_thr
+  This is determined by taking points near to lower side of power supply which is 0 volts for rising signal. The typical value is 20%.
+- slew_high_rise_thr
+  This is determined by taking points near to rising side of the supply for rising signal. This is usually 80%. 
+- slew_low_fall_thr
+  This is determined by taking points near to lower side of power supply which is 0 volts for falling signal. The typical value is 20%.
+- slew_high_fall_thr
+   This is determined by taking points near to rising side of the supply for falling signal. This is usually 80%. 
+- in_rise_thr
+  The slew in the input transition of the applied stimulus for rising input. This is usually 50%.
+- in_fall_thr
+  The slew in the input transition of the applied stimulus for falling input. This is usually 50%.
+- out_rise_thr
+   The slew in the output waveform obtained as the output of cell for rise in output. This is usually 50%
+- out_fall_thr
+  The slew in the output waveform obtained as the output of cell for rise in output. This is usually 50%
+These are used to calculate slew, propagation delay, currents etc..
+The threshold points must be chosen carefully. When chosen wrong, the cell delay may be negative, as output point comes becomes the input. While writing out libs, this issue is seen.
+ - The propagation delay is defined as difference between output and input thresholds points.
+ - The transition time is the difference between high threshold to low threshold points. 
+If a circuit is not designed properly i.e., input has more transition then the slew (50% point) at input comes much later than the slew of output (50% point).
+</details>
 
+## [Day17 : Std Cell Characterize Experiment](https://www.github.com/Usha-Mounika/Samsung_PD#Day17)
 
+<details>
+<summary>CMOS Inverter Simulations</summary>
+<br>	
 
-
-
-
+ 
 </details>

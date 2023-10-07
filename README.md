@@ -3368,14 +3368,72 @@ Let us consider that the input ports are connected on the left hand side and the
 The flipflops should not be placed on the preplaced cells, because their location is fixed. The clock port drives the cells continuously, so the least resistance path is required for the clock.
 
 ### Lab
+The README file in the opelane/configuration contains all the switches that are defined for the design flow. The cotents of README are as follows:
 
+The switches for synthesis step are:
+![lab1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/22e0ed87-6590-4524-b84b-2fc9ed8c7ac8)
 
+The switches for Floorplan step are:
+![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/09402c2e-a6d7-4e96-8d52-e2c5ed3ef452)
 
+- The FP_CORE_UTIL is to define the utilization of the core.
+- The FP_ASPECT_RATIO defines the aspect ratio i.e., height/width of the core.
+- The FP_CORE_MARGIN is the offset between the core and die area.
+All the switches need not be set. The switches that are required vary from design to design.
 
+The switches for placement as follows:
+![lab1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0a20de94-6b2b-47c0-ade0-40ae8d400e7d)
 
+The contents pf floorplan.tcl in this folder shows the variables set to values as follows:
+![lab1_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9b887336-ed9e-4b87-93b7-a7d37cccc76e)
 
+The config.tcl contents inside the design are as follows:
+![lab1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/294d3ce2-9d6b-4dae-b920-1c001abcef4d)
 
+The contents of sky130_fd_sc_hd_config.tcl are aas follows:
+![lab1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/31bc21a7-9a9e-4589-b920-0a58091bc460)
 
+Now, 
+```run_floorplan``` command is given and the floorplan run is fired. The PDN was created successfully.
+![lab1_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b42b4469-2a2f-4c80-888d-90afcbbccce8)
+
+The following image shows that the design after run, 
+![lab1_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/04e6788c-7896-4fcb-83cc-928c054acbdc)
+
+The config.tcl after the run shows the variables set in the design as follows:
+![log before 2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/658e8a41-cf4c-4c85-9100-3d1678b4a17d)
+
+The metal layers are set to one more than defined value. Here VMETAL is 3 and HMETAL is 4 after the run. The core utilization is 35% in the log after run and before run is as follows:
+![log before 3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/dbfd684b-0042-4822-a3f7-1a8293000bca)
+
+The contents of io-placer log is as follows:
+![log before](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e49b80d0-9e8e-460d-bc15-abd53b879d1a)
+
+The contents of def file after floorplan are as follows:
+![def](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d74555be-40cd-45e8-8fdf-6854170a9a6e)
+
+Inorder to view the floorplan the magic command is used as follows:
+
+This command is executed in the results/floorplan directory after runs.
+```
+magic -T /Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.placement.def &
+```
+Now, The floorplan is opened. Press **S** for selecting the whole design nd **V** to align the design to center.
+![design1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a8bad38f-df7e-4889-84e6-6ace9aa36fa7)
+
+By zooming,
+![design2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/85f38403-d089-43dd-b4bc-33ecf33328ac)
+
+By selecting a particular object and giving ```what``` command in tkcon.tcl gives the description of the shape as follows:
+![design3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/70be3b8a-2c60-479b-8887-f8240cf530f5)
+
+![design4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/08deabd0-0f6d-4940-8006-1db75f5bbb1f)
+
+The physical cells can be viewed when more zoomed in,
+![design5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9ca96966-4d98-4b65-a190-453d2744bfc7)
+
+All the cells are not placed in the design as placement is done. All these cells are present as cluster at the origin point as follows. When a particular cell is selected, it shows a standard cell as OAI cell.
+![design6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8ab79e3c-eee5-4f6a-a7c3-090d2dc3d04c)
 
 </details>
 <details>
@@ -3411,8 +3469,20 @@ The cells are common in each stage.The cells are modelled such that the tool und
 The placement being done is congestion aware, not for timing optimization.
  - Global placement is a coarse placement where no legalization is happening.
    Legalisation is nothing but the cells must be placed in the rows and must be abutted to each other and there should be no overlaps. The global placement reduces wire length. The openLANE uses HPW (Half parameter wirelength).
+The placement run is fired with ```run_placement``` command.
 
-   
+   The following figures show the HPW variatin during placement stage
+   ![day2_2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b17032c4-c11c-4bbd-90fa-afff1a6bd239)
+
+   ![day2_2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7ce9d9ac-76ce-4ce1-97bd-3c82476c8e85)
+The placement run is successfully completed as follows:
+![day2_2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/30efce03-50a3-40c0-bfd9-11bade6fb133)
+
+The following images show that cells are placed in their rows as follows:
+![day2_2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5d1504d6-039c-4e05-8840-c20a2258ddf9)
+
+![day2_2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8522cef8-68b1-49bc-82ec-0ffa0ae2acf0)
+
 All the cells in the lower left corner are now placed along the core of the design. There are no DRCs and all standard cells are placed in their rows.
 Flooplan ensured that decap cells are at boundary of standard cells, tap cells are properly placed, IO cells are correctly placed. The Power distribution Network(PDN) is created during the floorplan.
 </details>

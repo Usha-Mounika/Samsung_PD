@@ -3562,5 +3562,58 @@ If a circuit is not designed properly i.e., input has more transition then the s
 <summary>CMOS Inverter Simulations</summary>
 <br>	
 
+ #### IO placer
+The OpenLANE provides chance to change the variable options on the fly. Inorder to change the congestion of IO pins alignment, the magic command is used to view the floorplan def as follows:
+```
+magic -T /Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.floorplan.def &
+```
+The floorplan can be viewed as follows. The pins are placed in equidistant.
+![lab0_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/29bab887-e1f4-4451-88d4-bd7730644433)
+
+The IO placer is the tool used to place IO pins based on the requirement specified. So, let us increase the congestion by changing the variable to 2 as follows:
+![lab0_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6bcd33b3-04f8-4690-895f-bfc12215c45c)
+
+Now the floorplan run is fired again, the pins are placed closely as follows:
+![lab0_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f872f99b-7405-416d-b615-515ab58adf85)
+
+![lab0_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/450fea42-ca8f-4a12-ab05-c803aa1ee0c0)
+
+#### SPICE simulations
+The SPICE deck needs to be created before simulation. The SPICE deck is the connectivity information about the netlist, inputs provided, tap points to view outputs.
+The SPICE is created by defining component connectivity, component values, identifying the nodes and naming them.
+A substrate is a potential component/pin that needs the connectvity information. The substrate tunes the threshold of NMOS and PMOS.The substrate pin direction varies between NMOS and PMOS symbol.
+The value of output load capacitance is obtained with huge computational analysis.
+The component value needs to be defined for PMOS and NMOS i.e., W/L values(0.375u/0.25u). Let us assume same value although PMOS should be twice in size to NMOS. The output capacitance say 10fF.The applied gate voltage is usually considered multiple of channel length, say 2.5V. A node is defined when a component is placed between two nodes.
+
+The netlist is defined in a fashion of drain, gate, substrate and source.
+The deinition of a component is as follows:
+```
+M1 out in vdd vdd pmos W=0.375u L=0.25u
+M2 out in 0 0 nmos W=0.375u W=0.25u
+```
+Here, M1 is the component name and PMOS is the type of component and W/L values are defined. Here, the out is connected to drain and in is connected to gate.
+The substrate and source of PMOS are connected to supply and that of NMOS are connected to ground.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  
 </details>

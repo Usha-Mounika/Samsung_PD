@@ -2,8 +2,8 @@
 
 A brief description of what this training summarizes : 
 
-- [Day0 : Setup Check](https://www.github.com/Usha-Mounika/Samsung_PD#Day0)
-- [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
+- [Day0 : Setup Check](https://github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#day0setupcheck)
+- [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#/blob/master/README.md#Day1)
 - [Day2 : Timing Libs, hierarchical vs flat synthesis and efficient flop coding styles](https://www.github.com/Usha-Mounika/Samsung_PD#Day2)
 -  [Day3 : Combinational and Sequential Optimizations](https://www.github.com/Usha-Mounika/Samsung_PD#Day3)
 -  [Day4 : GLS,blocking vs non-blocking and Synthesis Simulation mismatch](https://www.github.com/Usha-Mounika/Samsung_PD#Day4)
@@ -17,9 +17,9 @@ A brief description of what this training summarizes :
 -  [Day12 : BabySoC Modelling](https://www.github.com/Usha-Mounika/Samsung_PD#Day12)
 -  [Day13 : Post-Synthesis Simulation](https://www.github.com/Usha-Mounika/Samsung_PD#Day13)
 -  [Day14 : Synopsys DC and timing analysis](https://www.github.com/Usha-Mounika/Samsung_PD#Day14)
--  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD#Day15)
--  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD#Day16)
--  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD#Day17)
+-  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day15)
+-  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day16)
+-  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day17)
 
 
 ## Day0 : Setup Check
@@ -92,7 +92,7 @@ The iverilog was setup.
 <img width="666" alt="iverilog" src="https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e649c3c3-d141-48f9-83ee-03a9ad5a669d">
 </details>
 
- ## [Day1 : Introduction to Verilog RTL Design and Synthesis](https://www.github.com/Usha-Mounika/Samsung_PD#Day1)
+ ## Day1 : Introduction to Verilog RTL Design and Synthesis
  
  <details>
 <summary>Introduction to RTL Design and Synthesis</summary>
@@ -3122,7 +3122,7 @@ This graph shows the THS of the design. THS stands for Total Hold Slack, which i
 
 </details>
 
-## [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD/tree/master/Samsung_PD#Day15)
+## Day15 : Inception of EDA and PDK
 <details>
 <summary>Introduction</summary>
 <br>	
@@ -3290,7 +3290,7 @@ The following image shows that the design is violated. One of the report is viol
 
 </details>
 
-## [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD#Day16)
+## Day16 : Good Floorplan vs Bad Floorplan
 
 <details>
 <summary>Chip Floorplan Considerations</summary>
@@ -3556,7 +3556,7 @@ The threshold points must be chosen carefully. When chosen wrong, the cell delay
 If a circuit is not designed properly i.e., input has more transition then the slew (50% point) at input comes much later than the slew of output (50% point).
 </details>
 
-## [Day17 : Std Cell Characterize Experiment](https://www.github.com/Usha-Mounika/Samsung_PD#Day17)
+## Day17 : Std Cell Characterize Experiment
 
 <details>
 <summary>CMOS Inverter Simulations</summary>

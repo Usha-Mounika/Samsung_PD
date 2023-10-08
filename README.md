@@ -3579,20 +3579,38 @@ Now the floorplan run is fired again, the pins are placed closely as follows:
 ![lab0_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/450fea42-ca8f-4a12-ab05-c803aa1ee0c0)
 
 #### SPICE simulations
-The SPICE deck needs to be created before simulation. The SPICE deck is the connectivity information about the netlist, inputs provided, tap points to view outputs.
+- The SPICE deck needs to be created before simulation. The SPICE deck is the connectivity information about the netlist, inputs provided, tap points to view outputs.
 The SPICE is created by defining component connectivity, component values, identifying the nodes and naming them.
-A substrate is a potential component/pin that needs the connectvity information. The substrate tunes the threshold of NMOS and PMOS.The substrate pin direction varies between NMOS and PMOS symbol.
+- A substrate is a potential component/pin that needs the connectvity information. The substrate tunes the threshold of NMOS and PMOS.The substrate pin direction varies between NMOS and PMOS symbol.
 The value of output load capacitance is obtained with huge computational analysis.
-The component value needs to be defined for PMOS and NMOS i.e., W/L values(0.375u/0.25u). Let us assume same value although PMOS should be twice in size to NMOS. The output capacitance say 10fF.The applied gate voltage is usually considered multiple of channel length, say 2.5V. A node is defined when a component is placed between two nodes.
+- The component value needs to be defined for PMOS and NMOS i.e., W/L values(0.375u/0.25u). Let us assume same value although PMOS should be twice in size to NMOS. The output capacitance say 10fF.The applied gate voltage is usually considered multiple of channel length, say 2.5V. A node is defined when a component is placed between two nodes.
 
-The netlist is defined in a fashion of drain, gate, substrate and source.
-The deinition of a component is as follows:
-```
+The netlist is defined in a fashion of drain, gate, source and substrate.
+The definition of a component is as follows:
+```cdl
 M1 out in vdd vdd pmos W=0.375u L=0.25u
 M2 out in 0 0 nmos W=0.375u W=0.25u
+cload out 0 10f
+Vdd vdd 0 2.5
+Vin in 0 2.5
 ```
-Here, M1 is the component name and PMOS is the type of component and W/L values are defined. Here, the out is connected to drain and in is connected to gate.
-The substrate and source of PMOS are connected to supply and that of NMOS are connected to ground.
+- Here, M1 is the component name and PMOS is the type of component and W/L values are defined. Here, the out is connected to drain and in is connected to gate.
+- The substrate and source of PMOS are connected to supply and that of NMOS are connected to ground.
+- The load capacitance is connected between out port and ground and the value is 10fF. Similarly, the supply voltages are connected between groud and respective nodes and the voltage is 2.5V.
+
+The simulation commands are 
+```cdl
+.op
+.dc Vin 0 2.5 0.05
+```
+This command implies that gate voltage is varied from 0 to 2.5V in steps of 0.05V. This is done to note the output characteristics with respect to input voltage.
+The model file must be described as follows that contains the complete model description of NMOS and PMOS of the length.
+```cdl
+.LIB "tsmc_025um_model.mod" CMOS_MODELS
+.end
+```
+#### Lab
+The SPICE simulation is done as follows:
 
 
 

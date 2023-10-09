@@ -3613,17 +3613,84 @@ The model file must be described as follows that contains the complete model des
 The SPICE simulation is done as follows:
 
 
+</details>
+<details>
+<summary> CMOS Fabrication Process</summary>
+<br>
+	
+The 16-mask process is
 
+1. Selecting a Substrate
+ A substrate is on which the whole design is fabricated. The GDSII is fabricated on to a substrate. There are various kinds of substrates available.
+The most commonly used substrate is P-type silicon substrate. It has the folowing properties:
+- High resistivity (5-50 ohm)
+- Doping level (10^15/cm3)
+- orientation (100)
+ A substrate doping should be less than well doping. A well is used to fabricate NMOS and PMOS seperately.
+2. Creating an active region for transistors
+  Active region is wher PMOS and NMOS cells are there on a substrate. These are like pockets created on p-substrate. An isolation must be created between these pockets.
+- A Silicon dioxide layer is grown, that acts as an insulator(of ~40nm thickness).
+- Next, deposit a layer of silicon nitrite (~80nm of Si3N4)
+- To create the wells, the silicon nitrite layer is covered with a photoresist (negative or positive film seen in camera) layer of ~1um. A layout is a mask in fabrication terms.
+- These masks act as protecting shields for the photoresist below them and the UV light is passed through the substrate. So, the area below mask is left and the remaining photoresist is gone. Now, The extra resist exposed to UV light is washed away with a developing solution. Now, the masks are removed
+- The silicon nitrite is etched. The photoresist is now removed, as silicon nitrite acts as protection, to grow other layers. The photoresist is removed chemically.
+- The substrate is placed in an oxidation furnace, that grows second level of oxidation lyer. The area under silicon nitrite is protected and oxide is grown on exposed area.
+- Now, the area at which the transistor is formed is isolated from one another. The field oxide is grown. This process is called LOCOS.(Local Oxidation of silicon)
+- The Silicon nitrite is stripped off using hot phosphoric acid. A strict electrical isolation is created between NOS and PMOS.
+3. N-well and P-well formation
+The P-well is used for NMOS fabrication and N-well is used for PMOS fabrication.
+- A photoresist layer is deposited and define the pattern of layers to be protected.
+- A part  of the substrate is masked and exposed to UV lightand washed away with solution.
+- A p-well is created using boron. The boron is diffused into p-type substrate using ion-implantation. The energy needed to diffuse boron through the oxide layer is ~200keV.
+- Similarly, the other part is masked now and covered with photoresist and masked, etched. Now, phosphorous is diffused through oxide layer with an energy of ~400keV using ion-implantation.
+- The wells are created but they need o be diffused such that they occupy half of the substrate area.
+- Now, the substrate is taken into a high temperature furnace (driving furnace) of ~1100c forming clear wells. This is known as twin-tub process.
+4. Formation of Gate terminal
+ Gate is an important terminal of PMOS and NMOS that controls the threshold voltage. The threshold voltage is the turning ON voltage of transistor.
+Threshold voltage is dependent on body effect co-efficient, inturn doping concentration and oxide capacitance.
+So, these variables are controlled while fabrication such that required threshold voltage is obtained.
+- Again the new mask is placed, etched and the boron is diffused with less energy of ~60keV such that this diffuses to the edge of surface.
+- The Mask is used for N-well, and etched and the n-type material is diffused with less energy such that it lies beneath the top of surface.
+- The oxide is damaged due to implantation and penetration of p-type and n-type dopants through it. The original oxide is etched using hydroflouric acid solution.
+- The oxide is regrown again to give high-quality oxide (~10nm thin). This thickness is controlled to obtain desired threshold voltage.
+  
+  The gate formation is done by
+- Deposit a polysilicon layer of 0.4um. The gate area needs to be of low resistance. The layer is doped with impurities such as phosphorous or arsenic.
+- Again, deposit a photoresist and gate mask is used and etch away extra exposed layer and photoresist is removed forming the gate terminal.
+5. Lightly Doped Drain (LDD) Formation 
+The doping profile for PMOS in n-well are P+, P-, N. The doping profie for NMOS in p-well are N+, N-, P. We need the variation (of +,-) in the doping profile due to
+- Hot electron effect
+  When device size reduces, the electric field increases as power supply is not changed.
+  - The high energy charge carriers break Si-Si bonds leading to more elctron flow which is undesirable as the doping profile is maintained.
+  - The energy might be high that it crosses the 3.2eV barrier between Si conduction band and SiO2 conduction band. If it crosses, it might enter into oxide layer, which is just above the surface creating liability issues.
+- Short Channel effect
+ For short channels, the drain field penetrates tthe channel. In other words, As the channel length reduces, the gate voltage applied is directly injected into the device loosing control over the current flow in it.
 
+The process to generate LDD structure is
+The mask7 is used on the photoresist. It is exposed to UV light and etched, washed. The phosphorous is diffused with energy such that it is implanted just beneath  the surface. N+ means heavily doped concentration and N- means lightly doped concentration. The gate avoids phosphorous entering beneath it.
+Similarly, the mask8 is used on photoresist and then the boron is diffused with energy such that it is implanted just beneath  the surface. 
+The whole layer is covered with SiO2 or Si3N4.
+The Plasma anistropic etching is a directed etching that removes the oxide except that on the side walls of gate. The side-wall spacers help us to keep the lightly doped areas more intact.
+6. Source and Drain formation
+A thin layer of screen oxide is added to avoid the effect of chanelling. It is added to randomize the  direction of ions.
+Channeling effect occurs when the vector velocity of ions matches with the crystalline structure of p-type substrate, the ions mightgo deeper into the substrate without hitting any silicon atoms.
+Now, tha mask 9 is used with the photolithographic process forcovering n-well and mask 10 for p-well. The P+ areas are formed below the surface in the N well region and N+ areas are formed beneath the P well region.
+The lightly doped drain areas are still intact and the boron(~50keV) and arsenic (~75keV) are diffused into n-well and p-well respectively.
+6. Contacts and local interconnects
+First, remove the thin screen oxide using HF solution. The oxide layer is etched to form the interconnects
+- Deposit titanium on wafer surface using sputtering. When titanium metal reacts with argom gas, the titanium ions moves from the metal surface to the surface of substrate.
+-  Then, Wafer is heated at about 650-700c in nitrogen ambience.The lowresistant TiSi2 gets deposited all over the surface that can be used for local interconnects.
+-  The mask 11 is used to create the gaps to draw interconnects to top.The extra TiN is etched by RCA cleaning. The RCA solution consists of deionized water, hydropgen peroxide, ammmonium hydroxide.
+8. Higher level metal formation
+   The surface topography is not planar. Inorder to planarise it, we deposit a thick SiO2 layer doped with phosphorous or boron. The chemical mechanical polishing is used for planarizing the wafer surface.
+   The contact holes are drilled using the photolithographic process with mask 12. The holes are drilled and mask is removed.
+   A thin layer of TiN is grown, as it acts a good adhesion layer for SiO2 and as goold barrier between bottom and top interconnects. A blanket tungsten layer is deposited and on which an aluminium layer is deposited. The mask13 i used on the aluminium layer to form metal contacts with photolithographic process.
+   The SiO2 is deposited again and holes are created with mask14 with photolithographic process and TiN layer is deposited.
+   The mask15 is used to define the pattern again above this second tungsten layer. The thickness of metal layer is increased from bottom to top.
+   The mask 16 is used to drill open contact holes in this layer.
 
-
-
-
-
-
-
-
-
+#### Lab
+   When a poly crosses n-diffusion, it is NMOS.
 
 
 

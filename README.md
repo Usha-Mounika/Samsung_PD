@@ -3609,9 +3609,58 @@ The model file must be described as follows that contains the complete model des
 .LIB "tsmc_025um_model.mod" CMOS_MODELS
 .end
 ```
-#### Lab
+
 The SPICE simulation is done as follows:
 
+The above netlist is written out in cmos_inv.cir and fired run. After setting plot, it gives options as op1, dc1. As the dc transfer characteristics are to be plotted, dc1 is given. The display command displays the voltages present in design. After plot command, we get the graph.
+```
+source cmos_inv.cir
+run
+setplot
+dc1
+display
+plot out vs in
+```
+Now Let us simulate another inverter with PMOS width varied to 2.5 times of NMOS i.e., 0.9375um.
+The output of these both simulations are as follows:
+![graph](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e330da7c-3773-419b-b15d-cec92bc3ab66)
+
+The CMOS inverter is a robust device, though size is varied, the switching waveform is same. The robustness is evaluated with some characteristicis such as switching threshold, noise margin.
+#### Switching Threshold
+The switching threshold is the point where Vin is equal to Vout. When a tan 45 line is drawm from origin, the point that intersects the output is the threshold value. It is the point where both PMOS and NMOS turn ON. If both turned ON, high leakage will be present.
+![graph2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1b5e8f90-5d26-41cd-945d-e7f499e28350)
+
+The operation of PMOS and NMOS in an inverter is as follows:
+![new](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/743208da-b9c0-4563-8410-7bab60d055f5)
+
+Here, the gate voltage and output voltage are same. The current flowing from PMOS to output capacitor and capacitor to NMOS are almost same. So, ```VGS=VDS``` and ```Idsp=-Idsn```.
+
+Let us now do the dynamic simulation of the CMOS inverter. The netlist written is as follows:
+```
+M1 out in vdd vdd pmos W=0.375u L=0.25u
+M2 out in 0 0 nmos W=0.375u W=0.25u
+
+cload out 0 10f
+
+Vdd vdd 0 2.5
+Vin in 0 0 pulse 0 2.5 0 10p 10p 1n 2n
+
+**SIMULATION Commands**
+.op
+.tran 10p 4n
+*** .include mosis_1um_model.mod ***
+.LIB "tsmc_025um_model.mod" CMOS_MODELS
+.end
+```
+The input signal defined is it starts from 0V and ends at 2.5V and shift is 0 and rise time and fall time of 10ps and ON pulse width is 1ns and period is 2ns. So, The duty cycle is 50%.
+The simulated transient waveform is as follows:
+![graph3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/69cdb634-6243-4074-ae4b-cecf65860fca)
+
+Clone the vsdstdcelldesign as follows:
+![lab0_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5ac76c59-0472-496a-9c10-8266b2c7e567)
+
+The magic command gives the following inverter as shown:
+![lab0_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/924db0c5-4a7b-44d5-b9a2-8f0cc8a231fb)
 
 </details>
 <details>
@@ -3632,10 +3681,14 @@ The most commonly used substrate is P-type silicon substrate. It has the folowin
 - A Silicon dioxide layer is grown, that acts as an insulator(of ~40nm thickness).
 - Next, deposit a layer of silicon nitrite (~80nm of Si3N4)
 - To create the wells, the silicon nitrite layer is covered with a photoresist (negative or positive film seen in camera) layer of ~1um. A layout is a mask in fabrication terms.
+![step1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a844f749-0838-4703-9ce0-92fa8d53c734)
+  
 - These masks act as protecting shields for the photoresist below them and the UV light is passed through the substrate. So, the area below mask is left and the remaining photoresist is gone. Now, The extra resist exposed to UV light is washed away with a developing solution. Now, the masks are removed
 - The silicon nitrite is etched. The photoresist is now removed, as silicon nitrite acts as protection, to grow other layers. The photoresist is removed chemically.
 - The substrate is placed in an oxidation furnace, that grows second level of oxidation lyer. The area under silicon nitrite is protected and oxide is grown on exposed area.
 - Now, the area at which the transistor is formed is isolated from one another. The field oxide is grown. This process is called LOCOS.(Local Oxidation of silicon)
+![step2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e84b56f2-2afe-4791-9537-cc7819c20910)
+
 - The Silicon nitrite is stripped off using hot phosphoric acid. A strict electrical isolation is created between NOS and PMOS.
 3. N-well and P-well formation
 The P-well is used for NMOS fabrication and N-well is used for PMOS fabrication.
@@ -3645,6 +3698,8 @@ The P-well is used for NMOS fabrication and N-well is used for PMOS fabrication.
 - Similarly, the other part is masked now and covered with photoresist and masked, etched. Now, phosphorous is diffused through oxide layer with an energy of ~400keV using ion-implantation.
 - The wells are created but they need o be diffused such that they occupy half of the substrate area.
 - Now, the substrate is taken into a high temperature furnace (driving furnace) of ~1100c forming clear wells. This is known as twin-tub process.
+![setep3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0ab536ac-9f48-485f-8617-56bad3985c7c)
+
 4. Formation of Gate terminal
  Gate is an important terminal of PMOS and NMOS that controls the threshold voltage. The threshold voltage is the turning ON voltage of transistor.
 Threshold voltage is dependent on body effect co-efficient, inturn doping concentration and oxide capacitance.
@@ -3653,7 +3708,8 @@ So, these variables are controlled while fabrication such that required threshol
 - The Mask is used for N-well, and etched and the n-type material is diffused with less energy such that it lies beneath the top of surface.
 - The oxide is damaged due to implantation and penetration of p-type and n-type dopants through it. The original oxide is etched using hydroflouric acid solution.
 - The oxide is regrown again to give high-quality oxide (~10nm thin). This thickness is controlled to obtain desired threshold voltage.
-  
+ ![step4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/63bd4f82-9feb-4e0a-8621-e7020dd1d462)
+
   The gate formation is done by
 - Deposit a polysilicon layer of 0.4um. The gate area needs to be of low resistance. The layer is doped with impurities such as phosphorous or arsenic.
 - Again, deposit a photoresist and gate mask is used and etch away extra exposed layer and photoresist is removed forming the gate terminal.
@@ -3665,32 +3721,122 @@ The doping profile for PMOS in n-well are P+, P-, N. The doping profie for NMOS 
   - The energy might be high that it crosses the 3.2eV barrier between Si conduction band and SiO2 conduction band. If it crosses, it might enter into oxide layer, which is just above the surface creating liability issues.
 - Short Channel effect
  For short channels, the drain field penetrates tthe channel. In other words, As the channel length reduces, the gate voltage applied is directly injected into the device loosing control over the current flow in it.
+![step5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/567d6912-eed3-403a-9303-770e6a8e76b0)
 
 The process to generate LDD structure is
 The mask7 is used on the photoresist. It is exposed to UV light and etched, washed. The phosphorous is diffused with energy such that it is implanted just beneath  the surface. N+ means heavily doped concentration and N- means lightly doped concentration. The gate avoids phosphorous entering beneath it.
 Similarly, the mask8 is used on photoresist and then the boron is diffused with energy such that it is implanted just beneath  the surface. 
 The whole layer is covered with SiO2 or Si3N4.
 The Plasma anistropic etching is a directed etching that removes the oxide except that on the side walls of gate. The side-wall spacers help us to keep the lightly doped areas more intact.
+![step6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/56f43e45-0638-4abc-8cba-25fde9952009)
+
 6. Source and Drain formation
 A thin layer of screen oxide is added to avoid the effect of chanelling. It is added to randomize the  direction of ions.
 Channeling effect occurs when the vector velocity of ions matches with the crystalline structure of p-type substrate, the ions mightgo deeper into the substrate without hitting any silicon atoms.
 Now, tha mask 9 is used with the photolithographic process forcovering n-well and mask 10 for p-well. The P+ areas are formed below the surface in the N well region and N+ areas are formed beneath the P well region.
+![step7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4553573b-f85d-4381-b892-7bd2bd3ff311)
+
 The lightly doped drain areas are still intact and the boron(~50keV) and arsenic (~75keV) are diffused into n-well and p-well respectively.
-6. Contacts and local interconnects
+8. Contacts and local interconnects
 First, remove the thin screen oxide using HF solution. The oxide layer is etched to form the interconnects
 - Deposit titanium on wafer surface using sputtering. When titanium metal reacts with argom gas, the titanium ions moves from the metal surface to the surface of substrate.
 -  Then, Wafer is heated at about 650-700c in nitrogen ambience.The lowresistant TiSi2 gets deposited all over the surface that can be used for local interconnects.
 -  The mask 11 is used to create the gaps to draw interconnects to top.The extra TiN is etched by RCA cleaning. The RCA solution consists of deionized water, hydropgen peroxide, ammmonium hydroxide.
+![step8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ff3c1371-06db-490b-a84e-9b3e7d8932c7)
+
 8. Higher level metal formation
    The surface topography is not planar. Inorder to planarise it, we deposit a thick SiO2 layer doped with phosphorous or boron. The chemical mechanical polishing is used for planarizing the wafer surface.
    The contact holes are drilled using the photolithographic process with mask 12. The holes are drilled and mask is removed.
-   A thin layer of TiN is grown, as it acts a good adhesion layer for SiO2 and as goold barrier between bottom and top interconnects. A blanket tungsten layer is deposited and on which an aluminium layer is deposited. The mask13 i used on the aluminium layer to form metal contacts with photolithographic process.
+   A thin layer of TiN is grown, as it acts a good adhesion layer for SiO2 and as goold barrier between bottom and top interconnects. A blanket tungsten layer is deposited and on which an aluminium layer is deposited. The mask13 is used on the aluminium layer to form metal contacts with photolithographic process.
+![step9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/59ec4a44-72e2-4b38-aec9-a8f16d41cbd4)
+
    The SiO2 is deposited again and holes are created with mask14 with photolithographic process and TiN layer is deposited.
    The mask15 is used to define the pattern again above this second tungsten layer. The thickness of metal layer is increased from bottom to top.
    The mask 16 is used to drill open contact holes in this layer.
+![last](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/63b145c1-8b0d-4e08-8a0f-e9de47c21ac5)
+
 
 #### Lab
-   When a poly crosses n-diffusion, it is NMOS.
+   When a poly crosses n-diffusion, it is NMOS. When a polysilicon crosses p-diffusion, it is PMOS.
+
+The magic command gives the following inverter as shown:
+![lab0_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/924db0c5-4a7b-44d5-b9a2-8f0cc8a231fb)
+
+The layer can be selected by clicking S and giving what command tells you about the shape selected as follows:
+![lab0_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/19ba801b-ef31-4dab-8bb8-bf2a23188e6c)
+
+![lab0_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a7f6a4b0-6444-48d5-9cb6-f118b7de013d)
+
+Clicking S thrice by placing cursor on any shape, will highlight the connected objects to that shape as follows:
+
+The output port is connected to NMOS and PMOS as follows:
+![lab0_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3719a64e-0dab-48f4-9e1e-f8a3bebfe17f)
+
+The source of PMOS is connected to powersupply.
+![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9444ef9e-73eb-40a8-ace5-49d1cae7893a)
+
+The drain of NMOS is connected to Ground.
+![lab1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1095bfe1-7b02-4577-8ab3-9b9c401ca86c)
+
+The color palette on right shows the different metal layers available. 
+</details>
+
+<details>
+<summary> Labs with magic</summary>
+<br>
+
+Inorder to extract the spice deck file, open tkcon window and execute the following commands:
+```
+extract all
+ext2spice cthresh 0 rthresh 0
+ext2spice
+```
+This creates a spice file with .spice extension and .ext extension file. The SPICE file is now edited and a netlist is written in it as follows:
+![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b23277bf-4cf1-413e-82dc-d79a5d0f574c)
+
+ Now, the ngspice is installed and the ngspice is simulated as:
+ ```
+sudo apt install ngspice
+ngspice sky130_inv.spice
+```
+![lab1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/75b79ccf-6845-4cb2-8f3d-1907821a4f2c)
+
+The circuit is simulated and output is plotted as follows ny command:
+```
+plot y vs time a
+```
+![lab1_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/33d12c00-2128-48fe-9c18-e9880738059a)
+
+The load capacitance is high forming spikes at the peaks so let us increase cload to 2fF. The output simulsted is as follows:
+```
+C3 Y 0 2fF 
+```
+![lab1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2f4c098f-f6b6-4fe6-900f-2199178c8a47)
+
+The rise time and propagation delay can be calculated by obtainig the points as below:
+![lab2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5079c24c-e01e-4238-b1e2-4ae103c4cdab)
+
+```
+Risetime = 2.182ns - 2.067ns = 0.115 ns or 115ps
+Rise delay = 2.207ns - 2.151ns  = 0.056 ns or 56ps
+```
+#### Labs on magic DRC
+
+![lab3_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/58cc939a-5cee-4ea4-a26f-791baabf14da)
+
+![lab3_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e49b31e7-94d1-4216-9a2a-f3a9a8e1367a)
+
+![lab3_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cd48d775-0c9d-4b85-8141-6ef9d7ac68c9)
+
+![lab3_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c88d4f9d-aa8a-4740-b59e-b7abe91bf57d)
+
+![lab3_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fe9384dd-d1e3-4ac2-9988-b91c4111edb5)
+
+![lab3_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9c9e3628-1e27-4fe2-b186-b19165da172f)
+
+![lab3_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c5a269e6-74ac-429f-8c91-b5de547219c5)
+
+![lab3_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/27aabacc-7992-4f6f-802e-df968cb4a3b6)
 
 
 
@@ -3700,5 +3846,7 @@ First, remove the thin screen oxide using HF solution. The oxide layer is etched
 
 
 
- 
+
+
+
 </details>

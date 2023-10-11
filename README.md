@@ -3913,6 +3913,105 @@ All n-wells contain metal contacted tap. This is viewed as error in nwell.4
 <summary>Timing Models using delay tables</summary>
 <br>	
 
+OpenLANE is a place n route tool. It does not require the mag information. It only requires, the pr boundary (inner box), power, ground, input and output ports information.
+The lef file contains only this information required.
+
+The guidelines for standard cell height are:
+- The input and output ports must lie on the vertical and horizontal tracks.
+- The width of the standard cell must be odd multiples of track pitch.
+- The height should be multiple of vertical pitch.
+
+The tracks are used during the routing stage. Routes are metal traces. The routing is specified through tracks.
+The following image shows the tracks.info contents as follows:
+![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f02f51ac-d4fc-4115-9693-af10fa71eea1)
+
+The first line says the horizontal track has an offset of 0.23 and pitch of 0.46. Every metal layer has X(horizontal) and Y(vertical) direction.
+
+The grid mode can be activated as follows.These are the reference for drawing a layout.
+![lab1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5897e336-e11f-4678-90f2-aefba63619af)
+
+The grid command needs an x spacing, y spacing, x origin, y origin. As the grid is being defined to check the alignment of input and output ports, the li1 is used as reference.
+So, the grid view is as follows.
+![lab1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/08b7709c-7063-4f1e-b25d-68f1b227359e)
+
+The ports are at the intersection of horizontal and vertical tracks ensuring route can reach from one to another.
+The PR boundary is the layer that the place and route tools will use for placing the cells next to each other. The standard cell PR boundary takes 3 boxes horizontally and 8 boxes vertically.
+![lab1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5133a3fe-528a-4f9e-a4e1-fdb1bec31515)
+
+The port information is not required by magic, but required for lef files. These ports, when extracted are defined as pins of macro. 
+
+A port can be defined by selecting it, and giving the values as follows:
+![lab2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6de35888-f19b-4a54-a912-454cfacfb0dd)
+
+Port enable number defines the order in which the port is defined in lef.
+
+The valid classes are default, input, output, tristate, bidirectional, inout, feedthrough, and feedthru. Valid uses are default, analog, signal, digital, power, ground, and clock. These attributes are set in tkcon window as follows:
+![lab2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6caf551f-9a2c-4d31-a009-bee16bca1f67)
+
+![lab2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/49690918-2422-438b-b3e0-7b7ad1a84f0c)
+
+Now, save the mag file using the command:
+```
+save sky130_invusha.mag
+```
+![lab2_15](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3f9126e4-95e3-46d3-a4cb-742978fb98e7)
+
+The ```lef write``` creates the lef file with the name same as cell name.
+![lab2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2fa19d7c-8baa-4193-8377-9ca47c565f68)
+
+The contents of the lef file created are as follows.The ports are defined as the pins in the lef.
+![lab2_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7b5dad88-3416-4897-b7b3-425be8d60600)
+
+
+The lef, libs that contain cell information are copied to src directory in designs/picorv32a. The information present in libs are as follows:
+![lab2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f9c50c88-0a12-415d-b986-ba6385616b13)
+
+![lab2_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/26920572-f829-403e-b010-22140d9fd5cf)
+
+![lab2_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/905c8839-cd4f-4ad1-b136-acda593274de)
+
+The cofig.tcl is edited as follows:
+![lab2_10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6571d487-6848-4c7f-ade8-738c8c18a7d8)
+
+Now, invoke the docker and open lane as follows:
+![lab2_12](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8f8292a7-9ac7-495f-8165-4664c577e749)
+
+The following commands are added inorder to ensure the inverter lef is included to the flow.
+```
+% set lefs [glob $::env(DESIGN_DIR)/src/*.lef]
+% add_lefs -src $lefs
+```
+![lab2_13](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5ab96ea8-1573-4ef6-ac77-7bb2c27f3511)
+
+Now, the synthesis run is fired using the following command.
+```
+run_synthesis
+```
+![lab2_14](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f2da6490-8acc-4dfc-b595-1a3a39544451)
+
+
+The AND gate acts as clock gate that is the other input decides whether it propagates the clock to the clock tree or not. The AND gate with input connected to 1 and OR gate with input connected to 0 can act as **clock gate**.
+The advantage is that the short-circuit power is saved during the switching time.
+
+The following clock tree is usually used for splitting load at the driver. The buffer can be swapped with a gate as follows.
+- The clock tree has levels of buffering and identical buffers(of same size) are present at same level
+- The load/fanout is same at each level.
+
+The delay tables act as timing models of the cell. The delay table is a function of input slew and output load.
+
+
+These are the various switches present in the configuration/README.md file.
+![lab2_16](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f9b2850d-429f-4435-bc55-5028ebb6e047)
+
+
+
+
+
+
+
+
+
+
 </details>
 <details>
 <summary>Timing Analysis with ideal clocks using OpenSTA</summary>

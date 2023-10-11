@@ -3778,6 +3778,9 @@ The source of PMOS is connected to powersupply.
 The drain of NMOS is connected to Ground.
 ![lab1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1095bfe1-7b02-4577-8ab3-9b9c401ca86c)
 
+When a box of the mask is deleted, it shows a drc error due to discontinuity.
+![lab1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a8d34297-1a87-4bad-b8a9-3f0123edab79)
+
 The color palette on right shows the different metal layers available. 
 </details>
 
@@ -3791,6 +3794,13 @@ extract all
 ext2spice cthresh 0 rthresh 0
 ext2spice
 ```
+![lab1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9155086a-1f4c-45e8-bfdd-f428288048ec)
+
+![lab1_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/99efa887-e046-421c-a80e-5ba394f35dea)
+
+The contents of pshort.lib are as follows:
+![lab2_1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a9aa6f2f-72a3-427a-95ce-f67380683ca7)
+
 This creates a spice file with .spice extension and .ext extension file. The SPICE file is now edited and a netlist is written in it as follows:
 ![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b23277bf-4cf1-413e-82dc-d79a5d0f574c)
 
@@ -3822,31 +3832,53 @@ Rise delay = 2.207ns - 2.151ns  = 0.056 ns or 56ps
 ```
 #### Labs on magic DRC
 
+First we copy ```drc_tests.tgz``` file from open_pdks in ```opencircuitdesign.com```. This zip file is unzipped using tar command. It contains various .mag files of layers such as met2, met3.
 ![lab3_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/58cc939a-5cee-4ea4-a26f-791baabf14da)
 
+The contents of .magicrc are as follows:
 ![lab3_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e49b31e7-94d1-4216-9a2a-f3a9a8e1367a)
 
+Now, the met3.mag file is loaded after opening an empty magic window using command:
+```
+magic -d XR
+```
 ![lab3_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cd48d775-0c9d-4b85-8141-6ef9d7ac68c9)
 
+The various drc errors are present on each box. This can be viewed by selecting a box and ```drc why``` in tkcon window.
 ![lab3_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c88d4f9d-aa8a-4740-b59e-b7abe91bf57d)
 
+The following image shows the drc error in metal 3.2
 ![lab3_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fe9384dd-d1e3-4ac2-9988-b91c4111edb5)
 
+The following image shows the drc error in metal 3.6 
 ![lab3_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9c9e3628-1e27-4fe2-b186-b19165da172f)
-
+As the 3.4 rule is not visible, it is visualised by selecting the location and filling it with metal3 layer
 ![lab3_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c5a269e6-74ac-429f-8c91-b5de547219c5)
 
+Now, using the command the vias are viewed in the rule.
+```
+cif see VIA2
+```
 ![lab3_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/27aabacc-7992-4f6f-802e-df968cb4a3b6)
 
+Now let us load poly.mag
+![lab3_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b44acf88-b035-44e0-b1f3-0658cdc62b21)
 
+The poly.9 has an error as shown. The vertical layer and horizontal layer are npolyres and npoly respectively. The spacing between these resistors is as follows:
+![lab3_10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/27bcf00f-dc11-4f9f-af58-cc453ce9413f)
 
+Inorder to remove the error, let us check poly.9 in sky130A as follows:
+![lab4_1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/528b01d6-ea91-4c6c-844a-11ea3b0bc2d9)
 
+Let us check for aliases used
+![lab4_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fab2e5a5-0803-4698-bf47-dd5b91298c9d)
 
+The diffusion layers are changed from ```alldiff``` to ```nonpolyres```
+![lab4_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ab7da8a9-01f4-4496-a1d3-a947f5dea23b)
 
+![lab4_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f234a766-6975-4a69-b4e7-a0a2dbb9a815)
 
-
-
-
-
+Now, the sky130A.tech is loaded and there is no drc error as shown.
+![lab4_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5cb2ef0f-1430-4c83-93bd-22b9b8c7a9c1)
 
 </details>

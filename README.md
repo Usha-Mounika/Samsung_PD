@@ -3881,4 +3881,16 @@ The diffusion layers are changed from ```alldiff``` to ```nonpolyres```
 Now, the sky130A.tech is loaded and there is no drc error as shown.
 ![lab4_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5cb2ef0f-1430-4c83-93bd-22b9b8c7a9c1)
 
+The other violations are
+- Copy the 3 poly metal and paste it into 2 different places and add pmos and nmos substrate and contact. This is to fix the issue with poly resistor spacing to diff and tap
+![lab2_1_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/04d21bed-5365-46fb-ad3b-15e0a6bba450)
+
+Now you change it back to alldiff in the poly.9 as follows:
+![lab2_1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cf4f4220-f3de-4d1a-a01a-6e96958d3662)
+
+The other drc error is as follows:
+![lab2_1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/679edf4f-f3b7-4947-ab34-236b4d96a0fd)
+
+![lab2_1_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c8cd88d7-761c-4669-9944-8413bbd547f1)
+
 </details>

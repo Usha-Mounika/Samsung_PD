@@ -20,6 +20,7 @@ A brief description of what this training summarizes :
 -  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day15)
 -  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day16)
 -  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day17)
+-   [Day18 : Pre-layout STA and importance of good clock tree](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day18)
 
 
 ## Day0 : Setup Check
@@ -3889,8 +3890,42 @@ Now you change it back to alldiff in the poly.9 as follows:
 ![lab2_1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cf4f4220-f3de-4d1a-a01a-6e96958d3662)
 
 The other drc error is as follows:
+
 ![lab2_1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/679edf4f-f3b7-4947-ab34-236b4d96a0fd)
 
 ![lab2_1_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c8cd88d7-761c-4669-9944-8413bbd547f1)
+
+All n-wells contain metal contacted tap. This is viewed as error in nwell.4
+![lab7_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ca95020e-3f18-45ac-924f-65091be82106)
+
+![lab7_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7003e912-1204-48b8-98cc-8925a51fe4e8)
+
+![lab7_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e0e0c302-4ec3-4f62-8e83-68a50608842f)
+
+![lab7_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a61b2b09-f042-44d9-a380-121aa2f49dda)
+
+![lab7_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1ff25643-c0a9-4e13-90b9-eefb602d19d6)
+
+</details>
+
+## Day 18 : Pre-layout STA aqnd importance of good clock tree
+<details>
+<summary>Timing Models using delay tables</summary>
+<br>	
+
+</details>
+<details>
+<summary>Timing Analysis with ideal clocks using OpenSTA</summary>
+<br>	
+
+</details>
+<details>
+<summary>Clock Tree Synthesis and Signal Integrity</summary>
+<br>	
+
+</details>
+<details>
+<summary>Timing Analysis with real clocks using OpenSTA</summary>
+<br>	
 
 </details>

@@ -4072,10 +4072,143 @@ After giving ```expand``` command in the tkcon window, the metal layers railed a
 <summary>Timing Analysis with ideal clocks using OpenSTA</summary>
 <br>	
 
+Ideal clock means the clock is not built (pre-cts stage). Let us consider the setup analyis with a single clock specifying theclock to be 1GHz (period=1ns).
+Inorder to avoid setup violation, the sum of internal delay of launch flop and combinational delay should be less than the time period of clock.
+
+Let us say that the clock at launch arrives at 0ns then the data takes a time of clock period to arrive at the capture flop. When the internal delay of a flop is considered, the capture flop also takes some time to produce output for propagated input. So, this internal delay is called setup time.
+![dsk2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2820f176-9a5e-4ce2-b05d-f6944e750071)
+
+The setup uncertainty is usually caused by the clock jitter, this makes the delay available for the path more stringent. The clock jitter is the uncertainty that causes delay in the clock that needs to reach at 0ns (to 0.1ns). This is usually caused due to the variations of the clock source. 
+![dsk2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9cd020de-1a01-425e-99d0-97a155bc2e7a)
+
+The combinational delay of a path involves the cell delays and net delays in the path aws follows:
+![dsk2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ef645dd0-f260-4cc0-8ae7-55c077deb869)
+
+The STA is usually done with PrimeTime (SYnopsys)tool. The timing analysis here is done using OpenSTA. Let us go to the openlane flow directory and create a file as follows:
+```
+cd ~/Desktop/work/tools/openlane_working_dir/openlane
+gvim pre_sta.conf                               \\for pre-layout STA i.e., with ideal clock conditions
+```
+The contents of the pre_sta.conf are as follows:
+```
+set_cmd_units -time ns -capacitance pF -current mA -voltage V -resistance kOhm -distance um \\units are defined
+read_liberty -max /home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src/sky130_fd_sc_hd__slow.lib \\liberty file for max(setup) delays
+
+read_liberty -min /home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src/sky130_fd_sc_hd__fast.lib \\liberty file for min(hold) delays
+
+read_verilog /home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/12-10_12-49/results/synthesis/picorv32a.synthesis.v
+
+link_design picorv32a
+
+read_sdc /home/vsduser/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/src/my_base.sdc
+report_checks -path_delay min_max -fields {slew trans net cap input_pin}
+report_tns
+report_wns
+```
+![lab2_31](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/398b82c6-2ea6-4217-aaa6-9f84bbe2d433)
+
+The netlist file is written at synthesis stage and then at CTS stage, but not at floorplan and placement stage. As the clock buffers are inserted at the CTS stage, the netlist is being changed, thus new netlist written out.
+
+The contents of my_base.sdc is as follows:
+```
+set ::env(CLOCK_PORT) clk 
+set ::env(CLOCK_PERIOD) 12.00
+set ::env(SYNTH_DRIVING_CELL) sky130_inv_usha 
+set ::env(SYNTH_DRIVING_CELL_PIN) Y 
+set ::env(SYNTH_CAP_LOAD) 17.65 
+create_clock [get_ports $::env(CLOCK_PORT)] -name $::env(CLOCK_PORT) -period $::env(CLOCK_PERIOD)
+set ::env(IO_PCT) 0.2
+set input_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_PCT)]
+set output_delay_value [expr $::env(CLOCK_PERIOD) * $::env(IO_PCT)]
+puts "\[INFO\]: Setting output delay to: $output_delay_value" 
+puts "\[INFO\]: Setting input delay to: $input_delay_value"
+ 
+## set max fanout S::env(SYNTH MAX FANOUT) (current design)
+set clk_indx [lsearch [all_inputs] [get_port $::env(CLOCK_PORT)]]
+
+#set rst indx [isearch (all inputs) Iget port resetn]]
+set all_inputs_wo_clk [lreplace [all_inputs] $clk_indx $clk_indx]
+
+#set all inputs wo clk rst (treplace sall inputs wo clk srst indx Srst indx] 
+set all_inputs_wo_clk_rst $all_inputs_wo_clk
+
+# correct resetn
+set_input_delay $input_delay_value -clock [get_clocks $::env(CLOCK_PORT)] $all_inputs_wo_clk_rst
+
+# set_input_delay 0.0 -clock [get clocks S::env(CLOCK PORT)] (resetn)
+set_output_delay $output_delay_value -clock [get_clocks $::env(CLOCK_PORT)] [all_outputs]
+
+# TODO set this as parameter
+set_driving_cell -lib_cell $::env(SYNTH_DRIVING_CELL) -pin $::env(SYNTH_DRIVING_CELL_PIN) [all_inputs]
+set cap_load [expr $::env(SYNTH_CAP_LOAD) / 1000.0] 
+puts "\[INFO\]: Setting load to: $cap_load" 
+set_load $cap_load [all_outputs]
+```
+The pre-sta is run by using the following command:
+```
+cd ~/Desktop/work/tools/openlane_working_dir/openlane
+sta pre_sta.conf
+```
+The following reports are generated showing the least positive slack as follows:
+![lab2_33](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0a739531-fb94-4fcf-9de4-f6cbead29948)
+
+![lab2_35](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/290a84f2-1858-4661-8c99-d25ed5d6544c)
+
+The hold is insignificant because the clock tree synthesis is not done yet. As skew is assumed zero, the hold is optimistic.
+Let us reduce the fanout, so the delays of the design are more optimized. The variables to be set are in README file as follows:
+![lab2_34](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a8b7db3d-cf4c-4993-b11b-d4893b604ad3)
+
+Now, we set the fanout to 4 using the following command. 
+```
+echo $::env(SYNTH_MAX_FANOUT)
+set ::env(SYNTH_MAX_FANOUT) 4
+```
+Now, remove the synthesis netlist again and fire the synthesis run and subsequent stages as follows:
+```
+run_synthesis
+run_floorplan
+run_placement
+```
+Now the sta is again checked for as follows:
+```
+sta pre_sta.conf
+report_net -connections _16837_
+```
+The report_net command is used to check all the connected inputs, outputs and nets as follows.
+![lab2_36](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ee41c5d3-f062-4250-84e2-8919658ea743)
+
+The following command is used to check the report of timing path as follows:
+```
+report_checks -fields {net cap slew input pins} -digits 4
+```
+![lab2_37](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/756d2556-e330-493d-87ce-d2a927b4fce8)
+
+![lab2_38](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0ba5367f-27b2-4410-bdf9-763b59dd425a)
+
 </details>
 <details>
 <summary>Clock Tree Synthesis and Signal Integrity</summary>
 <br>	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </details>
 <details>

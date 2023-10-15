@@ -4151,13 +4151,13 @@ cd ~/Desktop/work/tools/openlane_working_dir/openlane
 sta pre_sta.conf
 ```
 The following reports are generated showing the least positive slack as follows:
-![lab2_33](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0a739531-fb94-4fcf-9de4-f6cbead29948)
+![lab2_33](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c0f05a5a-c956-4adf-9863-4e801df6e62f)
 
-![lab2_35](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/290a84f2-1858-4661-8c99-d25ed5d6544c)
+![lab2_35](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4daa1fcd-d21e-4ef1-b4dc-9be3767e38a0)
 
 The hold is insignificant because the clock tree synthesis is not done yet. As skew is assumed zero, the hold is optimistic.
 Let us reduce the fanout, so the delays of the design are more optimized. The variables to be set are in README file as follows:
-![lab2_34](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a8b7db3d-cf4c-4993-b11b-d4893b604ad3)
+![lab2_34](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cfde8d9b-5f2a-4e10-875b-36690b6e6b75)
 
 Now, we set the fanout to 4 using the following command. 
 ```
@@ -4176,7 +4176,7 @@ sta pre_sta.conf
 report_net -connections _16837_
 ```
 The report_net command is used to check all the connected inputs, outputs and nets as follows.
-![lab2_36](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ee41c5d3-f062-4250-84e2-8919658ea743)
+![lab2_36](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c3d330eb-d94d-4f22-8741-a0722c6d5980)
 
 The buffers can be upsized using the ```replace_cell``` command. Upsizing the  cell improves transition, thus reducing cell delay.
 
@@ -4184,9 +4184,9 @@ The following command is used to check the report of timing path as follows:
 ```
 report_checks -fields {net cap slew input pins} -digits 4
 ```
-![lab2_37](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/756d2556-e330-493d-87ce-d2a927b4fce8)
+![lab2_37](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/613cf3a8-bee6-41b9-bf95-70f0ffa68c66)
 
-![lab2_38](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0ba5367f-27b2-4410-bdf9-763b59dd425a)
+![lab2_38](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1cf55293-3ffc-412c-abe0-40806e3216ba)
 
 A timing ECO is generated and fed to the PnR tools once the timming is met.
 
@@ -4227,17 +4227,17 @@ run_floorplan
 run_placement
 run_cts
 ```
-![lab2_39](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/78a0218f-9039-4b46-aa44-facb0cabd2e0)
+![lab2_39](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2a25af30-bba0-4061-92a1-7c4963846c32)
 
 This completes the successful clock tree synthesis as follows:
-![lab2_40](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9e78ca2f-9163-4a41-aa75-bdcbf8d11e5c)
+![lab2_40](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a9002b79-cd89-40ef-aadd-aa2d00778b42)
 
 Each stage in PnR has the relative .tcl files in openroad. The files for CTS are or_cts.tcl and cts.tcl.
 The contents of cts.tcl are as follows:
-![lab_41](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cfc025d4-39b6-4949-8756-0881e7203a45)
+![lab_41](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c7c002e2-87e3-4436-abd2-fbcd72e89b1b)
 
 The contents of or_cts.tcl are as follows:
-![lab2_42](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/98998623-e92a-4d1a-b6af-378abbdafa8c)
+![lab2_42](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a6d0d83b-a0d0-4cc6-a6af-8cab3d62109c)
 
 Let us check the following variables defined in openlane.
 ```

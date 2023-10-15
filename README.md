@@ -4336,16 +4336,17 @@ read_sdc designs/picorv32a/src/my_base.sdc
 set_propagated_clock [all_clocks]
 report_checks -path_delay min_max -fields {slew trans net cap input pin} -format full_clock_expanded
 ```
-![lab2_52](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8902c8e1-186a-42d5-bbc0-9f552839fb4c)
+![lab2_52](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/65c77bbb-4464-489b-a874-ad0c17818afb)
 
-![lab2_53](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/103909b1-4b4d-4c88-9112-7d05fd9ac830)
+![lab2_53](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/211a4374-697d-48b0-8e4a-d91e50e60cbe)
 
 ```
 report_clock_skew -hold
 report_clock_skew -setup
 set ::env(CTS_CLK_BUFFER_LIST) [linsert $::env(CTS_CLK_BUFFER_LIST) 0 sky130_fd_sc_hd__clkbuf_1]      (Adding back clkbuf1)
 ```
-![lab2_54](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/83665b4a-2a26-49b5-89fc-d34a9df03456)
+
+![lab2_54](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6fe1aa14-71d8-49da-b6da-a98da4036a5c)
 
 </details>
 

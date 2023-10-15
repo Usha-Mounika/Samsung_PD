@@ -3989,27 +3989,82 @@ run_synthesis
 ```
 ![lab2_14](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f2da6490-8acc-4dfc-b595-1a3a39544451)
 
+Clock gating is a technique that restricts the clock to propagate under specific conditions.
 
 The AND gate acts as clock gate that is the other input decides whether it propagates the clock to the clock tree or not. The AND gate with input connected to 1 and OR gate with input connected to 0 can act as **clock gate**.
-The advantage is that the short-circuit power is saved during the switching time.
+The advantage is that the short-circuit power is saved during the dynamic switching time.
 
 The following clock tree is usually used for splitting load at the driver. The buffer can be swapped with a gate as follows.
 - The clock tree has levels of buffering and identical buffers(of same size) are present at same level
 - The load/fanout is same at each level.
+![screen](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/27047de1-c798-4622-b548-b3c7f83f6ef6)
 
-The delay tables act as timing models of the cell. The delay table is a function of input slew and output load.
+The delay tables act as timing models of the cell. The delay table is a two-dimensional table, function of input slew and output load.
+A cell is characterized for range of input slew and range of output load values. The delay values vary with the size of cell also. This can be considered as a new cell with different specifications that is either slow or fast depending on requirement.
+![screen2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2c8f9bce-9f2e-496f-bd85-35b7c8e329dd)
 
+When the required delay is not present in table, but lies within the intervals of specified values, there are various techniques to deduce the equation and find out the delay value. This can be called interpolation.
+
+The latency at endpoints will be the sum of the delays of each individual cell in that path.
+The total skew value between two endpoints will be non-zero if the output load driven for a cell is varied, meaning different delay numbers are seen between endpoints, this is why it is preferred to have the nodes at each level driving the same load.
+This non-zero skew might lead to setup and violations.
+Inorder to retain the skew to be zero in the presence of variable load,it is done by using a different buffer size at the same level that can achieve the same level of delay as the other buffer in same level based on its delay table.
+Power aware CTS needs to consider the active and inactive parts in the design. The clock need not be propagated in the parts where it is inactive for sometime and later propagated.
 
 These are the various switches present in the configuration/README.md file.
+- SYNTH_STRATEGY: control the area and timing
+  The ```SYNTH_STRATEGY``` variable is set to DELAY 0 i.e., it optimizes the timing of the design with a trade-off of area.
+- SYNTH_BUFFERING: control if we want to buffer high fanout net
+  The ```SYNTH_BUFFERING``` set to 1 ensures usage of cell buffer on high fanout cells to reduce delay with high capacitance loads.
+- SYNTH_SIZING: control in cell sizing instead of buffering
+  The ```SYNTH_SIZING``` when set enables cell sizing where cell will be upsized or downsized as required to meet timing.
+- SYNTH_DRIVING_CELL: ensure more drive strength cell to drive input
+  It is the cell used to drive the input ports and is vital for cells with a lot of fan-outs since it needs higher drive strength.
 ![lab2_16](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f9b2850d-429f-4435-bc55-5028ebb6e047)
 
+These variables are defined in the flow as follows:
+![lab2_18](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/236c33c1-98eb-4084-bb8f-55ac30dddbe1)
 
+The previously dumped netlist is removed, as it is popping a message that synthesis is skipped as the netlist exists. 
+After the ```run_synthesis``` command, the design is much optimized such that the worst negative slack (WNS) and total negative slack (TNS) are zero as follows.
+![lab2_19](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3bef1077-a1be-4c54-ac1a-12183d839ffc)
 
+The cell created is in the list as follows:
+![lab2_28](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3f6e3c65-4eb3-426c-b322-019b0dbe5a41)
 
+The contents of merged.lef in the runs are as follows:
+![lab2_21](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9bd8e3eb-3fde-4125-9720-129772d6f099)
 
+The following command is used to run the floorplan.
+```
+run_floorplan
+```
+![lab2_20](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/40132430-7bb5-4d45-9d0c-1f584e9bb26e)
 
+This error implies that run is exited while executing ```or_basic_map.tcl```. This happened after the macros being called.  The path of these files to be commented are as follows:
+![lab2_26](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b0dc85a1-52dd-4a34-981a-c0d8e9d30012)
 
+So The command that calls macro_placement is commented as follows.
+![lab2_23](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d75c791f-5af0-4d69-b792-084cd5e215f8)
 
+Again, In the floorplan.tcl, it calls for global_placement or macro_placement. So, this is also commented as follows:
+![lab2_22](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/aec04cbe-0701-40f6-9f86-b81ce7a8e4bd)
+
+Now, the floorplan run is successfully done as follows:
+![lab2_24](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/81767515-b3ab-4e0f-8cc7-fc523160727b)
+
+The following command is used to run the placement.
+```
+run_placement
+```
+The placement run is completed as follows:
+![lab2_25](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5cae3bfc-276c-4eef-8e70-7f0f17105b78)
+
+The def created after the placement is as follows:
+![lab2_27](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7d0af394-d9b6-40bd-a728-070377ff498a)
+
+After giving ```expand``` command in the tkcon window, the metal layers railed are as follows:
+![lab2_30](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8eeea7f7-2954-462a-b46f-6995751f35d5)
 
 
 </details>

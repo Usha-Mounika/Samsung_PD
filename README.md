@@ -21,6 +21,7 @@ A brief description of what this training summarizes :
 -  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day16)
 -  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day17)
 -   [Day18 : Pre-layout STA and importance of good clock tree](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day18)
+-    [Day19 : FInal steps for RTL2GDS](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day19)
 
 
 ## Day0 : Setup Check
@@ -4177,6 +4178,8 @@ report_net -connections _16837_
 The report_net command is used to check all the connected inputs, outputs and nets as follows.
 ![lab2_36](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ee41c5d3-f062-4250-84e2-8919658ea743)
 
+The buffers can be upsized using the ```replace_cell``` command. Upsizing the  cell improves transition, thus reducing cell delay.
+
 The following command is used to check the report of timing path as follows:
 ```
 report_checks -fields {net cap slew input pins} -digits 4
@@ -4185,34 +4188,173 @@ report_checks -fields {net cap slew input pins} -digits 4
 
 ![lab2_38](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0ba5367f-27b2-4410-bdf9-763b59dd425a)
 
+A timing ECO is generated and fed to the PnR tools once the timming is met.
+
 </details>
 <details>
 <summary>Clock Tree Synthesis and Signal Integrity</summary>
 <br>	
 
+The time difference required by clock to reach the launch and capture flops is referred as skew. Skew should be as minimal as possible.
+![dsk3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/96a72ca1-8015-4eda-b071-0ad039e210f6)
 
+#### H-tree algorithm
+The tool calculates the distance from the clock port to all the clock points that needs to be connected to that port. The clock is routed to the midpoint of distance and then, to the midpoint of the nearby flops and so on. This midpoint procedure makes the skew almost zero, or as minimal as possible.
+![dsk3_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0bc660c8-deb9-4603-9dbb-8ec65e312deb)
 
+#### Clock Tree Buffering
+The clock repeaters have equal rise and fall delay and the datapath buffers do not have equal rise and fall delay. The cells are connected with wires that have some resistance and capacitance. The long length wires causing more transition and more net delays. So The buffers are added inorder to break these long length nets.
+![dsk3_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e3513cd4-0719-4fc8-bf99-cd9ad9d6188d)
 
+#### Clock Net Shielding
+The clock nets are encapsulated from the external world to avoid any coupling between other wires and clock net causing glitch or crosstalk.
+The shield can be connected to ground or to Vdd, as long as there is no switching activity occurring. Critical data nets are also necessary to be shielded.
+The unshielded nets can interact with other and act as capacitor causing ground bounds or voltage droop (glitch). This may impact the logical performance of the design.
+![dsk3_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c0bd3d22-e9b1-4dd0-9b5f-78fd6538486e)
 
+When both agressor and victim are switching as follows, the agressor impacts the victim such that it charges instead of discharging for certain time, increasing the cell delay.
+![dsk3_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5993b389-8474-4b78-bba8-c6d93fab7180)
 
+#### Lab
+The netlist is written out, after the STA using OpenSTA using the following command:
+```
+write_verilog ~/Desktop/work/tools/openlane_working_dir/openlane/designs/picorv32a/runs/12-10_12-49/results/synthesis/picorv32a.synthesis.v
+```
+So, The pre-existing netlist of the synthesis stage is usually overwritten with additional buffers to meet the timing. As there are no aditional buffers required, same netlist is being used.
+Now, thwe synthesis netlist is generated and timing is met. Let us continue with the consecutive steps as follows:
+```
+run_floorplan
+run_placement
+run_cts
+```
+![lab2_39](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/78a0218f-9039-4b46-aa44-facb0cabd2e0)
 
+This completes the successful clock tree synthesis as follows:
+![lab2_40](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9e78ca2f-9163-4a41-aa75-bdcbf8d11e5c)
 
+Each stage in PnR has the relative .tcl files in openroad. The files for CTS are or_cts.tcl and cts.tcl.
+The contents of cts.tcl are as follows:
+![lab_41](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cfc025d4-39b6-4949-8756-0881e7203a45)
 
+The contents of or_cts.tcl are as follows:
+![lab2_42](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/98998623-e92a-4d1a-b6af-378abbdafa8c)
 
+Let us check the following variables defined in openlane.
+```
+echo $::env(LIB_TYPICAL)
+echo $::env(CURRENT_DEF)
+echo $::env(CTS_MAX_CAP)
+echo $::env(CTS_CLK_BUFFER_LIST)
+echo $::env(CTS_ROOT_BUFFER)
+```
+![lab2_43](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d0f2d595-0922-4e18-96cc-faae93b90bc7)
 
-
-
-
-
-
-
-
-
-
+The value of capacitance can be checked in typical.lib as follows:
+![lab2_44](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d7980c53-fd04-4740-abcd-95bf733d927b)
 
 </details>
 <details>
 <summary>Timing Analysis with real clocks using OpenSTA</summary>
 <br>	
+
+Due to addition of clock buffers, clock network delay has been introduced and it will combining all the delays.With real clocks, we will need to have buffers inserted into the clock path to ensure the clock signal integrity.Because of the buffer introduction, the clock edge will reach the clock pin with consideration to the delays of the buffers inserted.
+The clock network delay will also need to take into consideration the delays from the buffers inserted.The window will become shifted as a result of the delays from the buffers inserted.
+The skew for this design will now be the difference between the deltas, and the equation for setup timing analysis will also changed based on the image shown.If the data arrival time is higher than the data required time, then we will have negative slack on the path, meaning we have violations.
+![dsk4_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3086186c-8b59-4513-bd99-cd4a52b5eb27)
+
+For hold timing analysis, where the capture edge is on the o clock rise edge, the combinational delay should be greater than the hold time of the flop.
+Hold time refers to the second mux delay, which is the time required for the data to be sent after the clock edge within the flop.
+So the data needs to be arrived after the hold time, so the new data can be captured into the flop, after existing data is launched out.
+![dsk4_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d612f1f8-32a5-40b4-aaaa-69d8486731c7)
+
+Jitter for the launch clock and capture flop will not need to be taken into consideration as the design is on the 0 clock edge, and the arrival difference for the capture and launch flop will be the same.
+So, the uncertainty should be kept low for the hold analysis.
+
+ slack = data arrival time – data required time
+ 
+If data required time is higher, we will have negative slack, meaning the timing path for hold will be violated.The equations for setup time and hold time are as follows:
+![dsk4_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/17825368-38b6-4195-a990-656cf90fc4b2)
+#### Lab
+The following steps are executed after CTS stage.
+```
+openroad                                                                          \\Invoking openroad
+read_lef /openLANE_flow/designs/picorv32a/runs/13-01_14-09/tmp/merged.lef
+read_def /openLANE_flow/designs/picorv32a/runs/13-01_14-09/results/cts/picorv32a.cts.def
+write_db pico_cts.db
+read_db pico_cts.db
+read_verilog /openLANE_flow/designs/picorv32a/runs/13-01_14-09/results/synthesis/picorv32a.synthesis_cts.v
+read_liberty -max $::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd_slow.lib
+read_liberty -min $::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd_fast.lib
+set_propagated_clock [all_clocks]
+read_sdc designs/picorv32a/src/my_base.sdc
+report_checks -path_delay min_max -format full_clock_expanded -digits 4
+```
+![lab2_45](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6645dacf-fb99-478e-9c9f-2eabf9a8f25d)
+
+![lab2_47](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ad849cea-8c25-4f00-841a-83880f52c0e7)
+
+![lab2_46](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3cca809c-1e88-406b-a39a-282fb10e96b0)
+
+```
+exit        \\Exit openroad...Do it twice if read_sdc command doesn't work
+openroad
+read_db pico_cts.db
+read_verilog /openLANE_flow/designs/picorv32a/runs/13-01_14-09/results/synthesis/picorv32a.synthesis_cts.v
+read_liberty $::env(LIB_SYNTH_COMPLETE)
+link_design picorv32a
+read_sdc designs/picorv32a/src/my_base.sdc
+set_propagated_clock [all_clocks]
+report_checks -path_delay min_max -fields {slew trans net cap input pin} -format full_clock_expanded
+echo $::env(CTS_CLK_BUFFER_LIST)                              (To see the list of buffers)
+```
+![lab2_48](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/360475aa-78b5-441d-9b11-cee5dcf97842)
+
+![lab2_49](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b5561ad9-6f85-4a59-860c-ed7646c52295)
+
+![lab2_50](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/689cc6cc-00b2-496d-9753-8fa0357579b0)
+
+```
+exit 
+echo $::env(CTS_CLK_BUFFER_LIST)
+set ::env(CTS_CLK_BUFFER_LIST) [lreplace $::env(CTS_CLK_BUFFER_LIST) 0 0]
+echo $::env(CURRENT_DEF)
+set ::env(CURRENT_DEF) /openLANE_flow/designs/picorv32a/runs/13-01_14-09/results/placement/picorv32a.placement.def
+run_cts
+```
+![lab2_51](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6532eeec-1507-4c82-a8d6-cd29d6400853)
+
+```
+openroad
+read_lef /openLANE_flow/designs/picorv32a/runs/13-01_14-09/tmp/merged.lef
+read_def /openLANE_flow/designs/picorv32a/runs/13-01_14-09/results/cts/picorv32a.cts.def
+write_db pico_cts1.db
+read_db pico_cts1.db
+read_verilog /openLANE_flow/designs/picorv32a/runs/13-01_14-09/results/synthesis/picorv32a.synthesis_cts.v
+read_liberty $::env(LIB_SYNTH_COMPLETE)
+link_design picorv32a
+read_sdc designs/picorv32a/src/my_base.sdc
+set_propagated_clock [all_clocks]
+report_checks -path_delay min_max -fields {slew trans net cap input pin} -format full_clock_expanded
+```
+![lab2_52](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8902c8e1-186a-42d5-bbc0-9f552839fb4c)
+
+![lab2_53](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/103909b1-4b4d-4c88-9112-7d05fd9ac830)
+
+```
+report_clock_skew -hold
+report_clock_skew -setup
+set ::env(CTS_CLK_BUFFER_LIST) [linsert $::env(CTS_CLK_BUFFER_LIST) 0 sky130_fd_sc_hd__clkbuf_1]      (Adding back clkbuf1)
+```
+![lab2_54](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/83665b4a-2a26-49b5-89fc-d34a9df03456)
+
+</details>
+
+## Day19 : FInal steps for RTL2GDS
+<details>
+<summary>Routing and Design Rule Check</summary>
+<br>
+
+
+![next](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2776963d-9e78-4989-97e3-694f835a291a)
 
 </details>

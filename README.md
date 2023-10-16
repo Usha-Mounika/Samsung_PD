@@ -20,8 +20,10 @@ A brief description of what this training summarizes :
 -  [Day15 : Inception of EDA and PDK](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day15)
 -  [Day16 : Good Floorplan vs Bad Floorplan](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day16)
 -  [Day17 : Std Cell Characterize experiment](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day17)
--   [Day18 : Pre-layout STA and importance of good clock tree](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day18)
--    [Day19 : FInal steps for RTL2GDS](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day19)
+-  [Day18 : Pre-layout STA and importance of good clock tree](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day18)
+-  [Day19 : Final steps for RTL2GDS](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day19)
+-  [Day20 : Floorplanning and Powerplanning Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day20)
+
 
 
 ## Day0 : Setup Check
@@ -4257,12 +4259,13 @@ The value of capacitance can be checked in typical.lib as follows:
 <summary>Timing Analysis with real clocks using OpenSTA</summary>
 <br>	
 
-Due to addition of clock buffers, clock network delay has been introduced and it will combining all the delays.With real clocks, we will need to have buffers inserted into the clock path to ensure the clock signal integrity.Because of the buffer introduction, the clock edge will reach the clock pin with consideration to the delays of the buffers inserted.
+Due to addition of clock buffers, clock network delay has been introduced and it will combine all the delays.With real clocks, we will need to have buffers inserted into the clock path to ensure the clock signal integrity.Because of the buffer insertion, the clock edge will reach the clock pin with consideration to the delays of the buffers inserted.
+
 The clock network delay will also need to take into consideration the delays from the buffers inserted.The window will become shifted as a result of the delays from the buffers inserted.
 The skew for this design will now be the difference between the deltas, and the equation for setup timing analysis will also changed based on the image shown.If the data arrival time is higher than the data required time, then we will have negative slack on the path, meaning we have violations.
 ![dsk4_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3086186c-8b59-4513-bd99-cd4a52b5eb27)
 
-For hold timing analysis, where the capture edge is on the o clock rise edge, the combinational delay should be greater than the hold time of the flop.
+For hold timing analysis, where the capture edge is on the 0 clock rise edge, the combinational delay should be greater than the hold time of the flop.
 Hold time refers to the second mux delay, which is the time required for the data to be sent after the clock edge within the flop.
 So the data needs to be arrived after the hold time, so the new data can be captured into the flop, after existing data is launched out.
 ![dsk4_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d612f1f8-32a5-40b4-aaaa-69d8486731c7)
@@ -4276,6 +4279,8 @@ If data required time is higher, we will have negative slack, meaning the timing
 ![dsk4_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/17825368-38b6-4195-a990-656cf90fc4b2)
 #### Lab
 The following steps are executed after CTS stage.
+
+In openroad, the timing analysis is done by creating db using the lef and def files. The lef and def are read and the db is written out as follows. Now, the db is read and the steps are same as in conf.
 ```
 openroad                                                                          \\Invoking openroad
 read_lef /openLANE_flow/designs/picorv32a/runs/13-01_14-09/tmp/merged.lef
@@ -4286,7 +4291,7 @@ read_verilog /openLANE_flow/designs/picorv32a/runs/13-01_14-09/results/synthesis
 read_liberty -max $::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd_slow.lib
 read_liberty -min $::env(OPENLANE_ROOT)/designs/picorv32a/src/sky130_fd_sc_hd_fast.lib
 set_propagated_clock [all_clocks]
-read_sdc designs/picorv32a/src/my_base.sdc
+read_sdc designs/picorv32a/src/my_base.sdc   \\calculates actual cell delay in clockpath
 report_checks -path_delay min_max -format full_clock_expanded -digits 4
 ```
 ![lab2_45](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6645dacf-fb99-478e-9c9f-2eabf9a8f25d)
@@ -4295,6 +4300,7 @@ report_checks -path_delay min_max -format full_clock_expanded -digits 4
 
 ![lab2_46](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3cca809c-1e88-406b-a39a-282fb10e96b0)
 
+The above analysis stands incorrect because the design is defined for typical corner and the libs for analysis are min and max. So, the correct way of analysis is as follows. Now, the same steps are follwed but the liberty file used is typical corner.
 ```
 exit        \\Exit openroad...Do it twice if read_sdc command doesn't work
 openroad
@@ -4307,6 +4313,7 @@ set_propagated_clock [all_clocks]
 report_checks -path_delay min_max -fields {slew trans net cap input pin} -format full_clock_expanded
 echo $::env(CTS_CLK_BUFFER_LIST)                              (To see the list of buffers)
 ```
+
 ![lab2_48](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/360475aa-78b5-441d-9b11-cee5dcf97842)
 
 ![lab2_49](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b5561ad9-6f85-4a59-860c-ed7646c52295)
@@ -4321,6 +4328,7 @@ echo $::env(CURRENT_DEF)
 set ::env(CURRENT_DEF) /openLANE_flow/designs/picorv32a/runs/13-01_14-09/results/placement/picorv32a.placement.def
 run_cts
 ```
+
 ![lab2_51](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6532eeec-1507-4c82-a8d6-cd29d6400853)
 
 ```
@@ -4336,10 +4344,12 @@ read_sdc designs/picorv32a/src/my_base.sdc
 set_propagated_clock [all_clocks]
 report_checks -path_delay min_max -fields {slew trans net cap input pin} -format full_clock_expanded
 ```
+After changing clock buffers, the new timing reports are as follows:
 ![lab2_52](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/65c77bbb-4464-489b-a874-ad0c17818afb)
 
 ![lab2_53](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/211a4374-697d-48b0-8e4a-d91e50e60cbe)
 
+Let us check the clock skew of the design as follows:
 ```
 report_clock_skew -hold
 report_clock_skew -setup
@@ -4350,12 +4360,95 @@ set ::env(CTS_CLK_BUFFER_LIST) [linsert $::env(CTS_CLK_BUFFER_LIST) 0 sky130_fd_
 
 </details>
 
-## Day19 : FInal steps for RTL2GDS
+## Day19 : Final steps for RTL2GDS
 <details>
 <summary>Routing and Design Rule Check</summary>
 <br>
 
+#### Maze routing - Lee algorithm
+Routing: the process of creating the physical wire connections within the design in which it helps in determining the best way of routing that can be done between two endpoints.
+The best possible shortest path is routed between two cells with less twists and turns. No route can go on the pre-placed cells. The algorithm creates routing on the backside of floorplan.
+The adjacent grids to the point that is to be connected are labelled as 1, then their adjacent layers as 2 and so on as shown.
+![dsk5_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/89033e27-f6f5-4c2d-bd2a-51a18e680cfb)
 
+The grids under the bockage are not labelled as route cannot be done through it. 
+It is preferable to choose the LHS instead of RHS of the figure below because the chosen route in the LHS figure got the best route which is less bending (L-shaped) rather than the RHS figure.
+Performing the routing for 1 route will be fairly simple, but when we have millions of start and endpoints to route between, this method will consume a lot of time and memory when design is huge.
+There are some algorithms that can help to reduce the time and memory consumption such as line-search algorithm, stanner-tree algorithm.
+![dsk5_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/58c67100-2327-4cb6-af76-4c8bb1c91748)
+
+#### Design Rule Check
+Design Rule Check (DRC) are the rules that should be followed whenever the routing of the design is performed such as 
+- the minimal wire width (width of the wire should be no less than a specified amount based on the limitations of the fabrication process)
+- the wire pitch (the centre-to-centre distance between 2 wires should be no smaller than a certain distance)
+- wire spacing rule (distance between 2 wires should be no smaller than a certain distance)
+![dsk5_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f9f16641-75cb-4ec7-9c17-72b19d4c66e7)
+
+The parasitic information is extracted for each cell and net as shown.
+![dsk5_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e8bd5536-79ae-4121-9743-daefbc64f041)
+
+One type of DRC violation is a signal short, where two wires that are not intended to be connected becomes in contact on the same layer causing functional failure.
+To fix this, we need to simply moving one of the wires onto a different metal layer. The new drc rules after fixing are
+- Via width where the width of the via should be no less than a certain value.
+- Via spacing where the distance between 2 vias cannot be less than a specific distance.
+![dsk5_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6a37f3c4-4b9f-45dc-ae7d-c373eb2d2ab6)
+
+</details>
+</details>
+<details>
+<summary>PDN and routing</summary>
+<br>	
+If we want to retain the configurations from the last openlane job, we need to use prep -design -tag. If we want to create a fresh run with new configurations but without changing the tag name, we need to use prep -design -tag -overwrite.
+```
+cd work/tools/openlane_working_dir/openlane
+./flow.tcl -interactive
+package require openlane 0.9
+prep -design picorv32a -tag 13-01_14-09
+```
+	
 ![next](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2776963d-9e78-4989-97e3-694f835a291a)
+
+Inorder to generate the pdn network, the following commands are used.
+```
+echo $::env(CURRENT_DEF)    \\Ensure current_def is on the CTS stage
+gen_pdn                     \\To generate power distribution network
+```
+This is giving an error as follows:
+
+The current def is set to the CTS def and the routing run is fired.
+```
+echo $::env(CURRENT_DEF)            
+echo $::env(ROUTING_STRATEGY)
+run_routing
+```
+</details>
+<details>
+<summary>TritonRoute Features</summary>
+<br>
+
+The routing stage consists of two stages:
+- Global Routing: Form routing guides that can route all the nets. The tool used is FastRoute.
+- Detailed Routing: Uses the global routing's guide to connect the pins with the least amount of wire and bends. The tool used is TritonRoute.
+
+### Triton Route
+- Fast routing is the engine which is used for global routing, that creates a rough routing draft.
+- During global routing, the region is divided into grid cells, which acts as a route guide for the TritonRoute to be used for the detail routing, where an algorithm is used to find the best connectivity between the points.
+- It honours the preprocessed route guides (obtained after fast routes), wherein the tool attempts as much as possible to route within route guides, assuming each net satisfies inter-guide connectivity.
+- Triton route works on proposed MILP (Mixed integer liner programming) based panel routing scheme with intra-layer parallel and inter-layer sequential routing framework, to finds the best way to perform the routing.
+- Intra-layer refers to the routing within a layer, while inter-layer routing refers to routing between layers, through the uses of vias.
+
+
+</details>
+
+## Day20 : Floorplanning and Powerplanning Labs
+<details>
+<summary>Theory</summary>
+<br>
+
+</details>
+<details>
+<summary>Lab</summary>
+<br>
+
 
 </details>

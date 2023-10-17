@@ -4540,18 +4540,21 @@ Routing:
 ![flow steps](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3c9e82f0-b653-4c29-88a8-28cb46088d51)
 
 #### Floorplan:
-- Objectives:
+Objectives:
  - Minimize Area
  - Reducing the wire length
  -  Making routing easy
  -  Minimizing delay
  -   Less IR Drop
-- Issues with Bad Floor plan: Congestion, IR Drop, Reduced lifespan of IC, Noise, Increased Area, Routing, etc
-- Types:
+   
+Issues with Bad Floor plan: Congestion, IR Drop, Reduced lifespan of IC, Noise, Increased Area, Routing, etc
+
+Types:
  - Abutted
  - Non-Abutted
  - Mixed
-- Steps in Floor Planning::
+
+ Steps in Floor Planning::
  - Links Netlist with physical library
  - Creates initial core
  -  Creates I/O pin placement and pad rings
@@ -4562,6 +4565,7 @@ Routing:
  - Creates power and ground nets
  -  Routes power and ground nets
  -  Checks for violations
+   
 #### Powerplan
 It is done to connect the power to chip by considering issues like EMand IR Drop. Power routing includes creation of Power ring, Stripes, Rails
 Power Planning involves 

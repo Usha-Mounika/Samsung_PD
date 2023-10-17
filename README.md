@@ -4490,6 +4490,9 @@ The objective of the Mixed Integer Liner Programming (MILP) is to connect one ac
 <summary>Theory</summary>
 <br>
 
+Physical design refers to the process of transforming a high-level logical description of a circuit into a detailed physical representation that can be manufactured. It involves the creation of a layout that defines the exact positions, sizes, and interconnections of individual components, such as transistors, gates, and wires, on the silicon wafer. Physical design is a critical step in the chip design flow, as it directly impacts factors like performance, power consumption, and manufacturability.
+
+The steps in Physical Design flow are as follows:
 1. Technology Selection: Choose the semiconductor process technology, which defines the manufacturing parameters, transistor sizes, and available components.
    
 2. Floorplanning: Define the chip's overall layout, specifying the positions of major components and areas for routing.
@@ -4547,8 +4550,8 @@ Routing:
 - Types:
  - Abutted
  - Non-Abutted
-- Mixed
-- Steps in Floor Planning
+ - Mixed
+- Steps in Floor Planning::
  - Links Netlist with physical library
  - Creates initial core
  -  Creates I/O pin placement and pad rings
@@ -4670,7 +4673,7 @@ The power grid pattern for supply and ground rails requires the definition of th
 
 Invoking the icc2_shell, inorder to run the design using following commands.
 ```
-cd `/Physical_Design/icc2_workshop_collaterals/standaloneflow
+cd ~/Physical_Design/icc2_workshop_collaterals/standaloneflow
 csh
 icc2_shell
 source top.tcl

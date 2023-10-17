@@ -4400,7 +4400,9 @@ To fix this, we need to simply moving one of the wires onto a different metal la
 <details>
 <summary>PDN and routing</summary>
 <br>	
+	
 If we want to retain the configurations from the last openlane job, we need to use ```prep -design -tag```. If we want to create a fresh run with new configurations but without changing the tag name, we need to use ```prep -design -tag -overwrite```.
+	
 ```
 cd work/tools/openlane_working_dir/openlane
 ./flow.tcl -interactive
@@ -4414,6 +4416,7 @@ The power and ground rails need to be a part of floorplan, this is done using ge
 The standard cell height should be multiple of pitch of layers(metal1), so that cell gets power and ground rails alog its edges for proper connectivity.
 
 Inorder to generate the pdn network, the following commands are used.
+
 ```
 echo $::env(CURRENT_DEF)    \\Ensure current_def is on the CTS stage
 gen_pdn                     \\To generate power distribution network
@@ -4426,6 +4429,7 @@ Due to this error, the pdn def is not generated so CTS def is used for routing.
 The design is covered with IO pads around them. These pads contain the power and ground pads as shown.
 
 ```power and ground flows from power/ground pads --> power/ground ring --> power/ground straps --> power/ground rails```
+
 ![design](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3f37cfd1-54ed-4341-9b64-345abce0dd35)
 
 The current def is set to the CTS def and the routing run is fired.
@@ -4486,10 +4490,254 @@ The objective of the Mixed Integer Liner Programming (MILP) is to connect one ac
 <summary>Theory</summary>
 <br>
 
+1. Technology Selection: Choose the semiconductor process technology, which defines the manufacturing parameters, transistor sizes, and available components.
+   
+2. Floorplanning: Define the chip's overall layout, specifying the positions of major components and areas for routing.
+
+3. Placement:Place standard cells and macro blocks within the floorplan to optimize for area, power, and performance.
+
+4. Global Routing: Create a high-level interconnection structure, connecting the blocks and ensuring that power and clock signals can reach all parts of the chip.
+
+5. Detailed Placement: Refine the placement of standard cells to meet performance and area goals, considering factors like signal propagation delay and wirelength.
+
+6. Clock Tree Synthesis: Create a clock distribution network to ensure synchronous operation of the circuit elements.
+Routing:
+7. Route wires to connect all components while adhering to design rules and optimizing for minimal wirelength and congestion.
+
+8. Design Rule Checking (DRC): Verify that the layout adheres to the manufacturing constraints and design rules.
+
+9. Layout vs. Schematic (LVS) Verification: Ensure that the physical layout matches the intended logical design.
+
+10. Extraction: Extract parasitic information from the layout, which is essential for accurate timing analysis.
+
+11. Static Timing Analysis (STA): Analyze the circuit's timing behavior to ensure that it meets performance specifications.
+
+12. Power Analysis: Evaluate power consumption and optimize for low power, if required.
+
+13. Physical Verification: Perform additional checks like Antenna Checks, Metal Fill, and Design for Manufacturability (DFM).
+
+14. Tapeout: Prepare the final design data for manufacturing.
+![designflow](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3dbd97fe-4741-40aa-8594-341801e4a7b7)
+
+#### Inputs of Physical Design:
+- Technology file (.tf or .db)
+- Physical Libraries (In general Lef of GDS file for all design elements like macro, std Cell, IO pads etc)
+- Timing, Logical and Power Libraries
+- TDF file (.tdf or .io) 
+- Constraints (.sdc) 
+- Physical Design Exchange Format – PDEF (optional)
+- Design Exchange Format –DEF (optional)
+#### Outputs obtained:
+- Standard delay format (.sdf)
+- Parasitic format (.spef, .dspf)
+- Post routed Netlist (.v) 
+- Physical Layout (.gds)
+- Design Excahnge format (.def)
+  
+![flow steps](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3c9e82f0-b653-4c29-88a8-28cb46088d51)
+
+#### Floorplan:
+- Objectives:
+ - Minimize Area
+ - Reducing the wire length
+ -  Making routing easy
+ -  Minimizing delay
+ -   Less IR Drop
+- Issues with Bad Floor plan: Congestion, IR Drop, Reduced lifespan of IC, Noise, Increased Area, Routing, etc
+- Types:
+ - Abutted
+ - Non-Abutted
+- Mixed
+- Steps in Floor Planning
+ - Links Netlist with physical library
+ - Creates initial core
+ -  Creates I/O pin placement and pad rings
+ -  Place macros and standard cells
+ -  Creates placement blockages
+ - Specifies power nets and ground nets
+ - Creates power rings and macro rings
+ - Creates power and ground nets
+ -  Routes power and ground nets
+ -  Checks for violations
+#### Powerplan
+It is done to connect the power to chip by considering issues like EMand IR Drop. Power routing includes creation of Power ring, Stripes, Rails
+Power Planning involves 
+- Calculating number of power pins required
+- Number of Rings, Stripes
+- Width of Rings and Stripes
+- IR Drop
 </details>
 <details>
 <summary>Lab</summary>
 <br>
 
+Clone the following repositories for the physical design flow setup
+```
+git clone https://github.com/manili/VSDBabySoC.git
+git clone https://github.com/Devipriya1921/VSDBabySoC_ICC2.git
+git clone https://github.com/bharath19-gs/synopsys_ICC2flow_130nm.git
+git clone https://github.com/kunalg123/icc2_workshop_collaterals.git
+git clone https://github.com/google/skywater-pdk-libs-sky130_fd_sc_hd.git
+git clone https://github.com/kunalg123/sky130RTLDesignAndSynthesisWorkshop.git
+```
+The contents to my path are changed to the locations where files are cloned.
+The changes in vsdbabysoc.tcl are as follows:
+- remove -lib in read_lib commands
+- replace MYCLK to clk since the clock used in the design is {clk}
+
+All the commands for synthesis are included in the tcl file such as read_lib, read_verilog as follows:
+![lab2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/32c0a33e-b01e-4ec7-b83b-fe1e43e99230)
+
+The unwanted pins in avsdpll.lib are already commented out.
+The vsdbabysoc.tcl file is sourced to generate the area, power, timing and sdc as follows:
+```
+cd ~/Physical_Design/VSDBabySoC_ICC2
+csh
+dc_shell
+source vsdbabysoc.tcl
+```
+![lab2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f54bba06-727b-469a-b6ae-cd477c1fd1b5)
+
+![lab2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/18cba87e-07c4-4085-b37d-389aa8c21260)
+
+This generates the following gui based circuit of the design as follows:
+![lab2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f00af62e-d37f-41f8-9315-bfec95bae039)
+
+The RYMTH core schematic is as follows:
+![lab2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2f39d752-e20c-4a54-ba82-6cdc81aad363)
+
+The reports are dumped in the seperate directory ```report```. The reports are viewed as follows:
+#### Reports
+
+Area report:
+![lab2_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/42c595a8-45de-4cb0-a715-82c792788f59)
+
+power report:
+![lab2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ed629c18-1bc6-47ea-9523-1520cd5582f2)
+
+timing report:
+
+The timing is met with a positive slack of 30ps. The worst slack is considered as the critical slack.
+![lab2_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/97ae1557-3035-4276-9549-7ddc4fde4d1c)
+
+Constraints report:
+![lab2_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/aef2baea-8b09-4043-83dd-fa8dde6900e5)
+
+The schematic of the BabySoC is as follows:
+![lab2_10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1d5874b0-f3e0-473b-a2fd-4e45f031db35)
+
+The RVMYTH processor has wide number of gates as shown.
+![lab2_11](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d4713518-8940-47b5-9a2b-7a3e326e12cc)
+
+#### Physical design
+
+Inorder to setup the flow, the following files are edited with present working constraints of design and location of files.
+The following files are edited:
+
+**top.tcl**
+
+The floorplan switch is added for create_placement command and all linking paths are updated.
+![lab2_16](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/baf67a8e-9a0c-4a08-a8e0-65ff84c619a9)
+
+**icc2_common_setup.tcl**
+
+All the paths are updated and the metal routing layers are defined.
+![lab2_17](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1debbe04-c581-4a0b-adab-0b5a39c5da9d)
+
+All paths are updated in the **icc2_dp_setup.tcl** file also.
+
+**init_design.read_parasitic_tech_example.tcl**
+
+Inorder to generate tluplus file from itf file, the following command is used.
+```
+grdgenxo -itf2TLUPlus -i skywater130.nominal.itf -o skywater130.nominal.tluplus 
+```
+The file is generated as follows:
+![lab2_12](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8070b9d5-1fd9-4826-bec5-25a11a8c151b)
+
+This generated file path is passed as an argument in the file as shown.
+![lab2_14](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/67eee0fa-8351-443f-9075-1912425a4abd)
+
+**init_design.mcmm_example.auto_expanded.tcl**
+
+The SDC path in the file is updated to the generated SDC after the synthesis.
+![lab2_15](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0aeadd9c-e7c7-4dd0-9dd4-ad472523749d)
+
+**pns_example.tcl**
+
+The power grid pattern for supply and ground rails requires the definition of the layers to be used. The vertical and horizontal layers are changed as shown.
+![lab2_13](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a863ade2-8a50-41fa-a469-906d7262cdde)
+
+Invoking the icc2_shell, inorder to run the design using following commands.
+```
+cd `/Physical_Design/icc2_workshop_collaterals/standaloneflow
+csh
+icc2_shell
+source top.tcl
+```
+![lab2_18](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b9b9701f-47e6-41cc-a12b-bfe0e1b20470)
+
+The gui based design is as follows:
+![lab2_19](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e0fb8d1f-7eaf-41f9-9a04-f27d5f2ad51e)
+
+The cells are placed as a cluster as the floorplan is not done yet. The following image shows the cells in the design.
+![lab2_20](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b9a4f065-5c9b-4d1a-9758-db2129268753)
+
+The DAC and PLL are the analog IPs (macros in the SoC) such that the blockage for the circuits in the design are as shown.
+![lab2_21](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/979f3605-9cda-4480-802f-7c32bda1c404)
+
+The filler cells along the design with power rails are as follows:
+![lab2_22](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/59c377de-e799-4194-92a4-bc6789fa38aa)
+
+Let us check for the timing violations.
+```
+icc2_shell> set_propagated_clock [all_clocks]             //Converting clock object from ideal clock to propagated clock
+icc2_shell> report_timing
+```
+The slack is violated with 2.25ns.
+![2322](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e8b5b499-c402-4d2b-b52d-699cd5fa36e9)
+
+```
+icc2_shell> estimate_timing
+```
+estimate_timing report could not be generated since there is no estimate timing rules detected on nets
+![lab2_25](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/befa89b6-24d3-450d-89ef-28165144903d)
+
+![lab2_26](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/64bda72e-65dd-4910-b116-e194c29cb113)
+
+```
+icc2_shell> report_constraints -all_violators -nosplit -verbose -significant_digits 4 > violators.rpt
+icc2_shell> sh gvim violators.rpt &
+```
+![lab2_27](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2fec742e-6d69-4ec0-b02b-56e32d4f34f3)
+
+### Observing the same design with core utilization 45%
+Let us comment the clock latency also and creating new directory as report_changed. Now, the following comments are executed as follows:
+```
+gvim ~/Physical_Design/VSDBabySoC_ICC2/vsdbabysoc.tcl
+csh
+dc_shell
+source ~/Physical_Design/VSDBabySoC_ICC2/vsdbabysoc.tcl
+```
+
+The SDC before and after the changes is as follows:
+![lab2_28](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9ed1b0fc-ddb8-4ded-aca0-c707f8f88e12)
+
+Edit the top.tcl with the core utilization to 0.45
+![lab2_29](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bcc12a0f-f171-47d9-b5af-212f075ad093)
+
+After sourcing top.tcl, the GUI based design is as follows:
+![lab2_30](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b42ec200-c784-404e-93f2-76b85b8a791a)
+
+The macros PLL and DAC in the design are as shown.
+![lab2_31](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0128de93-899e-4362-947b-ea9a81b24f5b)
+
+The slack is increased to 2.37ps after increasing the core utilization from 7% to 45%
+![lab2_33](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5b03297d-4e45-48f2-af06-e8fc200c0922)
+
+![lab2_32](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fa0c49a6-12e5-47cd-8adc-2b24d79e72f2)
+
+The violators report for the 45% utilization of core is as shown:
+![lab2_34 (2)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/edf11304-d59f-4283-92ac-e4a3c22edcdd)
 
 </details>

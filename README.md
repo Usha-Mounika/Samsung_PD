@@ -4379,9 +4379,10 @@ There are some algorithms that can help to reduce the time and memory consumptio
 
 #### Design Rule Check
 Design Rule Check (DRC) are the rules that should be followed whenever the routing of the design is performed such as 
-- the minimal wire width (width of the wire should be no less than a specified amount based on the limitations of the fabrication process)
+- the minimal wire width (width of the wire should not be less than a specified amount based on the limitations of the fabrication process)
 - the wire pitch (the centre-to-centre distance between 2 wires should be no smaller than a certain distance)
 - wire spacing rule (distance between 2 wires should be no smaller than a certain distance)
+These wires are made with photolithographic process for desired width and pitch.
 ![dsk5_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f9f16641-75cb-4ec7-9c17-72b19d4c66e7)
 
 The parasitic information is extracted for each cell and net as shown.
@@ -4391,6 +4392,7 @@ One type of DRC violation is a signal short, where two wires that are not intend
 To fix this, we need to simply moving one of the wires onto a different metal layer. The new drc rules after fixing are
 - Via width where the width of the via should be no less than a certain value.
 - Via spacing where the distance between 2 vias cannot be less than a specific distance.
+  Upper metal layers are usually wider than lower metal layers.
 ![dsk5_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6a37f3c4-4b9f-45dc-ae7d-c373eb2d2ab6)
 
 </details>
@@ -4398,7 +4400,7 @@ To fix this, we need to simply moving one of the wires onto a different metal la
 <details>
 <summary>PDN and routing</summary>
 <br>	
-If we want to retain the configurations from the last openlane job, we need to use prep -design -tag. If we want to create a fresh run with new configurations but without changing the tag name, we need to use prep -design -tag -overwrite.
+If we want to retain the configurations from the last openlane job, we need to use ```prep -design -tag```. If we want to create a fresh run with new configurations but without changing the tag name, we need to use ```prep -design -tag -overwrite```.
 ```
 cd work/tools/openlane_working_dir/openlane
 ./flow.tcl -interactive
@@ -4408,12 +4410,23 @@ prep -design picorv32a -tag 13-01_14-09
 	
 ![next](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2776963d-9e78-4989-97e3-694f835a291a)
 
+The power and ground rails need to be a part of floorplan, this is done using gen_pdn command to build the power distribution network.
+The standard cell height should be multiple of pitch of layers(metal1), so that cell gets power and ground rails alog its edges for proper connectivity.
+
 Inorder to generate the pdn network, the following commands are used.
 ```
 echo $::env(CURRENT_DEF)    \\Ensure current_def is on the CTS stage
 gen_pdn                     \\To generate power distribution network
 ```
 This is giving an error as follows:
+![lab1_2 (2)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0ec73ac0-c8d7-4210-90d6-29929c08053c)
+
+Due to this error, the pdn def is not generated so CTS def is used for routing.
+
+The design is covered with IO pads around them. These pads contain the power and ground pads as shown.
+
+```power and ground flows from power/ground pads --> power/ground ring --> power/ground straps --> power/ground rails```
+![design](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3f37cfd1-54ed-4341-9b64-345abce0dd35)
 
 The current def is set to the CTS def and the routing run is fired.
 ```
@@ -4421,6 +4434,9 @@ echo $::env(CURRENT_DEF)
 echo $::env(ROUTING_STRATEGY)
 run_routing
 ```
+The ROUTING_STRATEGY variable implies the optimized routing in the design. The value 0 specifies the routing is not much optimized.
+![lab1_3 (2)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c84f4078-b7ee-466b-93b7-abcf01078f20)
+
 </details>
 <details>
 <summary>TritonRoute Features</summary>
@@ -4429,6 +4445,7 @@ run_routing
 The routing stage consists of two stages:
 - Global Routing: Form routing guides that can route all the nets. The tool used is FastRoute.
 - Detailed Routing: Uses the global routing's guide to connect the pins with the least amount of wire and bends. The tool used is TritonRoute.
+![route](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/468f3aaf-3012-42ec-8f8c-9c26247a2020)
 
 ### Triton Route
 - Fast routing is the engine which is used for global routing, that creates a rough routing draft.
@@ -4436,7 +4453,31 @@ The routing stage consists of two stages:
 - It honours the preprocessed route guides (obtained after fast routes), wherein the tool attempts as much as possible to route within route guides, assuming each net satisfies inter-guide connectivity.
 - Triton route works on proposed MILP (Mixed integer liner programming) based panel routing scheme with intra-layer parallel and inter-layer sequential routing framework, to finds the best way to perform the routing.
 - Intra-layer refers to the routing within a layer, while inter-layer routing refers to routing between layers, through the uses of vias.
+- Preprocessed guides should have unit width and must be in the preferred direction of the layer.Global route is done by fast route, and the output would be the routing guide.
+- The initial route guides are transformed into the preprocessed guides through splitting, merging, and bridging.
+- Whenever the tool detected the route guide with non-preferred direction, it divides the route guide into unit widths, and then the route with preferred direction is merged, while the non-preferred direction route is bridged to be a route on another layer, which is the preferred direction for routing.
+This way, parallel routing with higher layers are avoided thus avoiding parallel plate capacitance.
 
+Each layer or panel will have its own preferred routing direction assigned to it, in which the routes should be formed.
+Routing in higher layers will begin only once the routing the bottom layers have been completed.
+Two guides are connected if they are on the same metal layer with touching edges, or if they are on neighbouring metal layers with a non-zero vertically overlapped area.
+Each unconnected terminal i.e. pin of a standard cell instance, should have its pin shape overlapped by a route guide.
+
+Inputs file needed for TritonRoute are the LEF file, DEF file, and the Preprocessed route guides.Outputs from the TritonRoute would be a detailed routing solution with optimized wire-length and via count.
+Constraints needed in TritonRoute are the route guide honouring, connectivity constraints and design rules.
+
+#### TritonRoute method
+TritonRoute handles connectivity through 2 ways
+- Access Point (AP)
+- Access Point Cluster (APC)
+  
+**Access point**: on-grid point on the metal layer of the route guide, and is used to connect to lower-layer segments, upper-layer segments, pins or IO ports.Access point refers to the point where the via can be placed to allow connectivity between layers.
+
+**Access Point Cluster**: a union of all Access Points derived from the same lower-layer segment, upper-layer guide, a pin or an IO port.
+
+The objective of the Mixed Integer Liner Programming (MILP) is to connect one access point to another optimally.
+- Choose one of the access points where the via should be dropped
+- Determining how the first access point will be connected to the next access point.
 
 </details>
 

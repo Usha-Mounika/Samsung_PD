@@ -4911,11 +4911,138 @@ The following image shows the fanout view of clock in the design. The nets of al
 
 </details>
 
+## Day22 : CTS analysis Labs
+
+<details>
+<summary>Theory</summary>
+<br>
+	
+
+The primary purpose of Clock Tree Synthesis is to distribute the clock signal uniformly and with minimum skew to all sequential elements (flip-flops, registers, etc.) of the VLSI chip. This is essential to ensure synchronous operation and proper timing in the digital circuit.
+*The goal of clock tree synthesis (CTS) is to minimize skew and insertion delay.*
+
+Algorithms used for CTS:
+![algo used](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/028ffc89-4f70-43a6-a1d4-5418c3e5cbb3)
+
+The H-tree algorithm is
+1. Find out all the flops present
+2. Find out the center of all the flops
+3. Trace clock port ot the center point
+4. Now divide the core into two parts, trace both the parts and reach to each center.
+5. Then form this center again divide the area into two and again trace till center at both the end
+6. Repeat this algo till the time we reach the flop clock pin.
+![H-tree](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5a4081a0-e390-4e3e-a845-3b26477b9f90)
+
+Clock Tree Synthesis involves several key steps:
+- Clock Tree Generation: A hierarchical structure is created, branching from a primary clock source to various regions of the chip. This tree structure minimizes skew and optimizes signal distribution.
+- Buffer Insertion: Buffers are inserted along the clock tree to maintain signal integrity and minimize clock skew. Buffers help to drive long clock lines and reduce their delay.
+- Clock Skew Optimization: CTS algorithms aim to minimize clock skew, ensuring that all flip-flops across the chip experience the clock signal simultaneously. This is vital to prevent setup and hold time violations.
+- Clock Gating: In some cases, clock gating elements are inserted into the clock tree to disable the clock signal for specific sections of the design when they are not in use. This reduces dynamic power consumption.
+- Verification: After CTS, the design is rigorously verified to ensure that the clock signal is distributed correctly and meets timing requirements.
+
+#### Significance of CTS in VLSI:
+
+- Timing Closure: CTS is critical for achieving timing closure, ensuring that the digital design operates within specified clock frequencies without setup and hold time violations.
+- Reducing Clock Skew: CTS minimizes clock skew, ensuring synchronous operation and preventing metastability issues in sequential elements.
+- Power Optimization: Clock gating techniques employed in CTS help reduce dynamic power consumption by disabling clock signals in inactive areas of the chip.
+- Enhancing Chip Performance: Properly synthesized clock trees lead to better chip performance by reducing clock distribution delays and enhancing synchronization.
+
+**Challenges in CTS:**
+
+- Skew Minimization: Achieving minimum clock skew can be challenging, especially in complex designs with a high number of clock domains.
+- Trade-offs: There's often a trade-off between power consumption and clock distribution delay, and optimizing both aspects requires careful consideration.
+- Hierarchical Design: Hierarchical VLSI designs can make CTS more complex as it involves synthesizing clock trees at various levels.
+
+Let us look at some commands at CTS:
+```
+check_clock_tree
+```
+This command checks and reports issues that can lead to bad QoR
+- Clock tree structure
+- constraints
+- Clock tree exceptions
+```
+check_legality
+```
+If it is legal — well and good, else use legalize_placement. The default constraints can be 0.5ns for transition time, 0.6pF for maximum capacitance, 2000 of maximum fanout.
+
+IC Compiler uses the clock tree synthesis design rule constraints for all optimization phases, as well as for clock tree synthesis. For information about setting the clock tree synthesis design rule constraint
+```
+compile_clock_tree
+optimize_clock_tree
+```
+The clock_opt command does the following:
+1. Performs clock tree power optimization 
+2. Synthesizes(Re-Synthesizes) the clock trees
+3. Optimizes the clock trees
+4. Adjusts the I/O timing 
+5. Performs RC extraction of the clock nets and computes accurate clock arrival times
+6. Performs placement and timing optimization
+The ```remove_clock_tree``` command is used for unrouted clock trees (if any).
+
+</details>
+<details>
+<summary>Labs</summary>
+<br>
+
+Let us explore the clock tree behaviour using the following commands
+
+```
+check_clock_tree
+```
+The report shows the QoR of the tree built. It shows
+- Any multi-voltage violations caused
+- Skew Balancing
+- capacitance & transition in clock network
+- reference cells defined as don't use/don't touch cells
+The output of this command shows *None* to all the violations that might arise.
+![lab2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/44ae9799-ddce-4746-b303-2532d369f6a2)
+
+![lab2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f88229df-29b0-4a94-97da-f365de7d6393)
+
+```
+check_legality
+```
+
+This command shows the design rules checking such as any overlaps in the design, improper routes on metal layers as shown. All are shown as 0 and the legality is successfully checked.
+![lab2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fb2c0fc3-30e5-44d2-bbb4-59fe94f417b1)
+
+![lab2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/79736090-211e-457e-902a-27680666bb0f)
+
+![lab2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0e0bd843-5d92-4466-9936-5710f95a0a04)
+
+```
+
+report_clock_timing -type summary
+```
+![lab2_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/adc14342-d7cf-4709-8843-a4b5f370310f)
+
+```
+
+report_clock_timing -type skew
+```
+![lab2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b3a0e9dc-2a1c-4d0c-bbea-c8824cbf3e9a)
 
 
+```
+report_clock_timing -type transition
+report_clock_timing -type latency
+```
+![lab2_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e88c9109-63d5-48f9-9f22-fe353dd0930e)
 
 
+```
+report_clock_tree_options
+```
+This command is used to look at the values defined for skew, latency, fanout as shown. 
+![lab3_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0064691f-1670-4ad6-935c-a5bf582a4e03)
+
+These are defined using the command ```set_clock_tree_options`` as shown.
+
+```
+set_clock_tree_options -target_skew 0.3 -target_latency 0.6
+report_clock_tree_options
+```
 
 
-
-
+</details>

@@ -5037,12 +5037,12 @@ report_clock_tree_options
 This command is used to look at the values defined for skew, latency, fanout as shown. 
 ![lab3_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0064691f-1670-4ad6-935c-a5bf582a4e03)
 
-These are defined using the command ```set_clock_tree_options`` as shown.
+These are defined using the command ``set_clock_tree_options`` as shown.
 
 ```
 set_clock_tree_options -target_skew 0.3 -target_latency 0.6
 report_clock_tree_options
 ```
-
+![lab3_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bca31b69-4a5d-402c-a2be-b88c36fa419e)
 
 </details>

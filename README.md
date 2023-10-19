@@ -23,6 +23,8 @@ A brief description of what this training summarizes :
 -  [Day18 : Pre-layout STA and importance of good clock tree](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day18)
 -  [Day19 : Final steps for RTL2GDS](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day19)
 -  [Day20 : Floorplanning and Powerplanning Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day20)
+-  [Day21 : Placement and CTS Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day21)
+-  [Day22 : CTS analysis Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day22)
 
 
 
@@ -4748,3 +4750,166 @@ The violators report for the 45% utilization of core is as shown:
 ![lab2_34 (2)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/edf11304-d59f-4283-92ac-e4a3c22edcdd)
 
 </details>
+
+## Day21 : Placement and CTS Lab
+<details>
+<summary>Theory</summary>
+<br>	
+
+#### Pre-Placement
+- Physical Cells: These library cell doesn’t have signal connectivity and connect only to the power and ground rails. Physical cells, often referred to as standard cells, are used to implement various logical functions and are crucial for the layout and manufacturing of these circuits.
+  Functions:
+   - Functionality
+   - Cell libraries
+   - Fixed cell height and variable width
+-  Well Taps :Well taps ensure that the substrate (n or p) is properly connected to the supply or ground, breaking the parasitic thyristor structure and preventing latch-up.
+
+   Types:
+    - N-Well Taps: N-well taps are used in the CMOS process to connect the n-well regions of PMOS transistors to the ground (Vss). This is necessary to maintain the correct biasing of PMOS devices.
+    - P-Well Taps: P-well taps serve a similar purpose but are used for NMOS transistors, connecting the p-well regions to the supply voltage (Vdd).
+  Functions:
+   - Preventing Latch-Up
+   - Substrate Bias control
+   - Maintains isolation
+- End Cap Cells :Endcap cells, also known as filler cells, are specialized cells placed at the periphery of a chip to fulfill several important functions.
+
+   Functions:
+  - Planarity and Uniformity
+  - Densification
+  - Isolation and Protection
+  - Enhanced Manufacturing Yield
+    
+Types of Endcap cells:
+    - Standard Fillers: These are basic endcap cells used to fill empty spaces and maintain uniformity in the design. They are often rectangular or square in shape and come in various sizes to accommodate different gaps.
+- Corner Fillers: Corner fillers are designed to fill L-shaped or T-shaped gaps at the corners of the chip, ensuring that these irregularities do not affect the chip's structural integrity.
+- Edge Cells: Edge cells are tailored to fit gaps along the long edges of the chip. They are elongated and can be optimized to suit specific design requirements.
+- Special Cells: Special cells, also known as custom cells or macros,that serve specific functions and cannot be represented by standard or generic cells. These are mostly Memory Cells, Analog blocks, arithmetic units, I/O cells
+- Spare Cells: Spare cells, also known as redundant cells are integrated into the chip design to replace defective or malfunctioning standard cells.
+- Decap Cells :
+  
+  Functions:
+   - Power Supply Noise Reduction
+   - Stabilizing the Power Distribution Network
+   - Improving Signal Integrity
+   - Mitigating Electromagnetic Interference (EMI)
+  
+  Types of Decap Cells:
+   - Standard Decap Cells: These are general-purpose decap cells with fixed capacitance values that are commonly used across the chip.
+   - Switchable or Programmable Decap Cells: These cells offer flexibility by allowing designers to configure the capacitance based on the specific requirements of different regions or functional blocks within the chip.
+- Cell Padding is done to reserve space for avoiding routing congestion
+
+Placement doesn’t place the standard cells in synthesized netlist, it optimizes the design and placement also determines the routability of design
+
+ Goals and Objectives:
+- Timing, Power and Area optimization
+-  Minimum Congestion
+-   Minimum cell density, Pin density
+-    Inputs for Placement: .tf, netlist, .sdc, .lib & .lef, Floor Planning and Power planning DEF File
+  Placement Methods:
+- Timing Driven
+- Congestion Driven
+
+Steps:
+- Defining Design Constraints
+- Reading Gate Level netlist from Synthesis
+- Global Placement
+- Detailed Placement
+- Placement Optimization
+   - Cell sizing
+   - Cloning
+   - Buffering
+ Outputs of Placement:
+- Physical layout Information
+- Cell placement location
+- Physical layout, timing and technology information of reference libraries
+#### Clock Tree Synthesis
+
+There are number of algorithms to build the clock tree:
+- H Tree
+- Clock Mesh
+- Spine
+- Fish bone
+  Clocks are used to synchronize data communication. Before clock tree synthesis, clock path behaves as ideal, where there is equal delay from clock source to sink.CTS is the automatic insertion of buffers/inverters along the clock paths of the ASIC design to balance the clock delay to all clock inputs
+Key Objectives of Clock Tree Synthesis:
+
+- Clock Signal Distribution: CTS aims to efficiently distribute clock signals from a single source (the clock buffer) to all flip-flops, latches, and other sequential elements throughout the chip.
+- Minimizing Skew: Skew refers to the variation in arrival times of the clock signal at different destinations. Minimizing skew is crucial to ensuring that all sequential elements sample data at the same time, maintaining synchronous operation.
+- Balanced Load: The CTS process seeks to balance the capacitive load on each branch of the clock tree to avoid uneven voltage drop and maintain signal integrity.
+- Reducing Power Consumption: Efficient CTS can reduce power consumption by minimizing the number of clock buffers and optimizing their placement to minimize power dissipation.
+
+Key Steps in Clock Tree Synthesis:
+
+- Clock Tree Construction: The clock tree network is created by generating a tree-like structure of clock buffers and wires. These buffers amplify the clock signal and ensure it reaches all destination points.
+- Buffer Sizing and Insertion: Buffer sizing involves selecting the type and size of clock buffers to balance the drive strength with the capacitive load. Buffers are inserted strategically to ensure signal quality and minimize skew.
+- Clock Tree Balancing: This step aims to distribute the clock signal uniformly to all parts of the chip, reducing skew. Balancing can involve adjusting the buffer placements, buffer sizes, or wire widths.
+- Skew Minimization: Advanced techniques, such as clock skew optimization, are employed to further reduce clock skew to an acceptable level.
+</details>
+
+<details>
+<summary>Lab</summary>
+<br>	
+
+The following image shows the reports directed and the place_opt and clock_opt stage.
+![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b2175837-a2e9-4e7f-bbe9-a249086245c6)
+
+The SDC does not contain the latency as it is calculated by the tool in real time as the CTS is build. 
+The ```create_placement``` is used to create placement for the design. floorplan option is selected to make the design planning styled as placement.
+Pin Placement is done by sourcing pns.tcl to sync with the current technology file regarding power grid creation.
+![lab1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6bbe8fdc-3518-4efc-a6e8-162b64b95672)
+
+Reports are generated after the run in a directory ```rpts_icc2``` as defined in the SDC. The reports are:
+
+**check_design.pre_pin_placement**
+
+There are no errors and warnings before pin placement checked with ```check_design``` command.
+![lab1_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/093c28bc-e191-4776-9ac6-2eefa51c7a05)
+
+**report_port_placement.rpt**
+
+This report contains the ports of the top level design with the metals used for routing and their offset values
+![lab1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/233f2e48-6cba-4e80-9795-6cf94c7ac3b6)
+
+**report_placement.rpt**
+
+The following report shows 
+- the total net length in design is 65790 microns.
+- No hard macros being overlapped
+- No cells hae placement violations
+- All cells are placed within respective voltage areas.
+
+![lab1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f99ced33-d327-42cd-806c-60a1d8094781)
+
+**vsdbabysoc.post_estimated_timing.rpt**
+
+The estimated timing report shows that slack is MET with 860 ps margin as follows:
+![lab1_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6d977c60-d6d1-46e8-9579-552986aae60b)
+
+**vsdbabysoc.post_estimated_timing.qor**
+
+The QOR shows the cell count, criticsl path, critical slack, macros used, area used. It gives the detailed report of cells placed in design.
+![lab1_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/135e2a1a-8883-4cc4-82b5-b976dff023e6)
+
+**vsdbabysoc.post_estimated_timing.qor.sum**
+
+This reports shows the DRC violations and timing violations of estimated corners timing.
+![lab1_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/4af242a0-09b2-4015-834f-4512d2146e5d)
+
+#### Clock Tree
+Here when gui opens we need to go to window sections and in that we need to select clock tree synthesis analysis window.
+
+The following image shows the PLL source to connection to various cells.
+![lab1_10 (2)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fb3a92c6-fc34-416a-a00a-0a634c3794bb)
+
+The following image shows the fanout view of clock in the design. The nets of all cells from clock source to clock pins.
+![lab1_9 (2)](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/23f47dbc-6c19-46d4-8b71-75af98931a1d)
+
+</details>
+
+
+
+
+
+
+
+
+

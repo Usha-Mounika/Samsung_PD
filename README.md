@@ -4758,6 +4758,7 @@ The violators report for the 45% utilization of core is as shown:
 
 #### Pre-Placement
 - Physical Cells: These library cell doesn’t have signal connectivity and connect only to the power and ground rails. Physical cells, often referred to as standard cells, are used to implement various logical functions and are crucial for the layout and manufacturing of these circuits.
+
   Functions:
    - Functionality
    - Cell libraries
@@ -4767,7 +4768,8 @@ The violators report for the 45% utilization of core is as shown:
    Types:
     - N-Well Taps: N-well taps are used in the CMOS process to connect the n-well regions of PMOS transistors to the ground (Vss). This is necessary to maintain the correct biasing of PMOS devices.
     - P-Well Taps: P-well taps serve a similar purpose but are used for NMOS transistors, connecting the p-well regions to the supply voltage (Vdd).
-  Functions:
+
+ Functions:
    - Preventing Latch-Up
    - Substrate Bias control
    - Maintains isolation
@@ -4780,7 +4782,8 @@ The violators report for the 45% utilization of core is as shown:
   - Enhanced Manufacturing Yield
     
 Types of Endcap cells:
-    - Standard Fillers: These are basic endcap cells used to fill empty spaces and maintain uniformity in the design. They are often rectangular or square in shape and come in various sizes to accommodate different gaps.
+
+- Standard Fillers: These are basic endcap cells used to fill empty spaces and maintain uniformity in the design. They are often rectangular or square in shape and come in various sizes to accommodate different gaps.
 - Corner Fillers: Corner fillers are designed to fill L-shaped or T-shaped gaps at the corners of the chip, ensuring that these irregularities do not affect the chip's structural integrity.
 - Edge Cells: Edge cells are tailored to fit gaps along the long edges of the chip. They are elongated and can be optimized to suit specific design requirements.
 - Special Cells: Special cells, also known as custom cells or macros,that serve specific functions and cannot be represented by standard or generic cells. These are mostly Memory Cells, Analog blocks, arithmetic units, I/O cells
@@ -4805,6 +4808,7 @@ Placement doesn’t place the standard cells in synthesized netlist, it optimize
 -  Minimum Congestion
 -   Minimum cell density, Pin density
 -    Inputs for Placement: .tf, netlist, .sdc, .lib & .lef, Floor Planning and Power planning DEF File
+
   Placement Methods:
 - Timing Driven
 - Congestion Driven
@@ -4829,7 +4833,9 @@ There are number of algorithms to build the clock tree:
 - Clock Mesh
 - Spine
 - Fish bone
+
   Clocks are used to synchronize data communication. Before clock tree synthesis, clock path behaves as ideal, where there is equal delay from clock source to sink.CTS is the automatic insertion of buffers/inverters along the clock paths of the ASIC design to balance the clock delay to all clock inputs
+  
 Key Objectives of Clock Tree Synthesis:
 
 - Clock Signal Distribution: CTS aims to efficiently distribute clock signals from a single source (the clock buffer) to all flip-flops, latches, and other sequential elements throughout the chip.

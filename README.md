@@ -25,6 +25,7 @@ A brief description of what this training summarizes :
 -  [Day20 : Floorplanning and Powerplanning Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day20)
 -  [Day21 : Placement and CTS Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day21)
 -  [Day22 : CTS analysis Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day22)
+-  [Day23 : Clock Gating Technique](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day23)
 
 
 
@@ -5044,5 +5045,102 @@ set_clock_tree_options -target_skew 0.3 -target_latency 0.6
 report_clock_tree_options
 ```
 ![lab3_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bca31b69-4a5d-402c-a2be-b88c36fa419e)
+
+</details>
+
+## Day23 : Clock Gating Technique
+<details>
+<summary>Theory</summary>
+<br>
+
+
+#### Advanced H-Tree for million flop clock end-points randomly placed
+
+- When CTS is performed, power consumption also needs to be taken care of, especially when designing a large number of clocks where the design might induce a larger power, as well as a larger power usage. A digital circuit with a lot of clocks would be so huge with many buffers etc when designing its clock tree
+- In order to fix that, the whole chip is sectioned into smaller versions where each section will have its own clock tree, and managed to get a complete routed tree.Therefore, Clock Gating (CG) technique is introduced.
+![23](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a9a55137-9a6a-40e1-ae52-80fb65d60531)
+
+### Clock Gating
+- Clock gating involves the use of a gating logic, often in the form of an AND gate, to control the clock signal. When the gating logic's control input is inactive, the clock signal is effectively blocked, preventing it from reaching the clocked elements.
+- Clock signals in digital circuits toggle at a high frequency, consuming a significant portion of the power budget.
+-  Clock gating helps in mitigating this power consumption by turning off the clock signal when the circuit elements do not need to perform any computation.
+![cg](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5ef93f98-6c32-4458-b28f-b3840128201d)
+
+#### Types of Clock Gating:
+- Latch-Based Clock Gating: In latch-based clock gating, latches are used to store data between clock cycles. The gating logic controls whether the latches accept or ignore data based on the control input.
+- Flip-Flop-Based Clock Gating: Flip-flop-based clock gating is similar to latch-based gating, but it uses flip-flops instead of latches to store data. Flip-flops are edge-triggered, providing better synchronization.
+
+Advantages:
+
+-  Clock gating significantly reduces the dynamic power consumption of a digital circuit by preventing unnecessary switching activity.
+-  Clock gating can help reduce clock skew, leading to better timing closure in designs.
+-  Clock gating can make it easier to achieve timing closure in complex VLSI designs by allowing more control over clock distribution.
+
+Types of routing
+
+- P/G routing
+- Clock routing
+- Signal routing: Global & Detailed routing
+
+Clock Tree Synthesis:
+
+- In designs with synchronous circuits, a dedicated clock tree is synthesized to distribute the clock signal with minimal skew.
+- Clock tree synthesis ensures that all clocked elements in the design receive clock signals at the same time.
+
+
+#### Routing
+Routing is a critical step in VLSI design, where the logical connections between various components are physically established.
+Power Grid Routing:
+
+- Power grid routing focuses on routing power and ground signals to ensure even distribution of power throughout the chip.
+- Proper power grid routing is essential to avoid voltage drop issues and ensure that all components receive adequate power.
+
+Global Routing:
+
+- In the initial stage, global routing is performed to establish approximate routes for nets across the chip.
+- The objective is to find a path for each net between source and destination cells while considering the macro placement and available routing tracks.
+
+Detail Routing:
+
+- Detail routing, also known as track assignment, refines the global routes by determining the specific tracks and metal layers that will be used for each net.
+- Detailed routing ensures that the physical implementation adheres to design rules and constraints, optimizing for area, timing, and manufacturability.
+
+The ```route_auto``` command is used during routing stage in top.tcl.
+![routing](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bd7d3618-6c85-4dc0-8e3a-14aa6f3e37b4)
+
+</details>
+<details>
+<summary>Lab</summary>
+<br>
+
+Let us optimize the clock network. Inorder to this, the nets to the flops from the pll block requires buffers to improve transition thus reducing delay. 
+The following image shows the initial steps followed.
+- ```place_opt``` is used to optimize the placement in the design.
+- ```clock_opt``` is used to optimize the clock such thst latency improved and skew reduced.
+- ```route_auto``` is used for global routing, track and via assignment, detailed routing done at once. 
+![lab4_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/734c9c7a-850b-4d57-8f1c-c8086997851c)
+
+For the power grid routing, the following file contains the pg_mesh, pg_ring for the design and the pg pattern for standard cells as follows:
+![lab4_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/32145c3d-26d2-48e4-81ea-7fab098ab806)
+
+But the design contains no clock buffer cells in design. So, The lib cells were added and the clock tree is synthesized and propagated using the following commands:
+```
+set_lib_cell_purpose -include cts {sky130_fd_sc_hd_tt_025C_1v80/sky130_fd_sc_hd_buf_*}
+synthesize_clock_tree
+set_propagated_clock [all_clocks]
+```
+These steps should be involved after placement stage i.e., at CTS stage. So, These commands are added after optimizing placement and before the clock optimization.
+![lab4_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bf9ecf64-d72d-4183-9bdd-bd7f0022ad5e)
+
+We know, the PVT corner is defined for 1.8V  and 25C temperature, so the voltage set while defining constraints needs to be set to 1.8V.
+![lab4_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a4b34c56-c68d-43d4-a573-70b4bc42a51b)
+
+So, sourcing top.tcl file now, created the buffers as follows:
+![lab4_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/56843123-0f07-4ac0-8a95-3f28d8d5f227)
+
+Even the setup slack now has reduced to 0.11ns or 110ps and the hold violations are met as shown.
+![lab4_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/92156791-8cdb-426d-9676-7b7584e31692)
+
+![lab4_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ecfd7fff-31d4-4668-bbc5-68122bcdbb8c)
 
 </details>

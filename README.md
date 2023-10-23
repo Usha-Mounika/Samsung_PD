@@ -4856,7 +4856,7 @@ Key Steps in Clock Tree Synthesis:
 <br>	
 
 The following image shows the reports directed and the place_opt and clock_opt stage.
-![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b2175837-a2e9-4e7f-bbe9-a249086245c6)
+![lab1_1](https://github.com/Usha-Mounika/Samsung_PD/day21/lab1_1.png)
 
 The SDC does not contain the latency as it is calculated by the tool in real time as the CTS is build. 
 The ```create_placement``` is used to create placement for the design. floorplan option is selected to make the design planning styled as placement.

@@ -26,6 +26,7 @@ A brief description of what this training summarizes :
 -  [Day21 : Placement and CTS Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day21)
 -  [Day22 : CTS analysis Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day22)
 -  [Day23 : Clock Gating Technique](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day23)
+-  [Day24 : Timing violations and ECO](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day24)
 
 
 
@@ -5142,5 +5143,118 @@ Even the setup slack now has reduced to 0.11ns or 110ps and the hold violations 
 ![lab4_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/92156791-8cdb-426d-9676-7b7584e31692)
 
 ![lab4_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ecfd7fff-31d4-4668-bbc5-68122bcdbb8c)
+
+</details>
+
+## Day24 : Timing violations and ECO
+<details>
+<summary>Theory</summary>
+<br>
+
+- Engineering Change Order or ECO is how you incorporate last minute changes in your design. 
+So typically we do ECO on the gate level netlist. Designer need to edit the gate-level netlist, make the same changes in RTL. 
+Then pass all verifications before it is passed on to layout.
+- Make sure the ECO pass formal and functional verification before you start editing your layout.In this stage all the violations are fixed and seal all the sign-off checks that weren’t done during the PD flow
+
+It is all dependent on the PPA - Power(dynamic, short-circuit, leakage), Performance, Area.
+- We need to see different options for tradeoff between the PPA.
+- Implementation tool doesn’t fix all the violations => So here engineers come into pictures. 
+- More sign-off corners than what is enabled in PnR.
+- Verification catches bugs but can’t do a re-spin, hence we just directly change the netlist
+
+ECO has has the following steps :
+1. Investigate the problem using the recent database
+2. ECO generation to address the problem
+3. ECO implementation with the recent database
+4. After implementing and fixing the problem, save it in the database for future
+![eco](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/83118548-1880-4280-8592-b807b962f710)
+
+</details>
+<details>
+<summary>Lab</summary>
+<br>
+
+The following image shows the run completed by placing the filler cells in the design.
+The various filler cells of different size are as follws:
+![lab5_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/9e01df29-a5d6-43b7-a939-2fc4dc5df3f0)
+
+The setup slack is as follows:
+![lab5_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2fc64314-967b-4166-bd02-b492bc2e2869)
+
+The critical path in the design i.e., the report that has highest worst slack is viewed in GUI as follows:
+![lab5_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/69ea6dc9-c71c-4bec-b703-6c4f789340cf)
+
+All the cells, ports,pins are highlighted so the view is not clear, the only cells and label highlighted view is as follows:
+![lab5_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2148dddc-f2a0-4e94-8d14-8430c6ee5f7c)
+
+The inserted fiiler cell in the cell-view is as follows:
+![lab5_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/06dc929f-49eb-4b77-ac48-5fc15ba47e15)
+
+After inserting the decap cells in top.tcl,
+![lab5_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/44a26cf7-79b1-42e2-b2df-c0f42d879e0e)
+
+The decap cells are inserted as follows:
+![lab5_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/dc232c1c-268b-43a6-9a35-76ba20fe0bcb)
+
+The setup slack was violated after inserting decap cells as shown.
+![lab5_afterinsertdecap](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e97b0834-dc1f-4eae-a7a8-703f0cebedd6)
+
+The following report of global timing shows that there are 20 setup violations(NVE) with worst negative slack(WNS) of 0.08 ns and 0.76 of total negative slack(TNS).
+![lab5_afterinsertdecap_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c9a212aa-4b14-4f4f-8eca-931d7b613c31)
+
+The setup violation can be fixed by upsizing the cells in the arrival path of the data path. So, using ```size_cell``` command, the following violations are made to zero.
+```
+size_cell core/U339 sky130_fd_sc_hd_fa_2
+size_cell core/U3 sky130_fd_sc_hd_fa_2
+size_cell core/U340 sky130_fd_sc_hd_fa_2
+```
+![lab5_afterinsertdecap_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5fc1cc0b-ee07-493f-af90-b511cac7d717)
+
+![lab5_afterinsertdecap_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/36037d70-d694-460e-a738-e7169887f150)
+
+![lab5_afterinsertdecap_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/35dbef28-6271-4308-bd69-56ba28a55a0e)
+
+![lab5_afterinsertdecap_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0ec253e0-c413-4d17-95d1-feafb8219181)
+
+The improvement in the slack can be seen after upsizing the each cell. FInally the setup is MET with a positive margin of 30ps.
+
+Let us fix the tran violations. 
+The tran violations can be checked using the following command 
+```
+report_constraints -all_violators -max_transition
+```
+There are 5 violations. The driving cell needs to be upsized to fix the transition violation.
+
+The following image shows the net reported as violating with high fanout.
+![lab5_tran_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3a6f571b-539d-4172-874b-9f3ad1b21f0d)
+
+![lab5_tran_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5307ab1a-9472-401c-8cd5-fa1b07ad3c08)
+
+The following commands are used:
+```
+change_selection [get_net <violating_net>]
+// switch to schematic view and highlight the driving cell of net
+get_selection
+get_attribute [get_selection] ref_name
+size_cell <instance_name> <new_ref_name>
+```
+Similarly,
+![lab5_tran_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/24f2320c-755d-4f13-b8ee-ec4d0e617a9d)
+
+![lab5_tran_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d049c24a-7b93-4838-ad62-d7e5414afae5)
+
+All the transition violations are MET as shown.
+![lab5_tran_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/edab0720-2fa8-4a7a-9bda-3a50b0c6f45e)
+
+Fixing the transition violations, also fixed the capacitance violations but setup was violated again 
+![lab5_tran_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b2387700-ba9b-43ad-ad31-5e14ed365ca0)
+
+Again resizing the cells, the setup got fixed and all the violations are fixed.
+![lab5_tran_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/de5d6d4c-fe04-402f-9141-60e4a95d98f6)
+
+The ```report_power``` shows the final leakage power, switching power when the timing is completely MET.
+![lab6_power_after](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ad350b80-764d-424b-badc-56bddbe1b249)
+
+
 
 </details>

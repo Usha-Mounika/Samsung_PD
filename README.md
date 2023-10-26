@@ -5169,14 +5169,41 @@ These steps should be involved after placement stage i.e., at CTS stage. So, The
 ![lab4_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bf9ecf64-d72d-4183-9bdd-bd7f0022ad5e)
 
 We know, the PVT corner is defined for 1.8V  and 25C temperature, so the voltage set while defining constraints needs to be set to 1.8V.
-![lab4_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a4b34c56-c68d-43d4-a573-70b4bc42a51b)
+![lab4_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/497f2a13-f87b-4e2d-8ae7-c1758e431af6)
 
 So, sourcing top.tcl file now, created the buffers as follows:
-![lab4_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/56843123-0f07-4ac0-8a95-3f28d8d5f227)
+![lab8_ctsbuf](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/551a8088-0e26-4ca0-ad85-76f87a41c440)
+
+The clock buffers in the design are viewed with GUI as follows:
+![lab7_clockbuffer](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c23f82d4-d061-4bdb-b6f9-c353c5dff64e)
+
+![lab8_clocksink](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/011ae032-0291-422c-aa44-4f6b40f3675e)
+
+The following image highlights the fanout of the clock tree in the design.
+![lab4_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1cac02fb-8e88-4b5c-af03-6e720a234586)
+
+The cells view based on level and type connected to clock i.e., clock buffers and clock sinks (usually sequential cells with clock pin) are highlighted as follows:
+![lab9_clocktree](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/5638e318-53e4-4469-9962-50c1aae1b976)
 
 Even the setup slack now has reduced to 0.11ns or 110ps and the hold violations are met as shown.
+
+The setup path is viewed as 
+```
+report_timing
+```
+- The setup path gives the arrival time minus required time. The required time is the summation of period and setup uncertainty, clock network delay of capture flop.
+- The library setup time is 0.09ns (defined in libs), uncertainty is 0.5ns (user-defined in SDC) and network delay of 2.6ns.
+- The required time is 12.02 ns. The timing is violated by 0.11ns as the arrival time in data path is 12.13ns (clock network delay + comb delay)
 ![lab4_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/92156791-8cdb-426d-9676-7b7584e31692)
 
+The hold oath is viewed as
+```
+report_timing -delay_type min
+```
+- The hold path gives required time minus arrival time. The required time is due to network delay and uncertainties of clock, library hold time of capture flop.
+- The library hold time is 40ps (defined in libs), uncertainty is 0.5ns and the network delay is 2.38ns.
+- The hold is checked at the same edge of flop(at 0ns). The clock network delay is same for both flops as same clock is being propagated.
+- The hold is MET with a very minimal margin as shown.
 ![lab4_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ecfd7fff-31d4-4668-bbc5-68122bcdbb8c)
 
 </details>

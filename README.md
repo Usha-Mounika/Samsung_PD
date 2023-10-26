@@ -4997,41 +4997,71 @@ The report shows the QoR of the tree built. It shows
 - Skew Balancing
 - capacitance & transition in clock network
 - reference cells defined as don't use/don't touch cells
-The output of this command shows *None* to all the violations that might arise.
+
+The output of this command shows *None* to all the violations that might arise. 
 ![lab2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/44ae9799-ddce-4746-b303-2532d369f6a2)
 
 ![lab2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f88229df-29b0-4a94-97da-f365de7d6393)
 
+- CTS-013 : Cells  in  the  clock  network  have  been  marked  with  a  dont_touch attribute. *dont_touch*  on  a  cell prevents sizing, optimization, and replacement during CTS.  dont_touch can limit CTS  optimization,  which can cause worse latency, skew, or area in the clock network.
+- CTS-904 : CTS cannot resize a cell in the clock network unless  there  are  logically equivalent lib_cells specified in the clock reference list.  This message indicates that there are cells instantiated in the  clock  network that have no logically equivalent lib_cells in the reference list, so no sizing can be done.
+- CTS-913 : set_clock_ignore_points is used to define pins in the clock  tree  that should  be ignored for skew balancing.  create_clock_skew_group is used to add clock pins into a separate skew  group  from  the  default  skew group for that clock.  This message reports clock pins that are defined as explicit ignore points but also have been added to a skew group. 
 ```
 check_legality
 ```
 
 This command shows the design rules checking such as any overlaps in the design, improper routes on metal layers as shown. All are shown as 0 and the legality is successfully checked.
+The various app_options are set to true. One of them is,
+
+place.legalize.enable_prerouted_net_check :
+              This  app_option enables checking of cell placement against pre-routed nets, including Power and Ground nets,  during  legalization  and  legality checking.
 ![lab2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fb2c0fc3-30e5-44d2-bbb4-59fe94f417b1)
 
 ![lab2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/79736090-211e-457e-902a-27680666bb0f)
 
 ![lab2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0e0bd843-5d92-4466-9936-5710f95a0a04)
 
+As all the violations reported were zero, the legality is successful.
 ```
 
 report_clock_timing -type summary
 ```
 ![lab2_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/adc14342-d7cf-4709-8843-a4b5f370310f)
 
+- The summary gives the report of launch latency and capture latency of flop i.e., the clock network delay of flop.
+- The rp-+ implies the rise transition propagated clock from launching flop to capture flop.
+- The defined corner is func1 in init.design_mcmm.auto_expanded.tcl file.
+The various symbols used are as follows:
+    r     -->    Rising transition
+
+    f    -->     Falling transition
+
+    p    -->     Propagated clock to this pin
+
+    i    -->     Clock inversion to this pin
+
+    -    -->     Launching transition
+
+    +    -->     Capturing transition
+
+    e    -->     Exception on this pin
 ```
 
 report_clock_timing -type skew
 ```
 ![lab2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b3a0e9dc-2a1c-4d0c-bbea-c8824cbf3e9a)
 
-
+- The skew reports the local skew. Each report entry is a pair of sink pins and their relative skew.
+- For skew reports, the from-to skew sense is defined by the pins in the from_list and to_list options respectively. If the to_list option is not specified, by default all sink pins in the given clock networks are used. Thus, specifying the to_list option reduces the topological scope of the report. For transition time and latency reports, the from_list and to_list options are concatenated and treated as a single list. If neither is specified, the to_list option is assumed to be populated with all sink pins in the given clock networks.
+- Local skew exists from one sink pin to another only if their associated sequential devices are connected via a data path in the appropriate from-to sense.
 ```
 report_clock_timing -type transition
 report_clock_timing -type latency
 ```
 ![lab2_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e88c9109-63d5-48f9-9f22-fe353dd0930e)
 
+- The transition report gives the source latency and network latency and transition of the design clock.The source latency is 0 as the PLL in the design is blackbox yet.
+- The transition report gives maximum transition and the latency to that clock pin. The latency report gives the maximum latency of the clock pin along with transition at that pin.
 
 ```
 report_clock_tree_options
@@ -5047,6 +5077,7 @@ report_clock_tree_options
 ```
 ![lab3_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bca31b69-4a5d-402c-a2be-b88c36fa419e)
 
+This  command  reports  all  existing  settings   like   clock   targetskew/latency  constraints, fanout-based ndr, etc, previously defined by set_clock_tree_options commands.
 </details>
 
 ## Day23 : Clock Gating Technique
@@ -5114,7 +5145,7 @@ The ```route_auto``` command is used during routing stage in top.tcl.
 <summary>Lab</summary>
 <br>
 
-Let us optimize the clock network. Inorder to this, the nets to the flops from the pll block requires buffers to improve transition thus reducing delay. 
+Let us optimize the clock network. Inorder to do this, the nets to the flops from the pll block requires buffers to improve transition thus reducing delay. 
 The following image shows the initial steps followed.
 - ```place_opt``` is used to optimize the placement in the design.
 - ```clock_opt``` is used to optimize the clock such thst latency improved and skew reduced.
@@ -5130,6 +5161,10 @@ set_lib_cell_purpose -include cts {sky130_fd_sc_hd_tt_025C_1v80/sky130_fd_sc_hd_
 synthesize_clock_tree
 set_propagated_clock [all_clocks]
 ```
+- ```set_lib_cell_purpose -include cts {sky130_fd_sc_hd__tt_025C_1v80/sky130_fd_sc_hd__buf_}``` command specifies that the library cells in the PVT_lib library(sky130_fd_sc_hd__tt_025C_1v80) whose names start with "buf" should be used for clock tree synthesis i.e., buffer cells are used for synthesizing the clock tree.
+- ```synthesize_clock_tree``` command synthesizes clock trees and updates the design database with the compiled clock trees. The compilation of the clock tree is skew driven. This command can optimize compiled clock tree for improving the slack.
+- ```set_propagated_clock [all_clocks]``` command specifies that delays be propagated through the clock network to determine latency at register clock pins.Propagated clock latency is used for post-layout, after final clock tree generation. If the set_propagated_clock command is applied to pins or ports, it affects all register clock pins in the transitive fanout of the pins or ports. The above command specifies to use propagated clock latency for all clocks only in the current mode in the design .
+
 These steps should be involved after placement stage i.e., at CTS stage. So, These commands are added after optimizing placement and before the clock optimization.
 ![lab4_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/bf9ecf64-d72d-4183-9bdd-bd7f0022ad5e)
 

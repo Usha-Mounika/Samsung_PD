@@ -5287,6 +5287,13 @@ report_constraints -all_violators -max_transition
 ```
 There are 5 violations. The driving cell needs to be upsized to fix the transition violation.
 
+The various methods to fix transition violation are:
+- upsize the driving cell
+- add_buffer_on_route (if netlength is high)
+- split_load/split_fanout by adding buffer
+
+The method to fix capacitance is to upsize the cell. So, Upsizing the driving cell at transition violating pins might fix the capacitance violations.
+
 The following image shows the net reported as violating with high fanout.
 ![lab5_tran_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/3a6f571b-539d-4172-874b-9f3ad1b21f0d)
 
@@ -5314,9 +5321,27 @@ Fixing the transition violations, also fixed the capacitance violations but setu
 Again resizing the cells, the setup got fixed and all the violations are fixed.
 ![lab5_tran_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/de5d6d4c-fe04-402f-9141-60e4a95d98f6)
 
+**report_power**
+
 The ```report_power``` shows the final leakage power, switching power when the timing is completely MET.
 ![lab6_power_after](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ad350b80-764d-424b-badc-56bddbe1b249)
 
+The following report shows the power before ECO.
+![lab6_power_before](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b49b289d-627a-4578-b231-ff1d347b2ef2)
 
+- Internal power is any power dissipated within the boundary of a cell. A circuit dissipates internal power by charging or discharging any existing capacitances internal to the cell during switching.
+The internal power is 2.86 mW before and after ECO.
+- Switching power results from calculations based on the voltage, netlist capacitance, and switching of the nets. The switching power is 1.34mW before and after ECO.
+- Leakage power is the power dissipated by a cell when it is not switching—that is, when it is inactive or static.  The Leakage power increased from 190nW to 194nW.
+- The total power is at 4.2mW due to the negligible change of leakage power.  The cell internal power and the net switching power and cell leakage power are almost same. So, There is not much variation in power i.e., 4nW of increased power dissipiation.
+  
+  **report_qor**
+
+![qor](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2b40944d-5d20-49fa-8873-bf80630e6f5a)
+
+- The above image shows the all violations fixed in design, including the capacitance and transition violations.
+- The cell area has increased from 700465 to 700487 microns.
+- There is no change in buffer area or non-combinational area, as the combinational cells only are upsized.
+**So, This is an improved qor with no timing violations with little trade-off in area**.
 
 </details>

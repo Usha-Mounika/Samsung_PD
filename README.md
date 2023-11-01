@@ -27,7 +27,8 @@ A brief description of what this training summarizes :
 -  [Day22 : CTS analysis Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day22)
 -  [Day23 : Clock Gating Technique](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day23)
 -  [Day24 : Timing violations and ECO](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day24)
--  [Day25 : Introduction to mixed signal flow](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day25)
+-  [Day26 : Introduction to mixed signal flow](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day26)
+-  [Day27 : Introduction to crosstalk - glitch and delta delay](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day24)
 
 
 
@@ -5431,10 +5432,49 @@ programmable gate array (FPGA) or application-specific integrated circuit (ASIC)
 
 There are different categories for IP cores including hard IP cores and soft IP cores.
 - The soft IP core , can be customized during the physical design phase and mapped to any process technology.
-- A hard IP core is one that has the logic implementation and the physical implementation. In other words, the physical layout of a hard macro-IP is finished and fixed in a particular process technology
+- A hard IP core is one that has the logic implementation and the physical implementation. In other words, the physical layout of a hard macro-IP is finished and fixed in a particular process technology.
+  
+</details>
 
+## Day27 : Introduction to crosstalk - glitch and delta delay
+<details>
+<summary>Theory</summary>
+<br>
 
+#### Crosstalk
 
+- Signal Integrity & Crosstalk are the Quality checks of the clock routes.
+-  Signal integrity is the ability of an electrical signal to carry information reliably and resist the effects of high-frequency electromagnetic interference from nearby signals.
+- Crosstalk is the undesirable electrical interaction between two or more physically adjacent nets due to capacitive cross-coupling. Crosstalk is a type of noise signal that corrupts the actual signal while transmission through the communication medium
 
+As the geometry of cell reduces, the distance between the interconnects decrease, thus increasing crosscoupling capacitance between nets. So, the parasitic capacitance becomes less as interconnections become narrower.The cell delays are also reduced as the size of transistor is small.
 
+The various reasons for Crosstalk are more number of metal layers in design, more congestion (interms of routing), low voltage design and Thin and long metal layers are routed.
+These can be fixed by using guard rings, down-sizing the agressors or shielding, layer promotion of nets or breaking of long nets.
+
+-  A net that receives undesirable cross-coupling effects from a nearby net is called a victim net.
+-  A net that causes these effects in a victim net is called an aggressor net.
+-  An agressor can also be a victim net and vice-versa.
+  The timing effects of an agressor net on a victim net can be depending on various factors such as switching direction of rise and fall, relative times & slew rates of signal transition, amount of cross coupled capacitance and combinatinal effects of multiple agressor nets on single victim net.
+
+#### Glitch
+When one net is switching, and another net is constant then switching signal may cause spikes on other net because of which coupling capacitance (Cc) occurs between two nets, this is called as crosstalk noise.
+A steady signal net can have a glitch due to the charge transferred by the switching aggressors through coupling capacitances. The glitch magnitude may be large enough to be seen as a different logic value by the fan-out cells of the victim nets.
+The various types of glitches are rise, fall, overshoot and undershoot.
+![glitch](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/deeedd52-dcaf-4631-8f24-4a71b9a98c68)
+
+- Rise glitch: Raising aggressor net induces a rise glitch on a steady low
+- Fall glitch: Falling aggressor net induces a fall glitch on a steady high
+- Overshoot glitch: Raising aggressor net induces overshoot glitch on a steady high This takes the victim net voltage above its steady high value.
+- Undershoot glitch: Falling aggressor net induces an undershoot glitch on a steady low This takes the victim net voltage below its steady low value.
+</details>
+<details>
+<summary>Lab</summary>
+<br>
+	
+The various checks done specific to crosstalk analysis are:
+- no_driving_cell : reports input ports with no driving cell and doesn't have case analysis set on it. These nets are assigned as a stronger driver for modelling agressors.
+- ideal_clocks : reports nets that do not have propagated clocks. The design must have propagating clock tree to calaculate crosstalk.
+- partial_input_delay : reports the delays set with set_max_delay and set_min_delay commands in SDC.
+- unexpandable_clocks : reports any clocks that are not expanded to common time base.
 </details>

@@ -27,6 +27,7 @@ A brief description of what this training summarizes :
 -  [Day22 : CTS analysis Labs](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day22)
 -  [Day23 : Clock Gating Technique](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day23)
 -  [Day24 : Timing violations and ECO](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day24)
+-  [Day25 : Introduction to mixed signal flow](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day25)
 
 
 
@@ -5343,5 +5344,97 @@ The internal power is 2.86 mW before and after ECO.
 - The cell area has increased from 700465 to 700487 microns.
 - There is no change in buffer area or non-combinational area, as the combinational cells only are upsized.
 **So, This is an improved qor with no timing violations with little trade-off in area**.
+
+</details>
+
+## Day25 : Introduction to mixed signal flow
+<details>
+<summary>Mixed Signal flow</summary>
+<br>
+
+Mixed signal flow refers to the concurrent utilization and integration of both analog and digital signals within a system or process. This combination allows for the advantages of both signal types to be harnessed in achieving specific functionalities.
+
+**Analog Signals:**
+
+Analog signals are continuous in nature, representing information through a smooth, continuous waveform. Examples include voltage, current, and temperature. They are characterized by their infinite range of values within a given range.
+
+**Digital Signals:**
+
+Digital signals, on the other hand, represent information in discrete, binary form—commonly as 0s and 1s. These signals are used in computing systems and have distinct levels, usually on/off or high/low. They allow for robust storage, processing, and transmission of data.
+
+**Analog-to-Digital and Digital-to-Analog Converters (ADCs/DACs):**
+
+These components are fundamental in mixed signal design. ADCs convert analog signals into digital format, while DACs perform the reverse operation converting digital signals back into analog form. These are crucial for facilitating communication between the analog and digital sections of a system. These chips have very different Design and Process Technology demands than normal digital circuits
+  
+![amsflow](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0ed0dc37-f814-4e69-bb13-6a56d777dec3)
+
+In our vsdbabysoc design, the PLL and DAC are analog blocks and RVMYTH processor is a digital block.
+![lab2_10](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1d5874b0-f3e0-473b-a2fd-4e45f031db35)
+
+#### Various files required
+- **LEF (Library Exchange Format)**: The LEF file contains the physical information such as height,width etc.. of standard cells. A LEF file has two parts:
+   - Cell LEF
+   - Tech LEF
+  Technology LEF part contains the information regarding all the metal interconnects, via information and related design rules whereas cell LEF part contains information related to the geometry of each cell.
+  Technology LEF part contains the following information
+    - LEF Version ( like 5.7 or 5.8 )
+    - Units (for database, time,  resistance, capacitance)
+    - Manufacturing grids
+    - Design rules and other details of BEOL (Back End Of Layers)
+       - Layer name (like poly, contact, via1, metal1 etc)
+       - Layer type ( like routing, masterslice, cut etc)
+       - Prefered direction (like horizontal or vertical)
+       - Pitch
+       - Minimum width
+       - Spacing
+       - Sheet resistance
+ Cell LEF basically contains the following information
+   - Cell name (like AND2X2, CLKBUF1 etc)
+   - Class ( like CORE or PAD)
+   - Origin 0 0
+   - Size (width x height)
+   - Symmetry ( like XY, X, Y etc)
+   - Pin Information
+   - Pin name (like A, B, Y etc)
+   - Direction (like input, output, inout etc )
+   - Use (like Signal, clock, power etc)
+   - Shape  (Abutment in case of power pin)
+   - Layer (like Metal1, Metal2 etc )
+   - rectangular coordinate of pin (llx lly urx ury)
+- **LIB (Liberty File)** : LIB file is an ASCII representation of timing and power parameter associated with cells inside the standard cell library of a particular technology node. Lib file is basically a timing model file which contains cell delay, cell transition time, setup and hold time requirement of the cell. So Lib file basically contains the timing and electrical characteristics of a cell or macros. Lib file is generated and provided to ASIC designer by a standard cell library vendor or Foundry if the foundry provides a standard cell library. Timing and power parameter of a cell is obtained by simulating the cell in a variety of operating conditions and data are represented in the Lib file.
+- **GDSII file** : GDSII (Graphic Data System II) is a file format commonly used in the semiconductor industry, particularly in the design and manufacturing of integrated circuits. It is the standard format for transferring and storing design data for electronic chips. The 
+  1. Geometric Shapes and Layout Information: GDSII files encapsulate geometric shapes that define the layout of an integrated circuit. This includes polygons, paths, and other structures representing different elements of the chip design such as transistors, interconnects, vias, and metal layers.
+  2. Layered Information: The design is segmented into various layers, each representing a distinct aspect of the chip. Layers are crucial in distinguishing different elements of the chip design, from the physical components to the interconnections.
+  3. Hierarchical Data: GDSII files can contain hierarchical information, allowing designers to create and manage complex designs with different levels of detail, from macros to smaller components, making the representation of the layout more efficient and organized.
+  4. Text Labels and Markings: GDSII files may include textual information that labels components, specifies measurements, or contains other crucial annotations to aid in the understanding and interpretation of the design.
+  5. Design Data Compression: To manage the complexity and size of the file, GDSII uses data compression techniques, grouping geometric shapes into structures that facilitate efficient storage and retrieval of information.
+  6. Technology Information and Design Parameters: GDSII files can include information about the technology used, design rules, and parameters that define the chip's characteristics and constraints.
+- **OASIS file** : OASIS (Open Artwork System Interchange Standard) is another file format used in the semiconductor industry for representing and transferring layout data of integrated circuits. It was developed to address some limitations of the older GDSII format, aiming to handle the challenges posed by increasingly complex chip designs and to improve data handling efficiency.
+   - OASIS was designed to handle the complexities of modern chip designs more efficiently compared to GDSII
+   - They enable the representation of complex designs with various levels of detail, allowing for a more organized and manageable layout representation.
+   - OASIS files incorporate advanced features such as reusability of cell libraries and the ability to represent larger data volumes with improved data access, addressing the limitations faced by GDSII.
+   - OASIS employs variable-sized elements and serialization techniques, enhancing the handling of complex and detailed geometries.
+
+
+The PnR tool takes the inputs and generates the GDSII file. The various tools for PnR are Innovus (Cadence Design System), IC Compiler II (Synopsys), Olympus SOC (Mentor Graphics).
+
+The inputs required are the gate level netlist (.v or .vg format), the constraint files (.sdc format), the logical libraries (.lib or .db format), physical libraries (.lef), technology libraries(.tf or .techlef), the PVT conditions (scenarios defining file) and the RC parasitics file.
+
+The additional input files can be block partition (.fp file), I/O pin locations file (as pad_placement_constraints.tcl in vsdbabysoc), power plan script or rule, the power intent file and saif file(switching activity file).
+
+The following images shows the stages of physical design and brief need for stages.
+![whatwhy](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7824bb9a-a4af-4eeb-8293-148e726d64cc)
+
+#### IP cores
+An IP core consists of a block of logic or data that is used in a semiconductor chip. It is usually the intellectual property of a particular person or company. IP cores are used when making a field
+programmable gate array (FPGA) or application-specific integrated circuit (ASIC). IP cores are created throughout the design process and can be turned into components for reuse.
+
+There are different categories for IP cores including hard IP cores and soft IP cores.
+- The soft IP core , can be customized during the physical design phase and mapped to any process technology.
+- A hard IP core is one that has the logic implementation and the physical implementation. In other words, the physical layout of a hard macro-IP is finished and fixed in a particular process technology
+
+
+
+
 
 </details>

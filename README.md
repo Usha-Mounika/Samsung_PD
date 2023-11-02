@@ -5348,7 +5348,7 @@ The internal power is 2.86 mW before and after ECO.
 
 </details>
 
-## Day25 : Introduction to mixed signal flow
+## Day26: Introduction to mixed signal flow
 <details>
 <summary>Mixed Signal flow</summary>
 <br>
@@ -5471,10 +5471,72 @@ The various types of glitches are rise, fall, overshoot and undershoot.
 <details>
 <summary>Lab</summary>
 <br>
-	
+
+Before generating the reports for the crosstalk and SI analysis using primetime, the inputs required to read the design by the primetime tool are generated using icc2_shell.
+
+**Generating SPEF file**:
+
+```
+source top1.tcl
+update_timing
+write_parasitics -format spef -output vsdbabysoc_spef
+```
+The following image shows the generation of SPEF:
+![update spef](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ec125087-5b94-41ba-9c12-1fc97172f4ed)
+
+The generated zip file is unzipped using the command:
+```
+cd write_data_dir/vsdbabysoc
+gzip -d vsdbabysoc.pt.v.gz
+gzip -d func1.sdc.gz
+cp vsdbabysoc.pt.v /home/usha.m/Physical_Design/icc2_workshop_collaterals/standaloneFlow
+cp func1.sdc /home/usha.m/Physical_Design/icc2_workshop_collaterals/standaloneFlow
+```
+These files are copied to main directory standalone flow.
+![unzip_sdc](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/54f8995d-c506-4bd2-8521-1f7b9cd64505)
+
+![pt_shell1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7efbeaae-e7e2-40d4-ba5a-047235b3b599)
+
+The design is read into the pt_shell are as follows:
+```
+set target_library {list set target_library "avsddac.db avsdpll.db sky130_fd_sc_hd__tt_025C_1v80.db"
+set link_library [list avsddac.db avsdpll.db sky130_fd_sc_hd__tt_025C_1v80.db]
+read_verilog vsdbabysoc.pt.v
+link_design vsdbabysoc_1
+current_design
+```
+
+The sdc is read into the design and
+```
+read_sdc func1.sdc
+set_app_var si_enable_analysis true
+read_parasitics -keep_capacitive_coupling vsdbabysoc_spef.temp1_25.spef
+```
+The following image shows the parasitics read by the tool.
+![sdc read](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/676ab596-6113-4173-a32f-b9ba3105fd98)
+
+The following image shows the report of check_timing as follows:
+![check_timing](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6a7fe832-711d-41ae-894c-0e202893f2fe)
+
+The design can be viewed using GUI is as follows:
+![gui](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/81e1c3a1-ca8c-4b84-89ea-231225f43cc1)
+
 The various checks done specific to crosstalk analysis are:
 - no_driving_cell : reports input ports with no driving cell and doesn't have case analysis set on it. These nets are assigned as a stronger driver for modelling agressors.
 - ideal_clocks : reports nets that do not have propagated clocks. The design must have propagating clock tree to calaculate crosstalk.
 - partial_input_delay : reports the delays set with set_max_delay and set_min_delay commands in SDC.
 - unexpandable_clocks : reports any clocks that are not expanded to common time base.
+
+The various reports are as follows in pt_shell
+```
+report_si_bottleneck              
+report_bottleneck                
+report_si_delay_analysis
+report_si_aggressor_exclusion
+report_si_noise_analysis
+```
+![report_si_bn](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/89c1f27d-1a2b-4053-8cf4-cba816ff2f66)
+
+![report_si_bn1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ce763d16-b52a-4e9c-8677-d19f467b4ccd)
+
 </details>

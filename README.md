@@ -5599,6 +5599,38 @@ The sky130_fd_pr is the standard library for analog components.
 The most analog components such as transistors are handled by extraction, and do not need libraries. The components such as RF layouts, bipolar devices and parallel plate capacitors have an approved layout that can be used as an IP format in the library. The devices operate from 1.8V to 20V, with common voltages being  1.8V and 3.3V.
 The sky130_fd_io is the library for IO pads and pad frame cells. It contains power, ground pads, general purpose IO pads. The sky130_ml_xx_hd is the third-party library contains alpha-numeric text layouts, for putting text in the layout.
 The sky130A contains libs.tech and libs.ref directories. The libs.tech contains all opensource EDA tools setup and libs.ref contains reference libraries.
+The sky130 process is described as a hybrid 130nm-180nm standard CMOS fabrication process. There are 5 layers of aluminium metal and titanium nitride (used for short routes due to high resisitivity), called local interconnect li. The local interconnect is used for power and ground rails in skywater standard layouts. The poly contacts require a nitride polycut around the contacts. The metal layers are in progressive thickness. Usually higher order metal is used for routing purposes.
+Metal layers in vias are called back-end layers and the other layers below are called front end layers. The fabrication process for front-end is mostly diffusion and ion-implantation while backend is metal deposition by sputtering.
+The diff is higher concentration used for drain and source whereas tap is lower concentration used for substrate and wells. The masks differ for these higher concentration and lower concentration areas.
+
+The HVI (high voltage layer) has various uses. An n-well implanted with HVI is tolerant to high voltages and gate oxide is tolerant upto 5V and thin oxides are tolerant upto 2.2V leading to dual voltage design.
+ The pads in skywater library reflect dual domain voltage methodology with core voltage of 1.8V and pad voltage of 3.3V.
+ The MiM(Metal insulator Metal) cap layers are part of back-end process and these capacitors are formed by adding metal plates between routing layers. The Redistribution layer(which is copper) is not fabricated by skywater, is deposited on the fabricated chip and solder bumps added on redistribution layer. The redistribution layer is not a design layer, but a packaging layer of the chip.
+The different kinds of metal layers are as follows:
+![mmetal](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c624276e-2df8-4756-8c4e-76c55b8cd496)
+
+There are three types of libraries available in skwater pdks.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
  

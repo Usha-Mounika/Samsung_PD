@@ -28,7 +28,9 @@ A brief description of what this training summarizes :
 -  [Day23 : Clock Gating Technique](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day23)
 -  [Day24 : Timing violations and ECO](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day24)
 -  [Day26 : Introduction to mixed signal flow](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day26)
--  [Day27 : Introduction to crosstalk - glitch and delta delay](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day24)
+-  [Day27 : Introduction to crosstalk - glitch and delta delay](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day27)
+-  [Day28 : Introduction to DRC/LVS](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day28)
+
 
 
 
@@ -5539,4 +5541,65 @@ report_si_noise_analysis
 
 ![report_si_bn1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ce763d16-b52a-4e9c-8677-d19f467b4ccd)
 
+</details>
+
+## Day28 : Introduction to DRC/LVS
+<details>
+<summary>Theory</summary>
+<br>
+
+Introduction:
+
+The skywater 130nm PDK is a complete open source tool with all design rules, layer definitions, device definitions and models made available. Since open PDKs are available, any one can design the circuit using open source tool. The caravel chip has a RISC-V processor and the space for the design to be implemented by the user.
+PDK stands for process design kit, is a bundles of files and documentation needed by a chip designer to know how to work with particular process foundry to use it to make chips.
+The 130 in the sky130 stands for the feature size of process. The size of the smallest transistor that can be made with these PDKs is 130nm.  
+The sky130PDK mainly comprises of documentation (skywater PDK), library files (github repo) and community(slack group).
+The PDKs work better with open source EDA tools, but not with commercialized tools due to ligo complications (i.e., as the format of files used by tools differ).
+Opensource EDA tools:
+The open_pdks files in opencircuitdesign.com.
+The open_pdks is designed as a makefile based installer that takes files from skywater pdk and reformats them for any number of open source tools.
+Inorder to install the open_pdks, the following steps are followed:
+```
+git clone https://github.com/RTimothyEdwards/open_pdks
+cd open_pdks
+configure –enable-sky130-pdk
+make 
+sudo make install
+```
+As the open source pdks support every process, the configured process is defined. The make command grabs the skywater PDKs from google and submerges and keeps them for install.
+Now, Building the libraries from repository is done after the installation.
+
+- Magic:
+  
+Magic is the opensource EDA tool that must be installed before running the open_pdk file. Magic reads and writes various command formats. It does extraction in DRC, handles GDS,LEF and DEF formats. It can create design layouts from parameterized descriptions. Magic is responsible for creating any files of any formats missing from the repository source files.
+
+- Klayout:
+  
+Klayout is an alternative layout editor and viewer, can also do DRC. The opensource PDKs are installed to check the DRCs.
+
+- Openlane:
+  
+This is the synthesis, place and route package based on openroad tools. It is basically a wrapper around the opneroad tool with set of scripts that supports skywater PDKs.
+
+- Xschem:
+  
+It is a schematic editing tool, is not directy implemented in open_pdks, but is a third party repository that open_pdks can pull in and copy to installation location.
+
+- Netgen:
+
+Netgen is a LVS tool that works with an extracted netlist from layout using magic and netlist generated from Xscem of openlane.
+
+- Ngspice :
+
+It is the analog simulation tool based on spice and open_pdks installs all the model files such that Ngspice can find them with right include statements.
+
+There are other tools such as qflow, IRSIM(switch level simulator and power analyzer) and xcircuit.
+Inaddition of opensource EDA tools, open_pdks install the foundry and third-party libraries creating a  common directory across the source. There are different digital libraries based on speed and power of operation.
+The sky130_fd_pr is the standard library for analog components.
+The most analog components such as transistors are handled by extraction, and do not need libraries. The components such as RF layouts, bipolar devices and parallel plate capacitors have an approved layout that can be used as an IP format in the library. The devices operate from 1.8V to 20V, with common voltages being  1.8V and 3.3V.
+The sky130_fd_io is the library for IO pads and pad frame cells. It contains power, ground pads, general purpose IO pads. The sky130_ml_xx_hd is the third-party library contains alpha-numeric text layouts, for putting text in the layout.
+The sky130A contains libs.tech and libs.ref directories. The libs.tech contains all opensource EDA tools setup and libs.ref contains reference libraries.
+
+
+ 
 </details>

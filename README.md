@@ -5609,10 +5609,38 @@ The HVI (high voltage layer) has various uses. An n-well implanted with HVI is t
 The different kinds of metal layers are as follows:
 ![mmetal](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c624276e-2df8-4756-8c4e-76c55b8cd496)
 
+  The devices are not characterized with continuous change in width and length in skywater PDKs. The reference layouts are passed to user as GDS files. They are used without making any changes.
+- Biploar devices
+   - NPN (emitter of n-diffusion, base of p-well, collector of deep n-well)
+   - PNP (emitter of p-diffusion, base n-well, collector p-substrate)
+- Polysilicon resistors
+   - P+ polyresistor of poly resistance 1Kohm/square
+   - P- polyresistor of sheet resistance 2Kohm/square
+  - DIffusion resistors
+     - n diffusion resistor on substrate
+     - p diffusion resistor in n-well
+- Hidden mask layers
+   - PSDM Mask
+   - RPM Mask
+   - POLYRES ID layer
+There are some layers which need not be identified for DRC such as bipolar identifiers, capacitor identifiers.
+
 There are three types of libraries available in skwater pdks.
+- Digital standard cells:
+   These come with layout and GDS and formats used in synthesis flow. There are various flavours of cells covering high speed, high density, high voltage and low leakage.
+   All the libraries follow a naming convention.
+  ```
+  sky130_vendor_library_type[_name]
+  ```
+  The ```sky130_fd_sc_hd``` stands for fd is foundry(vendor), sc is standard cell(library type), hd is high density(library name). The library name prefixes all standard cell names. The standard cells must be placed such that abuttment bounding boxes touch each other.
+- I/O cells
+  The I/O cell libraries contain entire power and ground pads which have entire disconnected blocks with them. The overlay connects the clamps/pads to power rails.
+- Primitive devices and models
+  The primitive designs include bipolar transistors, varactors, ESD devices and so on.
 
-
-
+  A layout is created to understand the physical verification.
+  A simple circuit will have a schematic that represents the cells and hierarchy of layout. Xschem is used to create layout, with ngspice (analog simulation) and gaw(waveform viewer).
+  A schematic is used to generate netlist and simulated with ngspice and layout is generated with magic. The devices are moved around in the layout to fix the DRC checks. The LVS checks are done as the final step.
 
 
 

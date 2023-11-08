@@ -5545,17 +5545,20 @@ report_si_noise_analysis
 
 ## Day28 : Introduction to DRC/LVS
 <details>
-<summary>Theory</summary>
+<summary>Introduction to Skywater130</summary>
 <br>
 
 Introduction:
 
 The skywater 130nm PDK is a complete open source tool with all design rules, layer definitions, device definitions and models made available. Since open PDKs are available, any one can design the circuit using open source tool. The caravel chip has a RISC-V processor and the space for the design to be implemented by the user.
 PDK stands for process design kit, is a bundles of files and documentation needed by a chip designer to know how to work with particular process foundry to use it to make chips.
+
 The 130 in the sky130 stands for the feature size of process. The size of the smallest transistor that can be made with these PDKs is 130nm.  
 The sky130PDK mainly comprises of documentation (skywater PDK), library files (github repo) and community(slack group).
 The PDKs work better with open source EDA tools, but not with commercialized tools due to ligo complications (i.e., as the format of files used by tools differ).
+
 Opensource EDA tools:
+
 The open_pdks files in opencircuitdesign.com.
 The open_pdks is designed as a makefile based installer that takes files from skywater pdk and reformats them for any number of open source tools.
 Inorder to install the open_pdks, the following steps are followed:
@@ -5595,17 +5598,24 @@ It is the analog simulation tool based on spice and open_pdks installs all the m
 
 There are other tools such as qflow, IRSIM(switch level simulator and power analyzer) and xcircuit.
 Inaddition of opensource EDA tools, open_pdks install the foundry and third-party libraries creating a  common directory across the source. There are different digital libraries based on speed and power of operation.
+
 The sky130_fd_pr is the standard library for analog components.
+
 The most analog components such as transistors are handled by extraction, and do not need libraries. The components such as RF layouts, bipolar devices and parallel plate capacitors have an approved layout that can be used as an IP format in the library. The devices operate from 1.8V to 20V, with common voltages being  1.8V and 3.3V.
 The sky130_fd_io is the library for IO pads and pad frame cells. It contains power, ground pads, general purpose IO pads. The sky130_ml_xx_hd is the third-party library contains alpha-numeric text layouts, for putting text in the layout.
+
 The sky130A contains libs.tech and libs.ref directories. The libs.tech contains all opensource EDA tools setup and libs.ref contains reference libraries.
 The sky130 process is described as a hybrid 130nm-180nm standard CMOS fabrication process. There are 5 layers of aluminium metal and titanium nitride (used for short routes due to high resisitivity), called local interconnect li. The local interconnect is used for power and ground rails in skywater standard layouts. The poly contacts require a nitride polycut around the contacts. The metal layers are in progressive thickness. Usually higher order metal is used for routing purposes.
+
 Metal layers in vias are called back-end layers and the other layers below are called front end layers. The fabrication process for front-end is mostly diffusion and ion-implantation while backend is metal deposition by sputtering.
+
 The diff is higher concentration used for drain and source whereas tap is lower concentration used for substrate and wells. The masks differ for these higher concentration and lower concentration areas.
 
 The HVI (high voltage layer) has various uses. An n-well implanted with HVI is tolerant to high voltages and gate oxide is tolerant upto 5V and thin oxides are tolerant upto 2.2V leading to dual voltage design.
  The pads in skywater library reflect dual domain voltage methodology with core voltage of 1.8V and pad voltage of 3.3V.
+ 
  The MiM(Metal insulator Metal) cap layers are part of back-end process and these capacitors are formed by adding metal plates between routing layers. The Redistribution layer(which is copper) is not fabricated by skywater, is deposited on the fabricated chip and solder bumps added on redistribution layer. The redistribution layer is not a design layer, but a packaging layer of the chip.
+ 
 The different kinds of metal layers are as follows:
 ![mmetal](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c624276e-2df8-4756-8c4e-76c55b8cd496)
 
@@ -5642,13 +5652,40 @@ There are three types of libraries available in skwater pdks.
   A simple circuit will have a schematic that represents the cells and hierarchy of layout. Xschem is used to create layout, with ngspice (analog simulation) and gaw(waveform viewer).
   A schematic is used to generate netlist and simulated with ngspice and layout is generated with magic. The devices are moved around in the layout to fix the DRC checks. The LVS checks are done as the final step.
 
+### Lab
+#### Checking tool installations
+- Magic:
+  Magic opens two windows namely layout window and console window. The console window has a command prompt,as a tcl interpreter running commands related to layout.
+  ![lab1_1_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f5a465fa-cd23-4cab-a356-d8fc40cd267d)
 
+The magic can be called without layout window using ```-dnull``` option and without console window using ```-noconsole``` option
+- Netgen:
+Netgen is a command driven and has no graphics interface.
+![lab1_1_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/16dfd19a-d704-49c3-bbb6-bdd87dc69c6a)
 
+Netgen gui is run with the command
+```
+/usr/local/lib/netgen/python/lvs_manager.py
+```
+- Xschem:
+  Xschem doesn't have a console window, the terminal acts as console. It doesn't have quick command interface.
+  ![lab1_1_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/18523ccf-2bc3-4627-a4c8-973debb0bac7)
 
+- ngspice:
+  Ngspice doesn't have any additional consoles. It is executed on terminal. Ngspice has its own interpreter, neither tcl nor python.
+  ![lab1_1_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/db791470-60b0-4d8c-bd73-85283c4041b7)
 
+These tools can also be opened in batch mode as follows:
+![lab1_1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c38a0a1b-050c-4716-b1b6-e3cd0a6c9810)
 
+Inorder to create a basic circuit like inverter, the tools must be linked to present working directory as shown.
+![lab1_2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/59d8e660-b4e0-4c46-99ed-a9367d2a9c02)
 
+xschem has a lot of example devices as shown.
+![lab1_2_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7d7fb8ce-37da-416a-a4be-a2dbaebf65c6)
 
+The following image shows the schematic of a test varactor in xschem device models.
+![lab1_2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/60e56c7a-5c7e-407e-96f5-26088019fe4d)
 
 
 

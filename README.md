@@ -5679,6 +5679,20 @@ These tools can also be opened in batch mode as follows:
 ![lab1_1_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c38a0a1b-050c-4716-b1b6-e3cd0a6c9810)
 
 Inorder to create a basic circuit like inverter, the tools must be linked to present working directory as shown.
+```
+mkdir inverter
+cd inverter
+mkdir xschem
+mkdir mag
+mkdir netgen
+cd xschem
+ln -sf /usr/share/pdk/sky130A/libs.tech/xschem/xschemrc
+ln -sf /usr/share/pdk/sky130A/libs.tech/ngspice/spinit .spiceinit
+cd ../mag/
+ln -sf /usr/share/pdk/sky130A/libs.tech/magic/sky130A.magicrc .magicrc
+cd ../netgen/
+ln -sf /usr/share/pdk/sky130A/libs.tech/netgen/sky130A_setup.tcl setup.tcl
+```
 ![lab1_2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/59d8e660-b4e0-4c46-99ed-a9367d2a9c02)
 
 xschem has a lot of example devices as shown.
@@ -5687,16 +5701,126 @@ xschem has a lot of example devices as shown.
 The following image shows the schematic of a test varactor in xschem device models.
 ![lab1_2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/60e56c7a-5c7e-407e-96f5-26088019fe4d)
 
+*Note: Examples can be accessed by clicking the relevant rectangle and pressing the "E" key on the keyboard. We can return to the menu by pressing "CTRL+E". The "F" key resizes the schematic to fit the window.*
+
+On an empty window, let us try some magic shortcuts:
+```
+magic -d XR
+```
+The following image shows the painted view of selected area. By selecting the area, placing cursor on the required layer in color palette and clicking 'pk' from the keyboard.
+![lab1_2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1ed97d5e-e235-4df7-8fcb-75d41e560ac6)
+
+Any particular area can be erased by clicking 'e' as shown.
+![lab1_2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d3274cc5-d6ad-48a5-8625-d8449aae209d)
+
+Similarly,
+- Left and right mouse buttons --> to adjust the cursor box
+- Shift+z --> to zoom out
+- Middle mouse button/pk --> to select a layer (also known as painting)
+- Key e --> to erase whatever is present in the cursor box (can also be done by clicking the middle mouse button on an empty part of the layout)
+- Key v --> to view the entire layout
+- CTRL+P --> opens up the parameter options for the selected device
+- s key --> to select layers
+  
+Typing "what" command in the magic console --> gives information on the selected layer
+
+";" key --> to type commands in the magic console without moving between windows, until the Enter key is pressed
+- i key --> to select a device
+- m key --> to move the selected device
+
+To edit Devices,
+drop down buttons: Click on Devices 1 -> nmos (MOSFET)and select nmos (MOSFET) under "Devices 1" and set the width to 2 um, length to 0.5 um and fingers to 3 as shown.
+![lab1_2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e62d644b-0612-4aa1-842a-67c55002c76c)
+
+When applied, the NMOS viewed is as follows:
+![lab1_2_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/be1886e2-0a45-4dbe-b711-f037a32d26f1)
+
+By removing the guard rings, the NMOS is viewed as follows:
+![lab1_2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2b19fae9-8b80-4463-bda8-0b6baac1b177)
+
+Now Changing the device type to sky130_fd_pr__nfet_g5v0d10v5 to observe that voltage vslue changed but layout view is similar.
+When a particular layer is selected, the what command is used to know the details of the layer selected.
+![lab1_2_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/1bad56d1-0908-4440-b6ea-eecd17e1984a)
+
+The command need not be typed on console, it can be given on layout window with ":"
+![lab1_2_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d4a99fc5-3efe-463f-b0a1-7097b59d0d21)
+
+#### Creating schematic
+Now, let us create the inverter schematic using xschem.
+```
+cd ../xschem/
+xschem
+```
+Open a new schematic window and click insert button on keyboard. It pops a window to select the devices. Select the SkyWater library directory path to access SkyWater components and choose the fd_pr library. To create an inverter, a basic nfet and pfet are needed. Therefore, select nfet and pfet device from the insert window and place it anywhere in the schematic as shown.
+![lab1_3_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f1710251-1307-4255-9cab-0f12b5364365)
+
+- As pins are not PDK specific, they can be found under the xschem library in the insert window. These are named as ipin.sym, opin.sym and iopin.sym.
+- Place the pins and following keys are used for connecting schematic.
+   - m key to move the components around on the schematic window.
+   -  C key to copy the components and Del key to erase components.
+   -  W key to insert wires between components and make connections.
+- Rename each pin to something sensible using the Q key to bring up the parameter window.
+- Select the components by clicking on them and click Q key to bring up the parameter windows to configure the properties of the devices.
+- For nfet, change the length to 0.18 as the default value of 0.15 is restricted to sram devices only. Set the number of fingers to 3, and the width of each finger to 1.5.Since we have 3 fingers now, the total width in the parameter window must be set to 3 times of the finger width, which is 4.5.
+  ![lab1_3_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d2641014-5833-4639-984a-f1861655bbd5)
+
+- Similarly, for pfet, adjust the parameters to 3 fingers, width of 1 per finger, and a length of 0.18. We must specify the body to be connected to the Vdd pin as it is a 3 pin pfet.
+![lab1_3_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/25eba7ac-165c-4a58-9d9d-32d624a7f0ad)
+
+- Similarly, the pins such as in,out and vdd, vss are given names as shown.
+  ![la1_3_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/7f5285b1-a88c-4154-8c25-054542470285)
+
+  ![lab1_3_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/693df5e7-d440-4331-b9da-abb18c268e9e)
+
+- Save the design by clicking tab File --> save as --> inverter.sch
+![lab1_3_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8c67f066-40b8-40b8-91b7-86d0a165e1d0)
+
+#### Creating symbol and exporting schematic
+- To functionally validate the schematic, testbench that is separated from the schematic must be created.
+- Firstly, create a symbol for the schematic as the schematic will appear as a symbol in the testbench. To do this, click on the Symbol menu and select "Make symbol from schematic". Then, create a testbench schematic using new schematic option and insert the generated symbol from the local directory using the Insert key.
+- Select new schematic in File tab and choose inverter.sch under home directory and paste it on the schematic window.
+  ![lab1_4_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ae0c4e48-a9e7-414c-92a5-503fa904f554)
+
+- The testbench will be very simple where we will generate a ramp input and observe the output response after connecting the power supplies. To do this, insert 2 voltage sources from the default xschem library, one for the input and one for the supply. Connect these and add a GND node to the supply connections. Create "ipins" and "opins" for the input and output signals to observe in Ngspice.
+- Supply voltage is set to 1.8 V.
+  ![lab1_4_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8f530bb3-ce11-497d-9432-081d40d9329a)
+
+- For the input voltage, we must set the supply to a piece-wise linear function to get ramp. PWL function has voltage and time values stated that the supply will start at 0v, then start to ramp up from 20 ns till it reaches its final value at 900 ns of 1.8 V.
+  ![lab1_4_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/94ddd2a6-dd06-4f6b-8524-48ef2beb3c2f)
+
+- Next, place two more statements for ngspice, but as these aren't specific to any component, they must be placed in text boxes. To place a text box, select the code_shown.sym component under the xschem library.
+- The first text box will specify the location of the device models used in the device schematic, where it is using a .lib statement that selects a top level file that tells ngspice where to find all the models and also specifying a simulation corner for all the models. The first block specifying the typical corner with value = ".lib /usr/share/pdk/sky130A/libs.tech/ngspice/sky130.lib.spice tt".
+- For the second block, it specifies;
+
+value = ".control
+tran 1n 1u
+plot V(in) V(out)
+.endc"
+This will tell ngspice to run a transient simulation for 1 ns and monitor voltages for the in and out pins.
+![lab1_4_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/2c9c2637-d2d0-445c-bafc-4d70ebf27bd5)
+
+While specifying same name to in and out, in the symbol and output pins, it throws a warning during simulation. SO, Use the different names as shown.
+![lab1_4_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f6049d8e-b7a6-4809-be4d-9f9865133ebf)
+
+![lab1_4_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/0745f648-311a-4b5f-9af2-79308523143e)
+
+Therefore, a complete testbench schematic is as shown, and save this as inverter_tb.sch.
+To generate the netlist, click on the Netlist button, then simulate it in Ngspice by clicking the Simulate button. The waveform confirms that the schematic behaves as an inverter as shown below.
+![lab1_4_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/c8a4e697-09b5-4f1f-aab6-02868e50f237)
+
+- After verified the schematic, create a layout for it. To do this, go back to the inverter schematic.
+- Firstly, click on the Simulation menu and select "LVS netlist: Top Lvel is a .subckt" option.
+- Wait a few seconds and go back to the Simulation menu to check whether a tick mark appears beside the aforementioned option. This verifies if we have properly defined a sub circuit for creating a layout cell with pins in the layout.Finally, generate a netlist for the schematic by clicking the Netlist button and exit Xschem.
+
+#### Importing Schematic to Layout
+```
+cd ../mag/
+magic -d XR
+```
+- Import the schematic to the layout in Magic by running the magic, then click on File -> Import SPICE and then select the inverter.spice file from the xschem directory. If done correctly, the following layout has been opened up in magic.
+![lab1_5_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6a0cdadb-dbe8-4ae1-9ffd-d944bd354804)
+
+![lab1_5_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f781b96d-dabd-412d-89bb-e2bec7007baf)
 
 
-
-
-
-
-
-
-
-
-
- 
 </details>

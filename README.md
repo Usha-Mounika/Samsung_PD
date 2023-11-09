@@ -5651,8 +5651,11 @@ There are three types of libraries available in skwater pdks.
   A layout is created to understand the physical verification.
   A simple circuit will have a schematic that represents the cells and hierarchy of layout. Xschem is used to create layout, with ngspice (analog simulation) and gaw(waveform viewer).
   A schematic is used to generate netlist and simulated with ngspice and layout is generated with magic. The devices are moved around in the layout to fix the DRC checks. The LVS checks are done as the final step.
-
-### Lab
+</details>
+<details>
+ <summary>Lab</summary>
+<br>
+	
 #### Checking tool installations
 - Magic:
   Magic opens two windows namely layout window and console window. The console window has a command prompt,as a tcl interpreter running commands related to layout.
@@ -5820,7 +5823,82 @@ magic -d XR
 - Import the schematic to the layout in Magic by running the magic, then click on File -> Import SPICE and then select the inverter.spice file from the xschem directory. If done correctly, the following layout has been opened up in magic.
 ![lab1_5_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/6a0cdadb-dbe8-4ae1-9ffd-d944bd354804)
 
+Referring to the layout generated above, the schematic import does not know how to do analog placing and routing as it is very complicated. Therefore, We must place them in the best positions and wire them up manually.First of all, place the pfet device above the nfet and adjust the placement of the input, output and supply pins. Refer below figure.
 ![lab1_5_2](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/f781b96d-dabd-412d-89bb-e2bec7007baf)
 
+Next, set some parameters that are only adjustable in the layout which will make it more convenient to wire the whole layout up. To pop out the parameter editing section, use S key and press I key to select the object, then use CTRL+P to open up the parameter options for the selected device.
+![lab1_5_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/76ce8acb-4126-44c0-81d7-7910053ed815)
+
+- Set the "Top guard ring via coverage" to 100. This will put a local interconnect to metal1 via ta the top of the guard ring. Next, for "Source via coverage", put +40 and for "Drain via coverage", put -40. This will split the source drain contacts, making it easy to connect them with a wire.
+![lab1_5_8](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/cb323032-c39f-4d3b-a443-e1cd3a798761)
+
+For nfet, set the "Bottom guard ring via coverage" to 100, while the source and drain via coverages are set to +40 and -40, respectively, like the pfet.
+![lab1_5_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/010b41fb-8a19-451b-8ed9-28605bbe7168)
+
+Start to paint the wires using metal1 layers by connecting the source of the pfet to Vdd and source of the nfet to Vss. 
+![lab1_5_9](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ebc38ef0-e8ed-44e7-bba1-d3ee5239aadd)
+
+Next, connect the drains of both mosfets to the output.
+![lab1_5_9_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/198f870a-d275-4256-8f71-0b64f584aefe)
+
+Finally, connect the input to all the poly contacts of the gate.
+![lab1_5_9_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a382125e-b7a1-4a7b-abe9-a9fbe9b514f5)
+
+Save the file and select the autowrite option.
+![lab2_1](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/b0246be7-7f37-4275-bcea-ac5ce79e48de)
+
+Run the following commands in the magic console as shown.
+```
+extract do local    (Ensuring that magic writes all results to the local directory)
+extract all         (Performing the actual extraction)
+ext2spice lvs       (Simulating and setting up the netlist to hierarchical spice output in ngspice format with no parasitic components)
+ext2spice           (Generating the spice netlist)
+```
+![lab2_3](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/e92f5738-2132-4b95-9f9c-987b558fd4f4)
+
+```
+rm *.ext                                          (Clear any unwanted files -> .ext files are just intermediate results from the extraction)
+/usr/share/pdk/bin/cleanup_unref.py -remove .     (Clean up extra .mag files -> files containing paramaterised cells that were created and saved but not used in the design)
+netgen -batch lvs "../mag/inverter.spice inverter" "../xschem/inverter.spice inverter"    (Run LVS by entering the netgen subdirectory)
+```
+![lab2_4](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/d200929f-f710-44d0-963b-a4f92f3cf830)
+
+- Remember to always use the layout netlist first and schematic netlist second in the netgen command as in side by side, resulting the layout is on the left and the schematic is on the right.
+- Each netlist is represented by a pair of keywords in quotes, where the first is the location of the netlist file and the second is the name of the subcircuit to compare.
+- As we can see from the result below, there was an issue in the wiring and the netlists do not match. This is due to wiring errors in the layout.
+![lab2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/fa4bb315-322a-421a-b177-bb317e645319)
+
+**Debugging errors in netlist, rerun and save layout**
+
+```
+extract do local
+extract all
+ext2spice lvs
+ext2spice cthresh 0     (Tells magic to add all the parasitic capacitances to the spice netlist)
+ext2spice
+```
+
+![lab2_5](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/8d133ed7-b0d7-40ae-b664-2e39ebbc3a8d)
+
+Referring to the netlist file below, there are multiple lines beginning with C, which detail the parasitic capacitances.
+```
+gvim inverter.spice
+```
+![lab2_6](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/694eada6-4e92-4b79-979b-cd508b78310c)
+
+```
+cp ../xschem/inverter_tb.spice .
+vim inverter_tb.spice
+```
+Modify the test bench netlist file
+![2_7](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/01900b92-9b3d-400e-8209-691d2cce8e32)
+
+```
+/usr/share/pdk/bin/cleanup_unref.py -remove .
+cp ../xschem/.spiceinit .
+ngspice inverter_tb.spice
+```
+The result is almost the same as in previous simulation in xschem.
+![final](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ee79778d-35fe-4632-a0f4-2ac8385a96dd)
 
 </details>

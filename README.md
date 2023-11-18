@@ -30,6 +30,7 @@ A brief description of what this training summarizes :
 -  [Day26 : Introduction to mixed signal flow](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day26)
 -  [Day27 : Introduction to crosstalk - glitch and delta delay](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day27)
 -  [Day28 : Introduction to DRC/LVS](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day28)
+-  [Day30 : Tcl Scripting](https://www.github.com/Usha-Mounika/Samsung_PD/blob/master/README.md#Day30)
 
 
 
@@ -5900,5 +5901,121 @@ ngspice inverter_tb.spice
 ```
 The result is almost the same as in previous simulation in xschem.
 ![final](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/ee79778d-35fe-4632-a0f4-2ac8385a96dd)
+
+</details>
+
+## Day30 : Tcl Scripting
+<details>
+<summary>Introduction to tcl box and vsdsynth usage</summary>
+<br>
+
+ The tcl scripting is done with a task that takes a csv file as input generates the output of the design such as WNS, TNS, rutime. This can be divided into sub-tasks as follows:
+- Create a command and pass .csv file from UNIX shell to tcl script
+- convert all inputs to format[1] and SDC format, and pass these inputs to synthesis tool 'yosys'
+- convert format[1] and SDC to format[2] and pass to timing tool 'Opentimer'
+- Generate output report.
+- #### Creating a command
+  The general scenarios from a user point of view can be:
+  - not providing a csv file
+    ```
+    ./vsdflow
+    ```
+   These are achieved using the following snip of code as follows:
+```
+if ($#argv != 1) then 
+	echo "Info: Please provide the csv file"
+	exit 1
+endif
+```
+  - poviding a csv file, that doesn't exist
+    ```
+    ./vsdflow my.csv
+  - typing ```-help``` to find out usage
+    ```
+    ./vsdflow -help
+    ```
+This is achieved with the following snip of code as follows:
+````
+if (! -f $argv[1] || $argv[1] == "-help") then
+        if ($argv[1] != "-help") then
+                echo "Error:  Cannot find csv file $argv[1]. Exiting..."
+                exit 1
+        else
+                echo USAGE: ./vsdflow \<csv file\>
+                echo
+                echo         where \<csv file\> consists of 2 columns, below keyword being in 1st column and is Case Sensitive. Please request VSD team for sample csv file
+                echo
+                echo         \<Design Name\> is the name of top level module
+                echo
+                echo         \<Output Directory\> is the name of output directory where you want to dump synthesis script, synthesized netlist and timing reports
+                echo
+                echo         \<Netlist Directory\> is the name of directory where all RTL netlist are present
+                echo
+                echo         \<Early Library Path\> is the file path of the early cell library to be used for STA
+                echo
+                echo         \<Late Library Path\> is file path of the late cell library to be used for STA
+                echo
+                echo         \<Constraints file\> is csv file path of constraints to be used for STA
+                echo
+                exit 1
+        endif
+else
+		tclsh vsdflow.tcl $argv[1]
+endif
+```
+</details>
+<details>
+<summary>Variable creation and processing constraints from CSV</summary>
+<br>
+
+Let us convert all inputs into format[1] and SDC format, and pass these inputs to synthesis tool called 'yosys'. This can be further made into sub-tasks as follows:
+- Create the variables
+-  Check if files and directories mentioned in .csv, exists or not.
+-  Read the constraint file for above .csv file and convert it to SDC format.
+-  Read all files in the netlist directory.
+-  Create main synthesis script in format[2]
+-  Pass this script to yosys.
+
+#### Creating variables
+The variable creation starts with accessing the inputs in .csv file and asssigning the file names to variables. Inorder to do this, we need to access the .csv file first. We know that, the csv file is given as the input to the command ```./vsdflow````. In order to access the argument passed with this command, the following variable is set.
+```
+set filename [lindex $argv 0]
+```
+- lindex command is used to retrieve elements from a list. It allows you to access a specific element in a list based on its index.  The basic syntax is ```lindex $listname $index```.$listName is the name of the list.$index is the index of the element you want to retrieve. Indexing in Tcl starts at 0.
+- argv variable holds the list of command-line arguments passed to a Tcl script. It's similar to how other programming languages handle command-line arguments. The argv variable is a list containing the script name and any additional arguments provided when invoking the Tcl script.
+- set command is used to create or modify the variables.
+
+In this .csv file, the variables and files to be mapped are present in 2x6 table format. These values are read to a matrix and linked to the matrix, giving each value in the file an index.
+
+Inoder to create the matrix, the packages ```csv`` and ```struct::matrix``` are required. Using these packages, a matrix m is created.
+```
+package require csv
+package require struct::matrix
+struct::matrix m
+```
+Now, let us open the file to read. open is a file attribute. The file is opened in readmode with this command.
+```
+set f [open $filename]
+```
+ Inorder to map the opened file to a matrix, the command ```csv::read2matrix``` is used. csv is a comma seperated value. When you open this file with cat command, it just prints all the values in the terminal as rows seperated by commas and columns seperated with new line. The ```, auto``` signifies to seperate the values with comma and identify the size of matrix. This automatically convertss the .csv file into a matrix.
+```
+csv::read2matrix $f m , auto
+```
+As all the values in the opened csv file are saved to matrix m, the file can be closed using the following command.
+```
+close $f
+```
+Now, let us identify the size of matrix using the following commands:
+```
+set columns [m columns]
+m link arr
+set rows [m rows]
+```
+- The ```matrix_name columns``` returns the number of colums in the matrix. Similarly, ```matrix_name rows``` returns the number of rows in the matrix. The command ```matrix_name add columns number``` adds the number of columns to the matrix. This command is not used as the auto command is used while creating the matrix.
+- The ```matrix_name link array_name``` are used to link the created matrix to an array such that values can be accessed using array indices.
+
+
+
+
 
 </details>

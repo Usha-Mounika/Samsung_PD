@@ -5935,7 +5935,7 @@ endif
     ./vsdflow -help
     ```
 This is achieved with the following snip of code as follows:
-````
+```
 if (! -f $argv[1] || $argv[1] == "-help") then
         if ($argv[1] != "-help") then
                 echo "Error:  Cannot find csv file $argv[1]. Exiting..."
@@ -5963,7 +5963,7 @@ else
 		tclsh vsdflow.tcl $argv[1]
 endif
 ```
-</details>
+ </details>
 <details>
 <summary>Variable creation and processing constraints from CSV</summary>
 <br>

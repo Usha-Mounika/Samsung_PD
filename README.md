@@ -6471,7 +6471,7 @@ close $fileId
 ```
 </details>
 <details>
-<summary>Advanced scaripting and QoR generation</summary>
+<summary>Advanced scripting and QoR generation</summary>
 <br>
 	
 The following code is written for checking any errors in the above script.
@@ -6510,8 +6510,8 @@ puts "\nInfo: Please refer to log $Output_Directory/$Design_Name.synthesis.log"
 ```
 Procs can be used to create user-defined commands.Different procs used throught the training is given below:
 - reopenStdout.proc
-  ```tcl
-    #!/bin/tclsh
+```tclsh
+#!/bin/tclsh
 #proc to redirect screen log to file
 proc reopenStdout {file} {
     close stdout

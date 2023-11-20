@@ -6219,8 +6219,6 @@ The following image shows the constraints defined for SDC in the design
 
 The csv file contains the CLOCKS data and clock-based SDC commands have been generated into the.sdc file. The file was written out in .sdc format with all constraints needed for the design, the following snippet of code shows this as follows:
 ```tclsh
-######################## DAY3 Part 2 ######################################
-
 # Finding the starting column number for input clock latency in INPUTS section
 set ip_erd_st_col [lindex [lindex [m1 search rect $clocks_start_column $inputs_start [expr {$n_columns_concsv-1}] [expr {$outputs_start-1}] early_rise_delay] 0 ] 0 ]
 set ip_efd_st_col [lindex [lindex [m1 search rect $clocks_start_column $inputs_start [expr {$n_columns_concsv-1}] [expr {$outputs_start-1}] early_fall_delay] 0 ] 0 ]
@@ -6296,6 +6294,7 @@ while { $i < $end_of_inputs } {
 <summary>Scripting and yosys synthesis</summary>
 <br>
 Below code will process the csv file for the outputs data and then generate the output-based SDC instructions into SDC file.
+
 ```
 # Finding column number starting for output clock latency in OUTPUTS section only
 set op_erd_st_col [lindex [lindex [m1 search rect $clocks_start_column $outputs_start [expr {$n_columns_concsv-1}] [expr {$n_rows_concsv-1}] early_rise_delay] 0 ] 0 ]
@@ -6364,9 +6363,10 @@ while { $i < $end_of_outputs } {
 close $sdc_file
 puts "\nInfo-SDC: SDC created. Please use constraints in path $Output_Directory/$Design_Name.sdc"
 ```
+
 The following code involves implementation of error-handling for hierarchy checks.
 
-
+```
 # Hierarchy Check
 puts "\nInfo: Creating hierarchy check script to be used by Yosys"
 set data "read_liberty -lib -ignore_miss_dir -setattr blackbox ${Late_Library_Path}"
@@ -6431,6 +6431,7 @@ always @(posedge CLK) begin
 endmodule
 ```
 The basic Yosys script memory.ys to run this and obtain a gate-level netlist and 2D representation of the memory module in gate components is provided below.
+
 ```
 # Reading the library
 read_liberty -lib -ignore_miss_dir -setattr blackbox /home/vsduser/Desktop/work/openmsp430/openmsp430/osu018_stdcells.lib

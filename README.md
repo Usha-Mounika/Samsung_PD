@@ -6365,7 +6365,8 @@ close $sdc_file
 puts "\nInfo-SDC: SDC created. Please use constraints in path $Output_Directory/$Design_Name.sdc"
 ```
 The following code involves implementation of error-handling for hierarchy checks.
-```
+
+
 # Hierarchy Check
 puts "\nInfo: Creating hierarchy check script to be used by Yosys"
 set data "read_liberty -lib -ignore_miss_dir -setattr blackbox ${Late_Library_Path}"
@@ -6380,7 +6381,8 @@ foreach f $netlist {
 }
 puts -nonewline $fileId "\nhierarchy -check"
 close $fileId
-
+```
+```
 # Hierarchy check error handling
 # Hierarchy check error handling done to see any errors popping up in above script.
 # Running hierarchy check in yosys by dumping log to log file and catching execution message
@@ -6407,8 +6409,10 @@ if { $error_flag } {
 	puts "\nInfo: Please find hierarchy check details in '[file normalize $Output_Directory/$Design_Name.hierarchy_check.log]' for more info"
 }
 ```
+
 Now, the synthesis of memory module is to be done. The verilog code is as follows:
-```verilog
+```
+verilog
 module memory (CLK, ADDR, DIN, DOUT);
 
 parameter wordSize = 1;
@@ -6919,7 +6923,6 @@ puts "\nInfo: Number of Instances = $Instance_count"
 puts "\nInfo: Time elapsed = $time_elapsed_in_sec"
 ```
 - Final QOR Report generation
-  # Quality of Results (QoR) generation
 ```
 puts "\n"
 puts "                                                           ****PRELAYOUT TIMING RESULTS_TCLBOX****\n"

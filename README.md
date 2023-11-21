@@ -5915,7 +5915,7 @@ The result is almost the same as in previous simulation in xschem.
 - convert format[1] and SDC to format[2] and pass to timing tool 'Opentimer'
 - Generate output report.
 Inorder to operate all these, we need a csv file containing outputs as follows:
-![csv](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/eadd39a4-df7f-424d-ac56-10e61406a2bb)
+![csv](https://github.com/Usha-Mounika/Samsung_PD/assets/142480150/a267da0f-97b1-43c8-9233-62de3cb97fd7)
 
  #### Creating a command
   The general scenarios from a user point of view can be:
